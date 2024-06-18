@@ -274,66 +274,66 @@ export default function CrashGameSection() {
   const [liveChatOpen, setLiveChatOpen] = useState<boolean>(false);
   const { open } = useOpen();
 
-  useEffect(() => {
-    const canvas = canvasNode.current;
-    if (canvas) {
-      const canvasCtx = canvas.getContext('2d');
-      if (canvasCtx) {
-        console.log('crTick.cur', crTick.cur);
-        if (crashStatus === ECrashStatus.START) {
-        } else if (crashStatus === ECrashStatus.END) {
-          return canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-        } else if (crashStatus === ECrashStatus.PROGRESS) {
-        }
-        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(0, canvas.height);
-        const lastX = (canvas.width * crTick.cur) / 5;
-        console.log({ lastX });
-        const lastY = canvas.height - (crTick.cur - 1) * 20;
-        console.log({ lastY });
-        canvasCtx.lineTo(lastX, lastY);
-        canvasCtx.strokeStyle = '#000';
-        canvasCtx.lineWidth = 2;
-        canvasCtx.stroke();
+  // useEffect(() => {
+  //   const canvas = canvasNode.current;
+  //   if (canvas) {
+  //     const canvasCtx = canvas.getContext('2d');
+  //     if (canvasCtx) {
+  //       console.log('crTick.cur', crTick.cur);
+  //       if (crashStatus === ECrashStatus.START) {
+  //       } else if (crashStatus === ECrashStatus.END) {
+  //         return canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  //       } else if (crashStatus === ECrashStatus.PROGRESS) {
+  //       }
+  //       canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  //       canvasCtx.beginPath();
+  //       canvasCtx.moveTo(0, canvas.height);
+  //       const lastX = (canvas.width * crTick.cur) / 5;
+  //       console.log({ lastX });
+  //       const lastY = canvas.height - (crTick.cur - 1) * 20;
+  //       console.log({ lastY });
+  //       canvasCtx.lineTo(lastX, lastY);
+  //       canvasCtx.strokeStyle = '#000';
+  //       canvasCtx.lineWidth = 2;
+  //       canvasCtx.stroke();
 
-        // let lastX = 0;
-        // let lastY = 0;
-        // for (let x = 0; x <= (canvas.width * crTick.cur) / 5; x++) {
-        //   let y = 0;
-        //   // Stop vertical movement of rocket at a threshold
-        //   if (crTick.cur <= 5.0) {
-        //     y = canvas.height - (crTick.cur - 1) * 40;
-        //   } else {
-        //     y = canvas.height * 0.2;
-        //   }
+  //       // let lastX = 0;
+  //       // let lastY = 0;
+  //       // for (let x = 0; x <= (canvas.width * crTick.cur) / 5; x++) {
+  //       //   let y = 0;
+  //       //   // Stop vertical movement of rocket at a threshold
+  //       //   if (crTick.cur <= 5.0) {
+  //       //     y = canvas.height - (crTick.cur - 1) * 40;
+  //       //   } else {
+  //       //     y = canvas.height * 0.2;
+  //       //   }
 
-        //   canvasCtx.lineTo(x - crTick.cur * 1, y);
-        //   canvasCtx.strokeStyle = '#000';
-        //   canvasCtx.lineWidth = 2;
-        //   canvasCtx.stroke();
-        //   lastX = x - crTick.cur * 1;
-        //   lastY = y;
-        // }
+  //       //   canvasCtx.lineTo(x - crTick.cur * 1, y);
+  //       //   canvasCtx.strokeStyle = '#000';
+  //       //   canvasCtx.lineWidth = 2;
+  //       //   canvasCtx.stroke();
+  //       //   lastX = x - crTick.cur * 1;
+  //       //   lastY = y;
+  //       // }
 
-        // canvasCtx.fillText('🚀', lastX - 15, lastY - 15);
+  //       // canvasCtx.fillText('🚀', lastX - 15, lastY - 15);
 
-        // // Draw dynamic y-axis numbers
-        // if (crTick.cur > 5.0) {
-        //   for (let i = 0; i < 10; i++) {
-        //     ctx!.font = '10px Arial';
-        //     ctx!.fillText(
-        //       (5 + i * 0.5).toFixed(1) + 'x',
-        //       10,
-        //       canvasNode.current!.height * 0.2 + i * 20 - crTick.cur * 1
-        //     );
-        //   }
-        // }
-      }
-    }
+  //       // // Draw dynamic y-axis numbers
+  //       // if (crTick.cur > 5.0) {
+  //       //   for (let i = 0; i < 10; i++) {
+  //       //     ctx!.font = '10px Arial';
+  //       //     ctx!.fillText(
+  //       //       (5 + i * 0.5).toFixed(1) + 'x',
+  //       //       10,
+  //       //       canvasNode.current!.height * 0.2 + i * 20 - crTick.cur * 1
+  //       //     );
+  //       //   }
+  //       // }
+  //     }
+  //   }
 
-    return () => {};
-  }, [canvasNode, crTick, crashStatus]);
+  //   return () => {};
+  // }, [canvasNode, crTick, crashStatus]);
 
   return (
     <ScrollArea className="h-full">
@@ -352,7 +352,7 @@ export default function CrashGameSection() {
           <div className="flex h-full w-2/3 flex-col justify-between gap-6">
             <div className="flex h-2/5 w-full">
               <div className="relative m-[5px] h-full w-1/2 rounded-md">
-                {/* <video
+                <video
                   className="crash-moving-bg-video rounded-xl object-fill"
                   autoPlay
                   muted
@@ -362,7 +362,7 @@ export default function CrashGameSection() {
                   id="crash-moving-bg"
                 >
                   <source src={MovingBackgroundVideo} type="video/mp4" />
-                </video> */}
+                </video>
                 <canvas
                   ref={canvasNode}
                   className="crash-moving-bg-video rounded-xl object-fill"
@@ -395,7 +395,7 @@ export default function CrashGameSection() {
                     </div>
                   </div>
                 )}
-                {/* {(crashStatus === ECrashStatus.PROGRESS ||
+                {(crashStatus === ECrashStatus.PROGRESS ||
                   crashStatus === ECrashStatus.END) && (
                   <div className="crash-car car-moving absolute bottom-16">
                     <img
@@ -408,7 +408,7 @@ export default function CrashGameSection() {
                       alt="crash-car"
                     />
                   </div>
-                )} */}
+                )}
                 {crashStatus === ECrashStatus.NONE && (
                   <div className="crash-status-shadow absolute left-[30%] top-[40%] flex flex-col items-center justify-center gap-5">
                     <div className=" text-6xl font-extrabold uppercase text-[#f5b95a] delay-100">
