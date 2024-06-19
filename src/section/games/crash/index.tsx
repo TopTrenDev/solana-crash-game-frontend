@@ -31,6 +31,7 @@ import LiveChat from '@/components/shared/live-chat';
 import MobileLivechat from '@/components/shared/mobile-livechat';
 import { MessageSquareText } from 'lucide-react';
 import { useOpen } from '@/provider/chat-provider';
+import History from '@/components/shared/history';
 
 const GrowingNumber = ({ start, end }) => {
   const { number: numberValue } = useSpring({
@@ -74,6 +75,7 @@ export default function CrashGameSection() {
   const [crashHistoryData, setCrashHistoryData] = useState<CrashHistoryData[]>(
     []
   );
+  const [chatTab, setChatTab] = useState<boolean>(false);
 
   const updatePrepareCountDown = () => {
     setPrepareTime((prev) => prev - 100);
@@ -344,7 +346,7 @@ export default function CrashGameSection() {
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
-            <MenuIcon className="h-6 w-6" aria-hidden="true" />
+            <MenuIcon className="h-6 w-6" aria-hidden="true" />\
           </button> */}
           <Header />
         </div>
@@ -363,10 +365,10 @@ export default function CrashGameSection() {
                 >
                   <source src={MovingBackgroundVideo} type="video/mp4" />
                 </video>
-                <canvas
+                {/* <canvas
                   ref={canvasNode}
                   className="crash-moving-bg-video rounded-xl object-fill"
-                />
+                /> */}
                 {(crashStatus === ECrashStatus.PROGRESS ||
                   crashStatus === ECrashStatus.END) && (
                   <div className="crash-status-shadow absolute left-10 top-32 flex flex-col gap-2">
@@ -444,7 +446,7 @@ export default function CrashGameSection() {
                     {betMode.map((item, index) => (
                       <Button
                         className={cn(
-                          'min-h-full rounded-lg border border-[#1D1776] bg-dark-blue px-6 py-5 font-semibold uppercase text-gray500 hover:bg-dark-blue hover:text-white',
+                          'min-h-full rounded-lg border border-[#1D1776] bg-dark-blue px-6 py-2 font-semibold uppercase text-gray500 hover:bg-dark-blue hover:text-white',
                           selectMode === item &&
                             'border-purple bg-purple text-white hover:bg-purple'
                         )}
@@ -456,8 +458,8 @@ export default function CrashGameSection() {
                     ))}
                   </div>
                 </div>
-                <Card className=" border-purple-0.15  bg-dark bg-opacity-80 shadow-purple-0.5 drop-shadow-sm">
-                  <div className="flex h-full w-full flex-col gap-2 rounded-lg bg-[#0D0B32CC] px-8 py-5">
+                <Card className="border-purple-0.15  bg-dark bg-opacity-80 shadow-purple-0.5 drop-shadow-sm">
+                  <div className="flex h-full w-full flex-col gap-2 rounded-lg bg-[#0D0B32CC] px-4 py-4">
                     <div className="flex flex-row items-center justify-end">
                       <Button
                         className="h-12 w-6/12 bg-purple px-3 py-3 uppercase hover:bg-purple"
@@ -617,19 +619,41 @@ export default function CrashGameSection() {
                 </Card>
               </div>
             </div>
-            <MobileLivechat
-              livechatOpen={liveChatOpen}
-              setLivechatOpen={setLiveChatOpen}
-            />
-            <div
-              className={`hidden h-full transform shadow-lg shadow-purple-0.15 transition-all duration-300 ease-in-out lg:flex ${open ? 'w-full translate-x-0 opacity-100' : 'w-0 translate-x-full opacity-0'}`}
-            >
-              <LiveChat />
+            <div className="flex h-3/5 w-full">
+              <div className="flex h-full flex-col">
+                <button
+                  className={`h-full border-[1px] border-[#1d1776] px-2 ${!chatTab ? 'bg-[#151245] text-white' : 'bg-[#0d0b32cc] text-[#5a5959]'}`}
+                  onClick={() => setChatTab(false)}
+                >
+                  <span className="rotate-180 [writing-mode:vertical-lr]">
+                    History
+                  </span>
+                </button>
+                <button
+                  className={`h-full border-[1px] border-[#1d1776] px-2 ${chatTab ? 'bg-[#151245] text-white' : 'bg-[#0d0b32cc] text-[#5a5959]'}`}
+                  onClick={() => setChatTab(true)}
+                >
+                  <span className="rotate-180 [writing-mode:vertical-lr]">
+                    Chat
+                  </span>
+                </button>
+              </div>
+              <div className="w-full">
+                <MobileLivechat
+                  livechatOpen={liveChatOpen}
+                  setLivechatOpen={setLiveChatOpen}
+                />
+                <div
+                  className={`hidden h-full transform shadow-lg shadow-purple-0.15 transition-all duration-300 ease-in-out lg:flex ${open ? 'w-full translate-x-0 opacity-100' : 'w-0 translate-x-full opacity-0'}`}
+                >
+                  {chatTab ? <LiveChat /> : <History />}
+                </div>
+                <MessageSquareText
+                  className="fixed bottom-8 right-8 z-50 block h-14 w-14 cursor-pointer rounded-full bg-gray50 bg-opacity-15 p-3 text-lg text-gray50 bg-blend-multiply shadow-lg lg:hidden "
+                  onClick={() => setLiveChatOpen(true)}
+                />
+              </div>
             </div>
-            <MessageSquareText
-              className="fixed bottom-8 right-8 z-50 block h-14 w-14 cursor-pointer rounded-full bg-gray50 bg-opacity-15 p-3 text-lg text-gray50 bg-blend-multiply shadow-lg lg:hidden "
-              onClick={() => setLiveChatOpen(true)}
-            />
           </div>
           <div className="flex h-full w-1/3 flex-col p-[5px]">
             <BetBoard
