@@ -1,0 +1,15 @@
+canvas {
+  height: 50vh !important;
+  width: 100% !important;
+}
+.bg-img {
+  background-image: url('../../assets/img/chart_bg.jpg');
+  background-repeat: no-repeat;
+  /* Center and scale the image nicely */
+  background-position: center;
+  /* Ensure the entire background image is visible */
+  background-size: cover;
+  /* Set the background size to cover the entire body */
+  height: 100vh;
+  overflow: hidden;
+}

@@ -1,52 +1,57 @@
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { boardMode } from '@/constants/data';
 import { BetType } from '@/types';
+import { cn } from '@/utils/utils';
 
-const BetBoard = ({
-  betData,
-  betCashout,
-  totalAmount
-}: {
+interface BetBoardProps {
   betData: BetType[];
   betCashout: BetType[];
   totalAmount: any;
-}) => {
+  selectBoard: string;
+  setSelectBoard: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function BetBoard({
+  betData,
+  betCashout,
+  totalAmount,
+  selectBoard,
+  setSelectBoard
+}: BetBoardProps) {
   return (
-    <div className="flex h-full w-full flex-col gap-5">
-      <div className="flex flex-row items-center justify-between py-1.5">
-        <span className="text-lg uppercase text-gray-400">
-          {betData.length} players
-        </span>
-        <div className="flex flex-row gap-10">
-          <span className="flex flex-row items-center gap-2">
-            <img src="/assets/tokens/usk.png" className="h-6 w-6" />
-            <p className="text-lg text-[#049DD9]">
-              {totalAmount?.usk.toFixed(3) ?? '0.000'}
-            </p>
-          </span>
-          {/* <span className="flex flex-row items-center gap-2">
-            <img src="/assets/tokens/kuji.png" className="h-6 w-6" />
-            <p className="text-lg text-[#049DD9]">
-              {totalAmount?.kuji.toFixed(3) ?? '0.000'}
-            </p>
-          </span> */}
-        </div>
+    <div className="flex h-full w-full flex-col rounded-lg bg-[#463E7A]">
+      <div className="flex w-full flex-row items-center">
+        {boardMode.map((item, index) => (
+          <Button
+            className={cn(
+              'min-h-full w-1/2 rounded-tr-lg border-none bg-[#191939] p-6 font-semibold text-[#9688CC] shadow-none hover:bg-[#191939] hover:text-white',
+              selectBoard === item &&
+                'rounded-lg border-none bg-[#463E7A] text-white hover:bg-[#463E7A]'
+            )}
+            key={index}
+            onClick={() => setSelectBoard(item)}
+          >
+            {item}
+          </Button>
+        ))}
       </div>
-      <Card className=" border-purple-0.15 bg-dark bg-opacity-80 shadow-purple-0.5 drop-shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-b-purple-0.5 px-7 py-2 text-base font-semibold text-gray500">
+      <Card className="m-2 rounded-lg border-none bg-[#463E7A] text-white shadow-none">
+        <CardHeader className="flex flex-row items-center justify-between rounded-t-lg border-b border-b-[#000] bg-[#191939] px-7 py-2 text-base font-semibold">
           <Table className="w-full table-fixed">
             <TableBody>
               <TableRow className="!bg-transparent">
                 <TableCell className="w-6/12 text-start">User</TableCell>
-                <TableCell className="w-1/6">Cash Out</TableCell>
-                <TableCell className="w-1/6 text-center">Bet Amount</TableCell>
+                <TableCell className="w-1/6">@</TableCell>
+                <TableCell className="w-1/6 text-center">Bet</TableCell>
                 <TableCell className="w-1/6 text-center">Profit</TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </CardHeader>
-        <CardContent className="px-2 py-0">
+        <CardContent className="bg-[#2C2852] px-2 py-0">
           <ScrollArea className="px-5 py-3 lg:h-[295px]">
             <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-hidden ">
               <TableBody>
@@ -118,8 +123,17 @@ const BetBoard = ({
           </ScrollArea>
         </CardContent>
       </Card>
+      <div className="flex w-full justify-between text-[12px] text-[#EEAF0E]">
+        <span className="px-[18px] pb-[4px] pt-[12px]">
+          Online: {betData.length}
+        </span>
+        <span className="px-[18px] pb-[4px] pt-[12px]">
+          Playing: {totalAmount?.usk.toFixed(3) ?? '0.000'}
+        </span>
+        <span className="px-[18px] pb-[4px] pt-[12px]">
+          Betting: {totalAmount?.usk.toFixed(3) ?? '0.000'} bits
+        </span>
+      </div>
     </div>
   );
-};
-
-export default BetBoard;
+}

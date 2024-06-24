@@ -5,9 +5,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
 import store from '@/store/redux';
-import { WalletContext } from './provider/crypto/wallet';
-import { NetworkContext } from './provider/crypto/network';
-import { PasskeyContext } from './provider/crypto/passkey';
 
 export default function App() {
   return (
@@ -26,14 +23,8 @@ export default function App() {
           pauseOnHover
           theme="light"
         />
-        <PasskeyContext>
-          <NetworkContext>
-            <WalletContext>
-              <Modal />
-              <AppRouter />
-            </WalletContext>
-          </NetworkContext>
-        </PasskeyContext>
+        <Modal />
+        <AppRouter />
       </Provider>
     </AppProvider>
   );

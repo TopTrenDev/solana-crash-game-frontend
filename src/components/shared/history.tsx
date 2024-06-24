@@ -1,44 +1,20 @@
-import EmojiPicker, {
-  Theme,
-  EmojiClickData,
-  EmojiStyle
-} from 'emoji-picker-react';
-import { Separator } from '../ui/separator';
-import { Smile, SendHorizonal } from 'lucide-react';
-import { ScrollArea } from '../ui/scroll-area';
-import React, { useEffect, useRef, useState } from 'react';
+import { EmojiClickData } from 'emoji-picker-react';
+import { useEffect, useRef, useState } from 'react';
 import useToast from '@/hooks/use-toast';
-import { Input } from '../ui/input';
 import { chatActions } from '@/store/redux/actions';
 import { useAppDispatch, useAppSelector } from '@/store/redux';
 import { getAccessToken } from '@/utils/axios';
 import { useInView } from 'react-intersection-observer';
 import axios from 'axios';
+import { Card, CardContent, CardHeader } from '../ui/card';
+import { Table, TableBody, TableCell, TableRow } from '../ui/table';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 export type HistoryItemProps = {
   name: string;
   time: string;
   message: string;
   avatar: string;
-};
-
-const HistoryItem = ({ name, message, avatar, time }: HistoryItemProps) => {
-  return (
-    <div className="flex items-center gap-1 px-3 py-1">
-      <div className="relative"></div>
-      <div className="flex flex-1 flex-col justify-between rounded-lg bg-[#4a278d4f] px-2 py-1">
-        <div>
-          <span className="text-sm font-medium text-gray300">
-            {name ?? 'User:'}
-          </span>
-          <span className="text-xs font-medium text-gray500"> {time}</span>
-        </div>
-        <div className="max-w-[234px] rounded-sm text-[12px] font-medium text-gray200">
-          {message}
-        </div>
-      </div>
-    </div>
-  );
 };
 
 const History = () => {
@@ -69,44 +45,12 @@ const History = () => {
     threshold: 0,
     triggerOnce: false
   });
-  const toast = useToast();
   const chatState = useAppSelector((state: any) => state.chat);
   const firstChatSentAt =
     chatState?.chatHistory?.length > 0 ? chatState.chatHistory[0].sentAt : null;
   const dispatch = useAppDispatch();
-  const toggleIsOpened = (isOpened: boolean) => {
-    setEmojiIsOpened(!isOpened);
-  };
+
   const [getMoreChat, setGetMoreChat] = useState(false);
-
-  const onEmojiClick = (emojiObject: EmojiClickData) => {
-    setInputStr((prevInput) => prevInput + emojiObject.emoji);
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-  };
-
-  const sendMessage = () => {
-    if (!inputStr) return;
-    if (userData.username === '') {
-      toast.error('Please login to chat');
-      return;
-    }
-
-    const message = inputStr;
-    try {
-      dispatch(chatActions.sendMsg(message));
-      setInputStr('');
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     dispatch(chatActions.loginChatServer());
@@ -143,45 +87,45 @@ const History = () => {
   }, [inView]);
 
   return (
-    <div className="flex h-[450px] w-full flex-col overflow-scroll bg-dark bg-opacity-80">
-      <table className="text-sm text-gray-400">
-        <thead className="bg-inherit text-xs font-medium uppercase">
-          <tr>
-            <th scope="col" className="px-6 py-3 text-left tracking-wider">
-              Bust
-            </th>
-            <th scope="col" className="px-6 py-3 text-left tracking-wider">
-              @
-            </th>
-            <th scope="col" className="px-6 py-3 text-left tracking-wider">
-              Bet
-            </th>
-            <th scope="col" className="px-6 py-3 text-left tracking-wider">
-              Profit
-            </th>
-            <th scope="col" className="px-6 py-3 text-left tracking-wider">
-              Hash
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-[#271b5c]">
-          {histories.map((h, i) => (
-            <tr
-              key={i}
-              className={`${i % 2 ? 'bg-[#4b34a7] bg-opacity-20' : ''}`}
-            >
-              <td className="whitespace-nowrap px-6 py-4 font-medium">
-                {h.crashPoint / 100}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">—</td>
-              <td className="whitespace-nowrap px-6 py-4">—</td>
-              <td className="whitespace-nowrap px-6 py-4">—</td>
-              <td className="whitespace-nowrap px-6 py-4">{h.privateHash}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Card className="m-2 w-full rounded-lg border-none bg-[#463E7A] text-white shadow-none">
+      <CardHeader className="flex flex-row items-center justify-between rounded-t-lg bg-[#191939] p-0 py-[12px] text-base font-semibold">
+        <Table className="w-full table-fixed">
+          <TableBody>
+            <TableRow className="!bg-transparent">
+              <TableCell className="w-1/5 p-0 text-center">Bust</TableCell>
+              <TableCell className="w-1/5 p-0 text-center">@</TableCell>
+              <TableCell className="w-1/5 p-0 text-center">Bet</TableCell>
+              <TableCell className="w-1/5 p-0 text-center">Profit</TableCell>
+              <TableCell className="w-1/5 p-0 text-center">Hash</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardHeader>
+      <CardContent className="bg-[#2C2852] px-2 py-0">
+        <ScrollArea className="p-0 lg:h-[295px]">
+          <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-hidden ">
+            <TableBody>
+              {histories.map((history, index) => (
+                <TableRow key={index} className="text-[#fff]">
+                  <TableCell
+                    className={`w-1/5 text-center ${history.crashPoint > 170 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
+                  >
+                    {history.crashPoint / 100}x
+                  </TableCell>
+                  <TableCell className="w-1/5 text-center">-</TableCell>
+                  <TableCell className="w-1/5 text-center">-</TableCell>
+                  <TableCell className="w-1/5 text-center">-</TableCell>
+                  <TableCell className="w-1/5 text-center">
+                    {history.privateHash}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </CardContent>
+    </Card>
   );
 };
 

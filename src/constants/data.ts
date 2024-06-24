@@ -73,9 +73,10 @@ export const navItems: NavItemGroup[] = [
 ];
 
 export const tabItems = [
-  { name: 'home', path: '/' },
-  { name: 'leaderboard', path: '/leader-board' },
-  { name: 'dashboard', path: '/dashboard' }
+  { name: 'bankroll', path: '/bankroll' },
+  { name: 'backtesting', path: '/backtesting' },
+  { name: 'stats', path: '/stats' },
+  { name: 'leaderboard', path: '/leader-board' }
 ];
 
 export type Employee = {
@@ -97,7 +98,9 @@ export type Employee = {
   profile_picture?: string | null;
 };
 
-export const betMode = ['manual', 'auto'];
+export const betMode = ['Manual', 'Auto'];
+export const boardMode = ['All', 'High Win'];
+export const displayMode = ['History', 'Chat'];
 
 export const multiplerArray = [1 / 2, 2, 4, 8];
 
@@ -149,22 +152,15 @@ export const coinFlipPresets = [
 
 export interface IToken {
   name: string;
-  src: string;
-  denom: string;
+  value: string;
 }
 
-export const token: Array<IToken> = [
+export const tokens: Array<IToken> = [
   {
-    name: 'usk',
-    src: '/assets/tokens/usk.png',
-    denom: 'factory/kujira1sr9xfmzc8yy5gz00epspscxl0zu7ny02gv94rx/kartelUSk'
+    name: 'sola',
+    value: '1'
   },
-  { name: 'kuji', src: '/assets/tokens/kuji.png', denom: 'ukuji' },
-  {
-    name: 'kart',
-    src: '/assets/tokens/kart.png',
-    denom: 'factory/kujira1sr9xfmzc8yy5gz00epspscxl0zu7ny02gv94rx/kartel'
-  }
+  { name: 'SOL', value: '2' }
 ];
 
 export type TokenBalances = {
