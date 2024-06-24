@@ -51,11 +51,28 @@ export const calculateMiningProbabilities = (x: number, n: number) => {
       } else {
         probabilities.push(probabilities[i - 1] / probabilityOfSafeStep);
       }
-      out[i] = Math.floor((probabilities[i] * (1 - feePercentage)) * 100) / 100;
+      out[i] = Math.floor(probabilities[i] * (1 - feePercentage) * 100) / 100;
       remainingSafeSpots--; // Reduce the number of safe spots as they are discovered
     }
     return out;
   } catch (error) {
     return error;
   }
+};
+
+const min = 100;
+const max = 2000;
+
+export const numberFormat = (number: number, position: number) => {
+  return (Math.round(number * 100) / 100).toFixed(position);
+};
+
+export const randomNumberGenerator = () => {
+  return min + Math.floor(Math.random() * (max - min + 1));
+};
+
+export const initialLabel = (): number[] => {
+  const initArray: number[] = [];
+  for (let i = 0; i < 100; i++) initArray.push(i);
+  return initArray;
 };

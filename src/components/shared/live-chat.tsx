@@ -123,8 +123,8 @@ const LiveChat = () => {
   }, [inView]);
 
   return (
-    <div className="flex h-full w-full flex-col items-stretch gap-0 bg-dark bg-opacity-80">
-      <div className="flex items-center gap-3 p-3">
+    <div className="m-2 flex h-full w-full flex-col items-stretch justify-between gap-0 bg-[#463E7A]">
+      <div className="flex items-center gap-3 rounded-lg bg-[#191939] p-3">
         <span className="text-base font-medium text-gray300">LIVE CHAT</span>
         <div
           className="h-2 w-2 rounded-full bg-purple"
@@ -135,8 +135,7 @@ const LiveChat = () => {
           }}
         ></div>
       </div>
-      <Separator className="bg-[#4b34a7] bg-opacity-50" />
-      <div className="flex flex-1 flex-col items-stretch gap-4">
+      <div className="flex h-[300px] flex-1 flex-col items-stretch gap-4 bg-[#2C2852]">
         <ScrollArea
           className={`py-3 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
         >
@@ -158,7 +157,7 @@ const LiveChat = () => {
           </div>
         </ScrollArea>
       </div>
-      <div className="w-full bg-purple-0.15 px-2 text-gray-400">
+      <div className="w-full bg-[#2C2852] px-2 text-gray-400">
         <div className="flex h-full flex-col">
           <div className="flex h-full w-full items-center gap-2">
             <Smile

@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { getAccessToken, removeAllTokens } from '@/utils/axios';
-import { useWallet } from '@/provider/crypto/wallet';
 import useToast from '@/hooks/use-toast';
 import useModal from '@/hooks/use-modal';
 import { ModalType } from '@/types/modal';
@@ -22,25 +21,24 @@ export default function UserNav() {
   const dispatch = useDispatch();
   const toast = useToast();
   const userData = useAppSelector((store: any) => store.user.userData);
-  const { disconnect, account } = useWallet();
   const token = getAccessToken();
 
   const handleLogout = async () => {
     if (token) {
       await dispatch(userActions.initUserData());
-      disconnect();
+      // disconnect();
       removeAllTokens();
       toast.success('Logout Successfully');
     }
   };
 
   const toggleWalletConnection = async () => {
-    if (account) {
-      disconnect();
-      toast.success('Wallet Disconnected');
-    } else {
-      modal.open(ModalType.WALLETCONNECT);
-    }
+    // if (account) {
+    //   disconnect();
+    //   toast.success('Wallet Disconnected');
+    // } else {
+    //   modal.open(ModalType.WALLETCONNECT);
+    // }
   };
 
   return (
@@ -76,7 +74,8 @@ export default function UserNav() {
           <DropdownMenuItem>Billing</DropdownMenuItem>
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem onClick={toggleWalletConnection}>
-            {account ? 'Disconnect Wallet' : 'Connect Wallet'}
+            {/* {account ? 'Disconnect Wallet' : 'Connect Wallet'} */}
+            Connect Wallet
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
