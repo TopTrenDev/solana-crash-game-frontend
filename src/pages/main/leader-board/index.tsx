@@ -12,9 +12,7 @@ import { leaderboardActions } from '@/store/redux/actions';
 import { useAppDispatch, useAppSelector } from '@/store/redux';
 import LoadingIcon from '@/components/shared/loading-icon';
 
-const leaderboardTabs = [
-  { title: 'Crash', value: 'crash' },
-];
+const leaderboardTabs = [{ title: 'Crash', value: 'crash' }];
 
 export default function Leaderboard() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -156,7 +154,7 @@ export default function Leaderboard() {
               )}
             </CardContent>
           </Card>
-          {active === 'crash' && (
+          {/* {active === 'crash' && (
             <div className="flex transition-all ease-in-out">
               <div className="relative rounded-md">
                 <img
@@ -178,8 +176,8 @@ export default function Leaderboard() {
                 </Link>
               </div>
             </div>
-          )}
-          {active === 'coinflip' && (
+          )} */}
+          {/* {active === 'coinflip' && (
             <div className="flex transition-all ease-in-out">
               <div className="relative rounded-md">
                 <img
@@ -201,7 +199,7 @@ export default function Leaderboard() {
                 </Link>
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </ScrollArea>
