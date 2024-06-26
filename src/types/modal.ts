@@ -3,5 +3,9 @@ export enum ModalType {
   SIGNUP = 'signup',
   DEPOSIT = 'deposit',
   ADDGOLD = 'addGold',
-  WALLETCONNECT = 'wallectConnect'
+  WALLETCONNECT = 'wallectConnect',
+  BANKROLL = 'bankroll',
+  BACKTESTING = 'backtesting',
+  STATS = 'stats',
+  LEADERBOARD = 'leaderboard'
 }

@@ -29,10 +29,10 @@ export default function Leaderboard() {
 
   return (
     <ScrollArea className="h-[calc(100vh-64px)]">
-      <div className="flex flex-col items-stretch gap-8 p-12">
+      <div className="flex w-[500px] flex-col items-stretch gap-8 p-12">
         <div className="flex items-center justify-between">
           <div className="text-2xl font-semibold text-gray300">Leaderboard</div>
-          <div className="flex items-center gap-2 bg-transparent">
+          {/* <div className="flex items-center gap-2 bg-transparent">
             {leaderboardTabs.map((item, index) => (
               <button
                 key={index}
@@ -42,7 +42,7 @@ export default function Leaderboard() {
                 {item.title}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
         <div className="flex flex-col gap-3">
           <Card className="w-full border-purple-0.15 bg-dark bg-opacity-80 shadow-purple-0.5 drop-shadow-sm">

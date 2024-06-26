@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
-import DashboardLayout from '@/components/layout/dashboard-layout';
+import DashboardLayout from '@/pages/layout/dashboard-layout';
 import Home from '@/pages/main/home';
 import CrashGame from '@/pages/games/crash';
 import Leaderboard from '@/pages/main/leader-board';
@@ -26,22 +26,22 @@ export default function AppRouter() {
           path: '/',
           element: <Home />
         },
-        {
-          path: '/leader-board',
-          element: <Leaderboard />
-        },
+        // {
+        //   path: '/leader-board',
+        //   element: <Leaderboard />
+        // },
         {
           path: '/play',
           element: <CrashGame />
-        },
-        {
-          path: '/settings',
-          element: <Settings />
-        },
-        {
-          path: '/help-support',
-          element: <HelpSupport />
         }
+        // {
+        //   path: '/settings',
+        //   element: <Settings />
+        // },
+        // {
+        //   path: '/help-support',
+        //   element: <HelpSupport />
+        // }
       ]
     }
   ];

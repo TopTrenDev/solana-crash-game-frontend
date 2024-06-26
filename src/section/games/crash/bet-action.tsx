@@ -2,12 +2,25 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { IToken, betMode, roundArray, tokens } from '@/constants/data';
+import {
+  IToken,
+  autoScripts,
+  betMode,
+  roundArray,
+  tokens
+} from '@/constants/data';
 import { ECrashStatus } from '@/constants/status';
 import { cn } from '@/utils/utils';
 import useToast from '@/hooks/use-toast';
 import { Socket } from 'socket.io-client';
-import { Checkbox } from '@/components/ui/checkbox';
+import {
+  QuestionMarkCircledIcon,
+  PlusIcon,
+  MixerVerticalIcon,
+  PlayIcon,
+  EyeOpenIcon,
+  EraserIcon
+} from '@radix-ui/react-icons';
 
 interface BetActionProps {
   selectMode: string;
@@ -144,40 +157,41 @@ export default function BetAction({
           ))}
         </div>
       </div>
-      <Card className="m-2 rounded-lg border-none bg-[#2C2852] bg-opacity-80 px-[24px] pt-[40px] text-[#9688CC] shadow-none">
-        <div className="flex h-full w-full flex-col gap-4">
-          <div className="flex flex-col">
-            <p className="w-6/12 text-sm">Bet</p>
-            <div className="relative">
-              <Input
-                type="number"
-                value={betAmount}
-                onChange={handleBetAmountChange}
-                className="border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
-                disabled={isAutoMode && !autoBet}
-              />
-              <div className="absolute right-4 top-0 flex h-full items-center justify-center text-gray500">
-                <Tabs>
-                  <TabsList className="rounded-[6px] bg-[#191939] p-[2px]">
-                    {tokens.map((t, index) => (
-                      <TabsTrigger
-                        key={index}
-                        asChild
-                        disabled={isAutoMode && !autoBet}
-                        value={t.value}
-                        onClick={() => setSelectedToken(t)}
-                        className={`${selectedToken === t ? 'rounded-[6px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] text-white hover:bg-[#caab5c]' : 'text-[#9688CC]'} text-[10px]`}
-                      >
-                        <div className="flex cursor-pointer items-center">
-                          {t.name}
-                        </div>
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
+      {selectMode === betMode[0] ? (
+        <Card className="m-2 rounded-lg border-none bg-[#2C2852] bg-opacity-80 px-[24px] pt-[40px] text-[#9688CC] shadow-none">
+          <div className="flex h-full w-full flex-col gap-4">
+            <div className="flex flex-col">
+              <p className="w-6/12 text-sm">Bet</p>
+              <div className="relative">
+                <Input
+                  type="number"
+                  value={betAmount}
+                  onChange={handleBetAmountChange}
+                  className="border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
+                  disabled={isAutoMode && !autoBet}
+                />
+                <div className="absolute right-4 top-0 flex h-full items-center justify-center text-gray500">
+                  <Tabs>
+                    <TabsList className="rounded-[6px] bg-[#191939] p-[2px]">
+                      {tokens.map((t, index) => (
+                        <TabsTrigger
+                          key={index}
+                          asChild
+                          disabled={isAutoMode && !autoBet}
+                          value={t.value}
+                          onClick={() => setSelectedToken(t)}
+                          className={`${selectedToken === t ? 'rounded-[6px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] text-white hover:bg-[#caab5c]' : 'text-[#9688CC]'} text-[10px]`}
+                        >
+                          <div className="flex cursor-pointer items-center">
+                            {t.name}
+                          </div>
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                  </Tabs>
+                </div>
               </div>
-            </div>
-            {/* <div className="grid grid-cols-4 space-x-3">
+              {/* <div className="grid grid-cols-4 space-x-3">
               {multiplerArray.map((item, index) => (
                 <Button
                   disabled={isAutoMode && !autoBet}
@@ -189,56 +203,109 @@ export default function BetAction({
                 </Button>
               ))}
             </div> */}
-          </div>
-          <div className="flex w-full flex-col">
-            <p className="w-6/12 text-sm">Payout</p>
-            <div className="relative w-full">
-              <Input
-                type="number"
-                value={autoCashoutPoint}
-                onChange={handleAutoCashoutPointChange}
-                min={1.05}
-                max={1000}
-                className="w-full border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
-              />
-              <span className="absolute right-0 top-0 flex h-full items-center justify-center rounded-r-lg bg-[#605499] px-[14px] text-white">
-                bits
-              </span>
+            </div>
+            <div className="flex w-full flex-col">
+              <p className="w-6/12 text-sm">Payout</p>
+              <div className="relative w-full">
+                <Input
+                  type="number"
+                  value={autoCashoutPoint}
+                  onChange={handleAutoCashoutPointChange}
+                  min={1.05}
+                  max={1000}
+                  className="w-full border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
+                />
+                <span className="absolute right-0 top-0 flex h-full items-center justify-center rounded-r-lg bg-[#605499] px-[14px] text-white">
+                  bits
+                </span>
+              </div>
+            </div>
+            <div className="flex w-full flex-row items-center justify-center pt-4">
+              <Button
+                className="h-12 w-full rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c]"
+                disabled={
+                  isAutoMode
+                    ? false
+                    : (crashStatus !== ECrashStatus.PREPARE && !avaliableBet) ||
+                      (crashStatus !== ECrashStatus.PROGRESS && avaliableBet)
+                }
+                onClick={isAutoMode ? handleAutoBet : handleStartBet}
+              >
+                {isAutoMode
+                  ? autoBet
+                    ? 'Auto Bet'
+                    : 'Cancel'
+                  : avaliableBet
+                    ? 'Cash Out'
+                    : 'Bet'}
+              </Button>
+            </div>
+            <div className="flex h-full w-full flex-col items-center justify-start gap-2 text-[10px] text-[#9688CC]">
+              <div className="flex w-full justify-end">Hotkeys: OFF</div>
+              <div className="flex w-full items-center justify-between">
+                <span>Target Profit:</span>
+                <span className="text-white">2 bits</span>
+              </div>
+              <div className="flex w-full items-center justify-between">
+                <span>Win Chance:</span>
+                <span className="text-white">38.5%</span>
+              </div>
             </div>
           </div>
-          <div className="flex w-full flex-row items-center justify-center pt-4">
-            <Button
-              className="h-12 w-full rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c]"
-              disabled={
-                isAutoMode
-                  ? false
-                  : (crashStatus !== ECrashStatus.PREPARE && !avaliableBet) ||
-                    (crashStatus !== ECrashStatus.PROGRESS && avaliableBet)
-              }
-              onClick={isAutoMode ? handleAutoBet : handleStartBet}
-            >
-              {isAutoMode
-                ? autoBet
-                  ? 'Auto Bet'
-                  : 'Cancel'
-                : avaliableBet
-                  ? 'Cash Out'
-                  : 'Bet'}
-            </Button>
-          </div>
-          <div className="flex h-full w-full flex-col items-center justify-start gap-2 text-[10px] text-[#9688CC]">
-            <div className="flex w-full justify-end">Hotkeys: OFF</div>
-            <div className="flex w-full items-center justify-between">
-              <span>Target Profit:</span>
-              <span className="text-white">2 bits</span>
+        </Card>
+      ) : (
+        <Card className="m-2 overflow-hidden rounded-lg border-none bg-[#2C2852] bg-opacity-80 p-[24px] text-[#9688CC] shadow-none">
+          <div className="flex h-full w-full flex-col gap-4">
+            <div className="flex w-full">
+              <div className="flex w-1/2 items-center justify-start">
+                <span className="w-6/12 text-[16px] font-semibold text-[#fff]">
+                  My Scripts
+                </span>
+                <QuestionMarkCircledIcon
+                  color="#EEAF0E"
+                  width={18}
+                  height={18}
+                />
+              </div>
+              <div className="flex w-1/2 items-center justify-end gap-3">
+                <Button
+                  className="h-full rounded-[6px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-1 hover:bg-[#caab5c]"
+                  onClick={() => {}}
+                >
+                  <PlusIcon className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]" />
+                  <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+                    New
+                  </span>
+                </Button>
+                <Button className="h-full rounded-[6px] border-b-2 border-t-2 border-b-[#292447] border-t-[#6f62c0] bg-[#463E7A] p-1 hover:bg-[#6f62c0]">
+                  <MixerVerticalIcon color="#fff" width={18} height={18} />
+                </Button>
+              </div>
             </div>
-            <div className="flex w-full items-center justify-between">
-              <span>Win Chance:</span>
-              <span className="text-white">38.5%</span>
+            <div className="flex w-full flex-col gap-2">
+              {autoScripts.map((script) => (
+                <div
+                  key={script}
+                  className="flex w-full items-center justify-between rounded-[8px] bg-[#463E7A] p-1 text-[12px] font-semibold text-[#fff]"
+                >
+                  <p className="ml-2 w-1/2">{script}</p>
+                  <div className="flex w-1/2 justify-end gap-2">
+                    <Button className="h-full rounded-[6px] border-b-2 border-t-2 border-b-[#1b6345] border-t-[#39d896] bg-[#14F195] p-1 hover:bg-[#39d896]">
+                      <PlayIcon color="#fff" width={14} height={14} />
+                    </Button>
+                    <Button className="h-full rounded-[6px] border-b-2 border-t-2 border-b-[#1e4e6e] border-t-[#73c3f8] bg-[#3498DB] p-1 hover:bg-[#73c3f8]">
+                      <EyeOpenIcon color="#fff" width={14} height={14} />
+                    </Button>
+                    <Button className="h-full rounded-[6px] border-b-2 border-t-2 border-b-[#742023] border-t-[#ff767b] bg-[#E83035] p-1 hover:bg-[#ff767b]">
+                      <EraserIcon color="#fff" width={14} height={14} />
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      )}
     </>
   );
 }

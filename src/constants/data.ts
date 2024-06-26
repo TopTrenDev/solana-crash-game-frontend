@@ -1,4 +1,5 @@
 import { NavItemGroup } from '@/types';
+import { ModalType } from '@/types/modal';
 
 export const navItems: NavItemGroup[] = [
   {
@@ -73,10 +74,10 @@ export const navItems: NavItemGroup[] = [
 ];
 
 export const tabItems = [
-  { name: 'bankroll', path: '/bankroll' },
-  { name: 'backtesting', path: '/backtesting' },
-  { name: 'stats', path: '/stats' },
-  { name: 'leaderboard', path: '/leader-board' }
+  { name: 'bankroll', modal: ModalType.BANKROLL },
+  { name: 'backtesting', modal: ModalType.BACKTESTING },
+  { name: 'stats', modal: ModalType.STATS },
+  { name: 'leaderboard', modal: ModalType.LEADERBOARD }
 ];
 
 export type Employee = {
@@ -101,6 +102,16 @@ export type Employee = {
 export const betMode = ['Manual', 'Auto'];
 export const boardMode = ['All', 'High Win'];
 export const displayMode = ['History', 'Chat'];
+
+export const autoScripts = [
+  'Flat Bet',
+  'Sniper',
+  'Martingale',
+  'Payout Martingale',
+  'Narrator',
+  'Rebel',
+  'Terminator'
+];
 
 export const multiplerArray = [1 / 2, 2, 4, 8];
 
