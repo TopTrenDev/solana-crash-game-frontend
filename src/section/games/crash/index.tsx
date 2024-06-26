@@ -1,11 +1,17 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useRef, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
-import { BetType, CrashHistoryData, FormattedPlayerBetType } from '@/types';
+import {
+  BetType,
+  CrashHistoryData,
+  FormattedPlayerBetType,
+  ICrashHistoryRecord
+} from '@/types';
 import {
   ECrashSocketEvent,
   ICrashClientToServerEvents,
-  ICrashServerToClientEvents
+  ICrashServerToClientEvents,
+  ITick
 } from '@/types/crash';
 import { ECrashStatus } from '@/constants/status';
 import { getAccessToken } from '@/utils/axios';
@@ -20,7 +26,7 @@ import {
 } from '@/constants/data';
 import Header from '@/components/shared/header';
 import { useOpen } from '@/provider/chat-provider';
-import GraphicDisplay from '@/components/shared/graphic-display';
+import GraphicDisplay from '@/section/games/crash/graphic-display';
 import BetBoard from './bet-board';
 import BetAction from './bet-action';
 import BetDisplay from './bet-display';
@@ -47,15 +53,16 @@ export default function CrashGameSection() {
   const [avaliableAutoCashout, setAvaliableAutoCashout] =
     useState<boolean>(false);
 
-  const [crTick, setCrTick] = useState({ prev: 1, cur: 1 });
-  const [prepareTime, setPrepareTime] = useState(0);
+  const [crTick, setCrTick] = useState<ITick>({ prev: 1, cur: 1 });
+  const [crBust, setCrBust] = useState<number>(1);
+  const [prepareTime, setPrepareTime] = useState<number>(0);
   const [crashStatus, setCrashStatus] = useState<ECrashStatus>(
     ECrashStatus.NONE
   );
   const [downIntervalId, setDownIntervalId] = useState(0);
-  const [crashHistoryData, setCrashHistoryData] = useState<CrashHistoryData[]>(
-    []
-  );
+  const [crashHistoryRecords, setCrashHistoryRecords] = useState<
+    ICrashHistoryRecord[]
+  >([]);
 
   const [liveChatOpen, setLiveChatOpen] = useState<boolean>(false);
   const { open } = useOpen();
@@ -99,7 +106,26 @@ export default function CrashGameSection() {
       ICrashClientToServerEvents
     > = io(`${SERVER_URL}/crash`);
 
-    crashSocket.emit(ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY, 5 as any);
+    crashSocket.emit(ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY, 15 as any);
+
+    crashSocket.on(
+      ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY_RESPONSE,
+      (historyData: any) => {
+        console.log('history', historyData);
+        historyData.map((h) => {
+          setCrashHistoryRecords((prev) => [
+            ...prev,
+            {
+              bust: h.crashPoint / 100,
+              payout: 0,
+              bet: 0,
+              profit: 0,
+              hash: h.privateHash!
+            }
+          ]);
+        });
+      }
+    );
 
     crashSocket.on(ECrashSocketEvent.GAME_TICK, (tick) => {
       setCrashStatus(ECrashStatus.PROGRESS);
@@ -127,18 +153,21 @@ export default function CrashGameSection() {
       playCrashBgVideo();
     });
 
-    crashSocket.on(
-      ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY,
-      (historyData: any) => {
-        setCrashHistoryData(historyData);
-      }
-    );
-
     crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
+      setCrashHistoryRecords((prev) => [
+        {
+          bust: data.game.crashPoint!,
+          payout: 0,
+          bet: 0,
+          profit: 0,
+          hash: data.game.privateHash!
+        },
+        ...prev
+      ]);
+      setCrBust(data.game.crashPoint!);
       setCrashStatus(ECrashStatus.END);
       stopCrashBgVideo();
       setAvaliableBet(false);
-      crashSocket.emit(ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY, 10 as any);
     });
 
     crashSocket.on(
@@ -232,7 +261,13 @@ export default function CrashGameSection() {
                 />
               </div>
               <div className="relative m-[5px] h-full w-2/3 rounded-md">
-                <GraphicDisplay />
+                <GraphicDisplay
+                  crashStatus={crashStatus}
+                  crTick={crTick}
+                  crBust={crBust}
+                  prepareTime={prepareTime}
+                  crashHistoryRecords={crashHistoryRecords}
+                />
               </div>
             </div>
             <div className="flex h-1/2 w-full">
@@ -242,6 +277,7 @@ export default function CrashGameSection() {
                 setSelectDisplay={setSelectDisplay}
                 liveChatOpen={liveChatOpen}
                 setLiveChatOpen={setLiveChatOpen}
+                crashHistoryRecords={crashHistoryRecords}
               />
             </div>
           </div>

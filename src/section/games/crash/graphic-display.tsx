@@ -12,27 +12,19 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-import BoomPNG from '@/assets/img/boom.png';
+import BoomPNG from '@/assets/img/boom.svg';
 import EarnedPNG from '@/assets/img/earned.png';
-import RocketPNG from '@/assets/img/rocket.webp';
+import RocketPNG from '@/assets/img/rocket.png';
 import FlameSpriteSheetPNG from '@/assets/img/flame.png';
-import ChartImage from '@/assets/img/chart_bg.jpg';
-import { Socket, io } from 'socket.io-client';
-import { getAccessToken } from '@/utils/axios';
-import {
-  ECrashSocketEvent,
-  ICrashClientToServerEvents,
-  ICrashServerToClientEvents
-} from '@/types/crash';
+import ChartImage from '@/assets/img/chart_bg.png';
 import { ECrashStatus } from '@/constants/status';
-import { BetType, CrashHistoryData, FormattedPlayerBetType } from '@/types';
-import useToast from '@/hooks/use-toast';
 import {
   formatMillisecondsShort,
   initialLabel,
   numberFormat
 } from '@/utils/utils';
-import GrowingNumber from './growing-number';
+import GrowingNumber from '../../../components/shared/growing-number';
+import { ICrashHistoryRecord, ITick } from '@/types';
 
 // import { getTangentAngle } from '@/utils';
 // import { q, aM } from 'chart.js/dist/chunks/helpers.core';
@@ -48,7 +40,7 @@ ChartJS.register(
   Filler
 );
 
-const MAX_Y = 1.956;
+const MAX_Y = 3;
 const chartBGImage = new Image();
 chartBGImage.src = ChartImage;
 
@@ -64,35 +56,24 @@ const getGradintColor = (context: { chart: ChartJS }) => {
   return gradient;
 };
 
-export default function GraphicDisplay() {
-  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+interface GraphicDisplayProps {
+  crashStatus: ECrashStatus;
+  crTick: ITick;
+  crBust: number;
+  prepareTime: number;
+  crashHistoryRecords: ICrashHistoryRecord[];
+}
 
+export default function GraphicDisplay({
+  crashStatus,
+  crTick,
+  crBust,
+  prepareTime,
+  crashHistoryRecords
+}: GraphicDisplayProps) {
   const [labels, setLabels] = useState<Array<number>>(initialLabel);
   const [yValue, setYValue] = useState<Array<number>>([]);
   const [earned, setEarned] = useState<number>(-1);
-
-  const [crashHistory, setCrashHistory] = useState<
-    Array<{ value: number; color: string }>
-  >([]);
-
-  const [socket, setSocket] = useState<Socket | null>(null);
-
-  const [crTick, setCrTick] = useState({ prev: 1, cur: 1 });
-  const [prepareTime, setPrepareTime] = useState(0);
-  const [crashStatus, setCrashStatus] = useState<ECrashStatus>(
-    ECrashStatus.NONE
-  );
-
-  const [betData, setBetData] = useState<BetType[]>([]);
-  const [betCashout, setBetCashout] = useState<BetType[]>([]);
-  const [betAmount, setBetAmount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState<any>();
-  const [crashHistoryData, setCrashHistoryData] = useState<CrashHistoryData[]>(
-    []
-  );
-  const [downIntervalId, setDownIntervalId] = useState(0);
-
-  const toast = useToast();
 
   const graphColor = '#FFFFFF';
 
@@ -104,7 +85,7 @@ export default function GraphicDisplay() {
         pointBorderWidth: 0,
         pointHoverRadius: 0,
         borderColor: graphColor,
-        borderWidth: 6,
+        borderWidth: 3,
         data: yValue,
         backgroundColor: getGradintColor,
         lineTension: 0.8,
@@ -125,9 +106,9 @@ export default function GraphicDisplay() {
     options: {
       layout: {
         padding: {
-          right: 50,
-          top: 20,
-          bottom: 25
+          top: 30,
+          bottom: 60,
+          right: 30
         }
       },
       animation: false,
@@ -164,7 +145,7 @@ export default function GraphicDisplay() {
             callback: function (value: string) {
               return numberFormat(Number(value), 2) + 'x';
             },
-            markW: 10,
+            markW: 5,
             markWScale: 2,
             markStepSize: 2,
             maxTicks: 4,
@@ -326,34 +307,37 @@ export default function GraphicDisplay() {
 
   useEffect(() => {
     if (crashStatus === ECrashStatus.END) {
-      setData({
-        labels: labels,
-        datasets: [
-          {
-            label: '',
-            pointBorderWidth: 0,
-            pointHoverRadius: 0,
-            borderColor: graphColor,
-            borderWidth: 6,
-            data: [],
-            backgroundColor: getGradintColor,
-            lineTension: 0.8,
-            fill: true
-          },
-          {
-            label: '',
-            pointBorderWidth: 0,
-            pointHoverRadius: 0,
-            borderColor: graphColor,
-            borderWidth: 0,
-            data: [1, MAX_Y]
-          }
-        ]
-      });
-      setEarned(-1);
-      setLabels(initialLabel);
-      setYValue([]);
+      setTimeout(() => {
+        setData({
+          labels: labels,
+          datasets: [
+            {
+              label: '',
+              pointBorderWidth: 0,
+              pointHoverRadius: 0,
+              borderColor: graphColor,
+              borderWidth: 3,
+              data: [],
+              backgroundColor: getGradintColor,
+              lineTension: 0,
+              fill: true
+            },
+            {
+              label: '',
+              pointBorderWidth: 0,
+              pointHoverRadius: 0,
+              borderColor: graphColor,
+              borderWidth: 0,
+              data: [1, MAX_Y]
+            }
+          ]
+        });
+        setEarned(-1);
+        setLabels(initialLabel);
+        setYValue([]);
+      }, 1000);
     } else {
+      console.log('>>>>', yValue);
       const updateState = {
         labels: labels,
         datasets: [
@@ -362,20 +346,21 @@ export default function GraphicDisplay() {
             pointBorderWidth: 0,
             pointHoverRadius: 0,
             borderColor: graphColor,
-            borderWidth: 6,
+            borderWidth: 2,
             data: yValue,
             backgroundColor: getGradintColor,
-            lineTension: 0.8,
+            lineTension: 0,
+            pointStyle: false,
             fill: true
-          },
-          {
-            label: '',
-            pointBorderWidth: 0,
-            pointHoverRadius: 0,
-            borderColor: graphColor,
-            borderWidth: 0,
-            data: [1, MAX_Y]
           }
+          // {
+          //   label: '',
+          //   pointBorderWidth: 0,
+          //   pointHoverRadius: 0,
+          //   borderColor: graphColor,
+          //   borderWidth: 0,
+          //   data: [1, MAX_Y]
+          // }
         ]
       };
 
@@ -386,13 +371,6 @@ export default function GraphicDisplay() {
       setData(updateState);
 
       if (yValue.length === 0) {
-        if (crTick.cur > 1) {
-          const newChatHistory = {
-            value: Number(numberFormat(crTick.cur, 2)),
-            color: crTick.cur > 1.7 ? '#14F195' : '#E83035'
-          };
-          setCrashHistory((v) => [...v, newChatHistory]);
-        }
         setLabels(initialLabel);
 
         setEarned(-1);
@@ -400,118 +378,10 @@ export default function GraphicDisplay() {
     }
   }, [crashStatus, yValue.length, labels.length]);
 
-  const updatePrepareCountDown = () => {
-    setPrepareTime((prev) => prev - 100);
-  };
-
-  useEffect(() => {
-    if (socket) {
-      socket.emit('auth', getAccessToken());
-    }
-  }, [getAccessToken()]);
-
-  useEffect(() => {
-    const crashSocket: Socket<
-      ICrashServerToClientEvents,
-      ICrashClientToServerEvents
-    > = io(`${SERVER_URL}/crash`);
-
-    crashSocket.emit(ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY, 5 as any);
-
-    crashSocket.on(ECrashSocketEvent.GAME_TICK, (tick) => {
-      setCrashStatus(ECrashStatus.PROGRESS);
-      setCrTick((prev) => ({
-        prev: prev.cur,
-        cur: tick
-      }));
-    });
-
-    crashSocket.on(ECrashSocketEvent.GAME_STARTING, (data) => {
-      setCrashStatus(ECrashStatus.PREPARE);
-      setPrepareTime(data.timeUntilStart ?? 0);
-      // stopCrashBgVideo();
-      setBetData([]);
-      setBetCashout([]);
-      setTotalAmount({
-        usk: 0,
-        kuji: 0
-      });
-    });
-
-    crashSocket.on(ECrashSocketEvent.GAME_START, (data) => {
-      setCrashStatus(ECrashStatus.PROGRESS);
-      setCrTick({ prev: 1, cur: 1 });
-      // playCrashBgVideo();
-    });
-
-    crashSocket.on(
-      ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY,
-      (historyData: any) => {
-        setCrashHistoryData(historyData);
-      }
-    );
-
-    crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
-      setCrashStatus(ECrashStatus.END);
-      // stopCrashBgVideo();
-      // setAvaliableBet(false);
-
-      crashSocket.emit(ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY, 10 as any);
-    });
-
-    crashSocket.on(
-      ECrashSocketEvent.GAME_BETS,
-      (bets: FormattedPlayerBetType[]) => {
-        setBetData((prev: BetType[]) => [...bets, ...prev]);
-        const totalUsk = bets
-          .filter((bet) => bet.denom === 'usk')
-          .reduce((acc, item) => acc + item.betAmount, 0);
-
-        const totalKuji = bets
-          .filter((bet) => bet.denom === 'kuji')
-          .reduce((acc, item) => acc + item.betAmount, 0);
-
-        setTotalAmount((prevAmounts) => ({
-          usk: (prevAmounts?.usk || 0) + totalUsk,
-          kuji: (prevAmounts?.kuji || 0) + totalKuji
-        }));
-      }
-    );
-
-    crashSocket.on(ECrashSocketEvent.GAME_JOIN_ERROR, (data) => {
-      toast.error(data);
-      // setAutoBet(true);
-    });
-
-    crashSocket.on(ECrashSocketEvent.CRASHGAME_JOIN_SUCCESS, (data) => {
-      // setAvaliableBet(true);
-    });
-
-    crashSocket.on(ECrashSocketEvent.BET_CASHOUT, (data) => {
-      setBetCashout((prev) => [...prev, data?.userdata]);
-    });
-
-    crashSocket.emit('auth', getAccessToken());
-
-    setSocket(crashSocket);
-    return () => {
-      crashSocket.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (crashStatus === ECrashStatus.PREPARE) {
-      const intervalId = window.setInterval(updatePrepareCountDown, 100);
-      setDownIntervalId(intervalId);
-    } else {
-      clearInterval(downIntervalId);
-    }
-  }, [crashStatus]);
-
   return (
-    <div className="h-full rounded-lg">
-      <div className="relative h-full">
-        <div className={`relative h-full`}>
+    <div className="h-full w-full rounded-lg">
+      <div className="relative h-full w-full">
+        <div className={`relative h-full w-full`}>
           {crashStatus === ECrashStatus.NONE && (
             <div className="crash-status-shadow absolute left-[30%] top-[40%] flex flex-col items-center justify-center gap-5">
               <div className=" text-6xl font-extrabold uppercase text-[#f5b95a] delay-100">
@@ -519,8 +389,7 @@ export default function GraphicDisplay() {
               </div>
             </div>
           )}
-          {(crashStatus === ECrashStatus.PROGRESS ||
-            crashStatus === ECrashStatus.END) && (
+          {crashStatus === ECrashStatus.PROGRESS && (
             <label
               className={`absolute z-50 flex h-full w-full flex-col items-center justify-start py-8 text-[4rem] font-bold`}
             >
@@ -556,9 +425,9 @@ export default function GraphicDisplay() {
               <div className="absolute flex h-full w-full items-center justify-center">
                 <img src={BoomPNG} width={300} />
               </div>
-              <div className="absolute flex h-full w-full items-center justify-center">
-                <label className="text-[4rem] font-bold text-[#ff0000]">
-                  Crashed
+              <div className="absolute top-0 flex h-full w-full items-center justify-center">
+                <label className="text-6xl font-extrabold text-[#fff]">
+                  {crBust}x
                 </label>
               </div>
             </div>
@@ -577,23 +446,26 @@ export default function GraphicDisplay() {
               </label>
             </div>
           </div>
+          {crashHistoryRecords.length > 0 && (
+            <div
+              className={`absolute bottom-0 flex w-full items-center justify-start overflow-hidden px-[24px] py-[16px] opacity-100 transition-all duration-300 ease-in-out`}
+            >
+              {crashHistoryRecords.map((item, _index) => {
+                return (
+                  <span
+                    key={_index}
+                    className={`mr-4 rounded-lg bg-[#00000033] px-[6px] py-[4px] font-bold ${item.bust > 1.7 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
+                    style={{ opacity: 100 - _index * 7 + '%' }}
+                  >
+                    {item.bust}x
+                  </span>
+                );
+              })}
+            </div>
+          )}
 
           <Line className="rounded-lg" data={data} {...(config as object)} />
         </div>
-      </div>
-      <div className="bg-main-container-background-color relative z-20 mt-[-40px] flex overflow-x-hidden px-[15px] py-[10px]">
-        {crashHistory.length > 0 &&
-          crashHistory.map((item, _index) => {
-            return (
-              <label
-                style={{ color: item.color }}
-                className={`mr-10 font-bold`}
-                key={_index}
-              >
-                {item.value}x
-              </label>
-            );
-          })}
       </div>
     </div>
   );
