@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import MobileSidebar from '../shared/mobile-sidebar';
+import MobileSidebar from '../../components/shared/mobile-sidebar';
 export default function DashboardLayout({
   children
 }: {

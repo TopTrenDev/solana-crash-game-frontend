@@ -24,7 +24,7 @@ import {
   boardMode,
   displayMode
 } from '@/constants/data';
-import Header from '@/components/shared/header';
+import Header from '@/pages/layout/header';
 import { useOpen } from '@/provider/chat-provider';
 import GraphicDisplay from '@/section/games/crash/graphic-display';
 import BetBoard from './bet-board';

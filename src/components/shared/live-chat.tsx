@@ -135,7 +135,10 @@ const LiveChat = () => {
           }}
         ></div>
       </div>
-      <div className="flex h-[300px] flex-1 flex-col items-stretch gap-4 bg-[#2C2852]">
+      <div
+        className="flex 
+      flex-1 flex-col items-stretch gap-4 bg-[#2C2852]"
+      >
         <ScrollArea
           className={`py-3 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
         >
