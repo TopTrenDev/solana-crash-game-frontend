@@ -221,8 +221,8 @@ export default function GraphicDisplay({
     rocketImage.src = RocketPNG;
     const rocket = {
       src: rocketImage,
-      width: 50,
-      height: 90,
+      width: 150,
+      height: 150,
       rotationAngle: 90 - angle
     };
     if (!y) return;
@@ -321,15 +321,15 @@ export default function GraphicDisplay({
               backgroundColor: getGradintColor,
               lineTension: 0,
               fill: true
-            },
-            {
-              label: '',
-              pointBorderWidth: 0,
-              pointHoverRadius: 0,
-              borderColor: graphColor,
-              borderWidth: 0,
-              data: [1, MAX_Y]
             }
+            // {
+            //   label: '',
+            //   pointBorderWidth: 0,
+            //   pointHoverRadius: 0,
+            //   borderColor: graphColor,
+            //   borderWidth: 0,
+            //   data: [1, MAX_Y]
+            // }
           ]
         });
         setEarned(-1);
@@ -337,7 +337,6 @@ export default function GraphicDisplay({
         setYValue([]);
       }, 1000);
     } else {
-      console.log('>>>>', yValue);
       const updateState = {
         labels: labels,
         datasets: [

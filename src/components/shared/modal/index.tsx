@@ -3,15 +3,15 @@ import BacktestingModal from './backtesting';
 import BankrollModal from './bankroll';
 import DepositModal from './deposit';
 import LeaderboardModal from './leaderboard';
-import SignInModal from './signin';
-import SignUpModal from './signup';
+import LoginModal from './login';
+import RegisterModal from './register';
 import StatsModal from './stats';
 
 const Modal = () => {
   return (
     <>
-      <SignInModal />
-      <SignUpModal />
+      <LoginModal />
+      <RegisterModal />
       <DepositModal />
       <AddGoldModal />
       <BankrollModal />

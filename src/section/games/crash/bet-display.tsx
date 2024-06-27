@@ -8,7 +8,6 @@ import { cn } from '@/utils/utils';
 import { MessageSquareText } from 'lucide-react';
 
 interface BetHistoryProps {
-  open: boolean;
   selectDisplay: string;
   setSelectDisplay: React.Dispatch<React.SetStateAction<string>>;
   liveChatOpen: boolean;
@@ -17,7 +16,6 @@ interface BetHistoryProps {
 }
 
 export default function BetDisplay({
-  open,
   selectDisplay,
   setSelectDisplay,
   liveChatOpen,
@@ -47,12 +45,12 @@ export default function BetDisplay({
           setLivechatOpen={setLiveChatOpen}
         />
         <div
-          className={`hidden h-full transform rounded-lg transition-all duration-300 ease-in-out lg:flex ${open ? 'w-full translate-x-0 opacity-100' : 'w-0 translate-x-full opacity-0'}`}
+          className={`hidden h-full w-full translate-x-0 transform rounded-lg opacity-100 transition-all duration-300 ease-in-out lg:flex`}
         >
           {selectDisplay === displayMode[0] ? (
-            <History crashHistoryRecords={crashHistoryRecords} />
-          ) : (
             <LiveChat />
+          ) : (
+            <History crashHistoryRecords={crashHistoryRecords} />
           )}
         </div>
         <MessageSquareText

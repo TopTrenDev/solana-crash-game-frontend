@@ -1,5 +1,6 @@
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle
@@ -25,8 +26,9 @@ import {
 import { useDispatch } from 'react-redux';
 import { userActions } from '@/store/redux/actions';
 import { useAppSelector } from '@/store/redux';
+import { Cross2Icon } from '@radix-ui/react-icons';
 
-const SignInSchema = z.object({
+const LoginSchema = z.object({
   email: z
     .string()
     .nonempty('Email is required')
@@ -37,20 +39,20 @@ const SignInSchema = z.object({
     .min(6, 'Password must be at least 6 characters')
 });
 
-const SignInDefaultValue = {
+const LoginDefaultValue = {
   email: '',
   password: ''
 };
 
-const SignInModal = () => {
+export default function LoginModal() {
   const toast = useToast();
   const modal = useModal();
   const modalState = useAppSelector((state: any) => state.modal);
   const dispatch = useDispatch();
   const isOpen = modalState.open && modalState.type === ModalType.LOGIN;
-  const signInForm = useForm<z.infer<typeof SignInSchema>>({
-    resolver: zodResolver(SignInSchema),
-    defaultValues: SignInDefaultValue
+  const loginForm = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: LoginDefaultValue
   });
 
   const hanndleOpenChange = async () => {
@@ -60,49 +62,55 @@ const SignInModal = () => {
   };
 
   const handleSignUp = async () => {
-    modal.open(ModalType.SIGNUP);
+    modal.open(ModalType.REGISTER);
   };
 
-  const handleSubmit = async (data: z.infer<typeof SignInSchema>) => {
+  const handleSubmit = async (data: z.infer<typeof LoginSchema>) => {
     try {
       const signInPayload = {
         email: data.email,
         password: data.password
       };
       const resSignIn = await axiosPost([
-        BACKEND_API_ENDPOINT.auth.signIn,
+        BACKEND_API_ENDPOINT.auth.login,
         { data: signInPayload }
       ]);
-      if (resSignIn?.responseObject?.auth?.accessToken) {
-        setAccessToken(resSignIn?.responseObject?.auth?.accessToken);
-        await dispatch(userActions.userData(resSignIn?.responseObject?.user));
+      if (resSignIn.responseObject.auth.accessToken) {
+        setAccessToken(resSignIn.responseObject.auth.accessToken);
+        dispatch(userActions.userData(resSignIn.responseObject.user));
         toast.success('SignIn Success');
         modal.close(ModalType.LOGIN);
         return;
       }
-      toast.error('SignIn Failed');
-    } catch (error) {
-      console.log(error);
-      toast.error('SignIn Failed');
+    } catch (error: any) {
+      if (error.statusCode === 400) {
+        toast.error(error.message);
+      } else {
+        toast.error('Login Failed');
+      }
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
-      <DialogContent className="rounded-lg border-2 border-gray-900 bg-[#0D0B32] p-10 sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle className="text-center text-3xl text-white">
+      <DialogContent className="w-[800px] !max-w-[800px] gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm">
+        <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
+          <DialogTitle className="text-center text-[24px] font-semibold uppercase">
             Log In
           </DialogTitle>
+          <DialogClose className="hover:ropacity-100 !my-0 rounded-sm opacity-70 outline-none ring-offset-background transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:text-muted-foreground">
+            <Cross2Icon className="h-7 w-7 text-white" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
         </DialogHeader>
-        <Form {...signInForm}>
-          <form onSubmit={signInForm.handleSubmit(handleSubmit)}>
-            <div className="mt-3 flex flex-col items-center gap-7">
+        <Form {...loginForm}>
+          <form onSubmit={loginForm.handleSubmit(handleSubmit)}>
+            <div className="flex flex-col items-center gap-7 rounded-b-lg bg-[#2C2852] px-[128px] py-[36px]">
               <div className="flex w-full flex-col gap-5">
                 <div className="grid w-full flex-1 gap-3">
-                  <p className="text-gray-300">Email</p>
+                  <p className="text-[#9688CC]">Email</p>
                   <FormField
-                    control={signInForm.control}
+                    control={loginForm.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
@@ -110,7 +118,7 @@ const SignInModal = () => {
                           <Input
                             type="text"
                             placeholder="email"
-                            className="border border-gray-700 text-white placeholder:text-gray-700"
+                            className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
                             {...field}
                           />
                         </FormControl>
@@ -122,7 +130,7 @@ const SignInModal = () => {
                 <div className="grid w-full flex-1 gap-3">
                   <p className="text-gray-300">Password</p>
                   <FormField
-                    control={signInForm.control}
+                    control={loginForm.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
@@ -130,7 +138,7 @@ const SignInModal = () => {
                           <Input
                             type="password"
                             placeholder="*****"
-                            className="border border-gray-700 text-white placeholder:text-gray-700"
+                            className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
                             {...field}
                           />
                         </FormControl>
@@ -142,7 +150,7 @@ const SignInModal = () => {
               </div>
               <div className="flex w-full flex-row justify-between">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="terms" className="text-[#049DD9] " />
+                  <Checkbox id="terms" className="text-[#9945FF]" />
                   <label
                     htmlFor="terms"
                     className="text-sm leading-none text-gray-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -150,25 +158,24 @@ const SignInModal = () => {
                     Remember me
                   </label>
                 </div>
-                <a href="" className="text-sm font-semibold text-[#049DD9]">
+                <a href="" className="text-sm font-semibold text-[#9945FF]">
                   Forgot password?
                 </a>
               </div>
               <Button
-                className="w-full bg-purple py-5 hover:bg-purple"
+                className="h-12 w-full rounded-[12px] border-b-4 border-t-4 border-b-[#682fad] border-t-[#ba88f8] bg-[#9945FF] px-3 py-3 hover:bg-[#ad77f0]"
                 type="submit"
               >
                 login
               </Button>
               <p className="flex text-sm text-gray-300">
-                Don’t have an account ?&nbsp;
                 <span
-                  className="cursor-pointer font-semibold text-[#049DD9]"
+                  className="cursor-pointer font-semibold text-[#9945FF]"
                   onClick={handleSignUp}
                 >
                   Register
                 </span>
-                &nbsp;now
+                &nbsp;a new account
               </p>
             </div>
           </form>
@@ -176,6 +183,4 @@ const SignInModal = () => {
       </DialogContent>
     </Dialog>
   );
-};
-
-export default SignInModal;
+}
