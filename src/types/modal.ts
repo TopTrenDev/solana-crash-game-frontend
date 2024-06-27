@@ -1,6 +1,6 @@
 export enum ModalType {
   LOGIN = 'login',
-  SIGNUP = 'signup',
+  REGISTER = 'register',
   DEPOSIT = 'deposit',
   ADDGOLD = 'addGold',
   WALLETCONNECT = 'wallectConnect',

@@ -25,7 +25,6 @@ import {
   displayMode
 } from '@/constants/data';
 import Header from '@/pages/layout/header';
-import { useOpen } from '@/provider/chat-provider';
 import GraphicDisplay from '@/section/games/crash/graphic-display';
 import BetBoard from './bet-board';
 import BetAction from './bet-action';
@@ -65,7 +64,6 @@ export default function CrashGameSection() {
   >([]);
 
   const [liveChatOpen, setLiveChatOpen] = useState<boolean>(false);
-  const { open } = useOpen();
 
   const updatePrepareCountDown = () => {
     setPrepareTime((prev) => prev - 100);
@@ -232,7 +230,7 @@ export default function CrashGameSection() {
           </button> */}
           <Header />
         </div>
-        <div className="flex h-full w-full">
+        <div className="flex h-full w-full py-8">
           <div className="flex h-full w-3/4 flex-col justify-between gap-6">
             <div className="flex h-1/2 w-full">
               <div className="m-[5px] flex h-full w-1/3 flex-col justify-between rounded-lg bg-[#463E7A]">
@@ -272,7 +270,6 @@ export default function CrashGameSection() {
             </div>
             <div className="flex h-1/2 w-full">
               <BetDisplay
-                open={open}
                 selectDisplay={selectDisplay}
                 setSelectDisplay={setSelectDisplay}
                 liveChatOpen={liveChatOpen}

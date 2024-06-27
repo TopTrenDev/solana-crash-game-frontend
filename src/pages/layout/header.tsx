@@ -1,22 +1,21 @@
 import { Link } from 'react-router-dom';
-import { MessageSquareMore } from 'lucide-react';
 import UserNav from '@/components/shared/user-nav';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { usePathname } from '@/hooks';
 import useModal from '@/hooks/use-modal';
 import { ModalType } from '@/types/modal';
-import { useOpen } from '@/provider/chat-provider';
 import { useAppSelector } from '@/store/redux';
 import { tabItems } from '@/constants/data';
 
 export default function Header() {
   const modal = useModal();
-  const { open, setOpen } = useOpen();
   const userData = useAppSelector((store: any) => store.user.userData);
 
-  const handleSignIn = async () => {
+  const handleLogin = async () => {
     modal.open(ModalType.LOGIN);
+  };
+
+  const handleRegister = async () => {
+    modal.open(ModalType.REGISTER);
   };
 
   const handleModalOpen = async (modalType: ModalType) => {
@@ -49,30 +48,21 @@ export default function Header() {
       <div className="ml-4 mr-8 flex items-center gap-1 md:ml-6">
         {userData?.username !== '' ? (
           <div className="flex items-center gap-4">
-            <Button
-              className="hidden bg-transparent px-0 hover:bg-transparent lg:block"
-              onClick={() => setOpen(!open)}
-            >
-              <MessageSquareMore
-                className={`text-${open ? 'purple' : 'white'}`}
-              />
-            </Button>
-            <Separator orientation={'vertical'} className="h-6" />
             <UserNav />
           </div>
         ) : (
           <>
             <Button
               className="rounded-[12px] border-b-2 border-t-2 border-b-[#292447] border-t-[#6f62c0] bg-[#463E7A] px-[24px] py-[16px] hover:bg-[#6f62c0]"
-              onClick={handleSignIn}
+              onClick={handleLogin}
             >
               <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
-                Sign In
+                Login
               </span>
             </Button>
             <Button
               className="rounded-[12px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-[24px] py-[16px] hover:bg-[#caab5c]"
-              onClick={() => {}}
+              onClick={handleRegister}
             >
               <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
                 Register

@@ -170,9 +170,9 @@ export default function BetAction({
                   className="border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
                   disabled={isAutoMode && !autoBet}
                 />
-                <div className="absolute right-4 top-0 flex h-full items-center justify-center text-gray500">
-                  <Tabs>
-                    <TabsList className="rounded-[6px] bg-[#191939] p-[2px]">
+                <div className="absolute right-0 top-0 flex h-full items-center justify-center text-gray500">
+                  <Tabs className="h-full">
+                    <TabsList className="h-full rounded-[6px] bg-[#191939]">
                       {tokens.map((t, index) => (
                         <TabsTrigger
                           key={index}
@@ -180,7 +180,7 @@ export default function BetAction({
                           disabled={isAutoMode && !autoBet}
                           value={t.value}
                           onClick={() => setSelectedToken(t)}
-                          className={`${selectedToken === t ? 'rounded-[6px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] text-white hover:bg-[#caab5c]' : 'text-[#9688CC]'} text-[10px]`}
+                          className={`${selectedToken === t ? 'rounded-[6px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] text-white hover:bg-[#caab5c]' : 'text-[#9688CC]'} h-full text-[10px]`}
                         >
                           <div className="flex cursor-pointer items-center">
                             {t.name}
@@ -216,7 +216,7 @@ export default function BetAction({
                   className="w-full border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
                 />
                 <span className="absolute right-0 top-0 flex h-full items-center justify-center rounded-r-lg bg-[#605499] px-[14px] text-white">
-                  bits
+                  multiplier
                 </span>
               </div>
             </div>

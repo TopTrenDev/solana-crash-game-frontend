@@ -1,11 +1,3 @@
-import { EmojiClickData } from 'emoji-picker-react';
-import { useEffect, useRef, useState } from 'react';
-import useToast from '@/hooks/use-toast';
-import { chatActions } from '@/store/redux/actions';
-import { useAppDispatch, useAppSelector } from '@/store/redux';
-import { getAccessToken } from '@/utils/axios';
-import { useInView } from 'react-intersection-observer';
-import axios from 'axios';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { Table, TableBody, TableCell, TableRow } from '../ui/table';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
@@ -32,7 +24,7 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
         </Table>
       </CardHeader>
       <CardContent className="bg-[#2C2852] px-2 py-0">
-        <ScrollArea className="p-0 lg:h-[295px]">
+        <ScrollArea className="p-0 lg:h-[260px]">
           <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-hidden ">
             <TableBody>
               {crashHistoryRecords.map((history, index) => (

@@ -101,7 +101,7 @@ export type Employee = {
 
 export const betMode = ['Manual', 'Auto'];
 export const boardMode = ['All', 'High Win'];
-export const displayMode = ['History', 'Chat'];
+export const displayMode = ['Chat', 'History'];
 
 export const autoScripts = [
   'Flat Bet',

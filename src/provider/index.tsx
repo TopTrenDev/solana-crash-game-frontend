@@ -5,7 +5,6 @@ import { Suspense } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
-import { ChatProvider } from './chat-provider';
 
 export const queryClient = new QueryClient();
 
@@ -37,10 +36,8 @@ export default function AppProvider({
         <BrowserRouter>
           <ErrorBoundary FallbackComponent={ErrorFallback}>
             <QueryClientProvider client={queryClient}>
-              <ChatProvider>
-                {/* <ReactQueryDevtools /> */}
-                {children}
-              </ChatProvider>
+              {/* <ReactQueryDevtools /> */}
+              {children}
             </QueryClientProvider>
           </ErrorBoundary>
         </BrowserRouter>
