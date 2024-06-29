@@ -4,6 +4,35 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  /* border: 0.5px dotted red; */
+}
+
+@font-face {
+  font-family: clash display;
+  src: url('/public/font/TTF/ClashDisplay-Variable.ttf');
+}
+
+@font-face {
+  font-family: clash grotesk;
+  src: url('/public/font/TTF/ClashGrotesk-Variable.ttf');
+}
+html {
+  font-size: 16px;
+}
+
+@media screen and (max-width: 1024px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 11px;
+  }
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -164,6 +193,14 @@ input::-webkit-inner-spin-button {
   width: auto;
 }
 
+@media screen and (max-width: var(--lg)) {
+  .w-fluid {
+    width: 100vw;
+    margin-left: -3rem;
+    margin-right: -3rem;
+  }
+}
+
 @media screen and (min-width: var(--md)) {
   .Toastify__toast-container {
     min-width: 450px;
@@ -306,4 +343,63 @@ input::-webkit-inner-spin-button {
   100% {
     stroke-dashoffset: -125px;
   }
+}
+
+.launching-rocket {
+  -webkit-mask-image: linear-gradient(transparent, black, transparent);
+  mask-image: linear-gradient(transparent, black, transparent);
+}
+
+.how-does-work > .item {
+  width: calc(100% / 3);
+  text-align: center;
+  > div {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 56px;
+    background-color: #ffffff20;
+    border: 1px solid #ffffff40;
+  }
+}
+
+.how-does-work > .absolute {
+  width: 100%;
+  height: 60px;
+  > div {
+    padding-left: calc(56px + (100% - 56 * 3px) / 6);
+    padding-right: calc(56px + (100% - 56 * 3px) / 6);
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    > div {
+      width: calc((100% - 56px) / 2);
+      height: 100%;
+      border-bottom: 1px dashed #ffffff40;
+    }
+  }
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 56px;
+}
+
+.feature-item h4 {
+  margin: 13px 0px;
+  padding: 3px 10px;
+}
+
+.font-clash-display {
+  font-family: Clash Display;
+}
+
+.font-clash-grotesk {
+  font-family: Clash Grotesk;
 }

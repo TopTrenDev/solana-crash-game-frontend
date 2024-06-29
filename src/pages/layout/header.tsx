@@ -5,8 +5,13 @@ import useModal from '@/hooks/use-modal';
 import { ModalType } from '@/types/modal';
 import { useAppSelector } from '@/store/redux';
 import { tabItems } from '@/constants/data';
+import logo from '@/assets/img/logo.svg';
 
-export default function Header() {
+interface HeaderProps {
+  isApp: boolean;
+}
+
+export default function Header({ isApp }: HeaderProps) {
   const modal = useModal();
   const userData = useAppSelector((store: any) => store.user.userData);
 
@@ -23,30 +28,42 @@ export default function Header() {
   };
 
   return (
-    <div className="flex flex-1 items-center justify-between bg-dark bg-opacity-30 bg-blend-multiply">
-      <div className="flex px-4">
+    <div className="flex flex-1 items-center justify-between bg-dark bg-opacity-30 px-[80px] py-[28px] bg-blend-multiply">
+      <div className="flex">
         <Link
           to="/"
-          className="via-green-500 inline-block bg-gradient-to-r from-[#9E00FF] to-[#14F195] bg-clip-text text-[24px] font-semibold text-transparent"
+          className="via-green-500 flex bg-gradient-to-r from-[#9E00FF] to-[#14F195] bg-clip-text text-[24px] font-semibold text-transparent"
         >
-          Bustalot
+          <img className="mr-[11px]" src={logo} alt="" />
+          <p className="text-white">Bustalot</p>
         </Link>
       </div>
-      <div className="flex">
-        {tabItems.map((item, index) => (
-          <div
-            key={index}
-            className={
-              'min-h-full cursor-pointer rounded-none border-b-2 border-b-transparent px-6 py-5 text-[14px] font-medium uppercase text-[#fff] duration-300 hover:bg-transparent hover:text-[#9E00FF]'
-            }
-            onClick={() => handleModalOpen(item.modal)}
-          >
-            {item.name}
-          </div>
-        ))}
-      </div>
+      {!isApp && (
+        <div className="flex">
+          {tabItems.map((item, index) => (
+            <div
+              key={index}
+              className={
+                'min-h-full cursor-pointer rounded-none border-b-2 border-b-transparent px-6 py-5 text-[14px] font-medium uppercase text-[#fff] duration-300 hover:bg-transparent hover:text-[#9E00FF]'
+              }
+              onClick={() => handleModalOpen(item.modal)}
+            >
+              {item.name}
+            </div>
+          ))}
+        </div>
+      )}
       <div className="ml-4 mr-8 flex items-center gap-1 md:ml-6">
-        {userData?.username !== '' ? (
+        {isApp ? (
+          <Link
+            className="rounded-[12px] border-b-4 border-t-4 border-b-[#6e32b8] border-t-[#be8afd] bg-[#9945FF] px-[24px] py-[16px] text-[16px] text-[#fff] hover:bg-[#a376da]"
+            to={'/play'}
+          >
+            <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+              Play
+            </span>
+          </Link>
+        ) : userData?.username !== '' ? (
           <div className="flex items-center gap-4">
             <UserNav />
           </div>
