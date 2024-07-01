@@ -21,6 +21,8 @@ import {
   EyeOpenIcon,
   EraserIcon
 } from '@radix-ui/react-icons';
+import { useAppDispatch } from '@/store/redux';
+import { userActions } from '@/store/redux/actions';
 
 interface BetActionProps {
   selectMode: string;
@@ -69,6 +71,7 @@ export default function BetAction({
   socket
 }: BetActionProps) {
   const toast = useToast();
+  const dispatch = useAppDispatch();
 
   const isAutoMode = selectMode === 'auto';
 
@@ -119,6 +122,11 @@ export default function BetAction({
 
   const handleStartBet = async () => {
     if (betAmount > 0 && !avaliableBet) {
+      dispatch(userActions.siteBalanceStatus(true));
+      const balanceTimeout = setTimeout(() => {
+        dispatch(userActions.siteBalanceStatus(false));
+      }, 2000);
+
       const joinParams = {
         target: avaliableAutoCashout
           ? Number(autoCashoutAmount) * 100
@@ -127,6 +135,7 @@ export default function BetAction({
         denom: selectedToken.name
       };
       socket?.emit('join-crash-game', joinParams);
+      return () => clearTimeout(balanceTimeout);
     }
     if (!(betAmount > 0)) {
       toast.error('Bet amount must be greater than 0');
@@ -158,7 +167,7 @@ export default function BetAction({
         </div>
       </div>
       {selectMode === betMode[0] ? (
-        <Card className="m-2 rounded-lg border-none bg-[#2C2852] bg-opacity-80 px-[24px] pt-[40px] text-[#9688CC] shadow-none">
+        <Card className="m-2 rounded-lg border-none bg-[#2C2852] bg-opacity-80 p-3 text-[#9688CC] shadow-none">
           <div className="flex h-full w-full flex-col gap-4">
             <div className="flex flex-col">
               <p className="w-6/12 text-sm">Bet</p>
@@ -167,7 +176,7 @@ export default function BetAction({
                   type="number"
                   value={betAmount}
                   onChange={handleBetAmountChange}
-                  className="border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
+                  className="h-10 border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
                   disabled={isAutoMode && !autoBet}
                 />
                 <div className="absolute right-0 top-0 flex h-full items-center justify-center text-gray500">
@@ -191,18 +200,6 @@ export default function BetAction({
                   </Tabs>
                 </div>
               </div>
-              {/* <div className="grid grid-cols-4 space-x-3">
-              {multiplerArray.map((item, index) => (
-                <Button
-                  disabled={isAutoMode && !autoBet}
-                  className="rounded-lg border border-[#1D1776] bg-dark-blue font-semibold uppercase text-gray500 hover:bg-dark-blue hover:text-white"
-                  key={index}
-                  onClick={() => handleMultiplierClick(item)}
-                >
-                  {item + 'x'}
-                </Button>
-              ))}
-            </div> */}
             </div>
             <div className="flex w-full flex-col">
               <p className="w-6/12 text-sm">Payout</p>
@@ -213,14 +210,14 @@ export default function BetAction({
                   onChange={handleAutoCashoutPointChange}
                   min={1.05}
                   max={1000}
-                  className="w-full border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
+                  className="h-10 w-full border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
                 />
                 <span className="absolute right-0 top-0 flex h-full items-center justify-center rounded-r-lg bg-[#605499] px-[14px] text-white">
                   multiplier
                 </span>
               </div>
             </div>
-            <div className="flex w-full flex-row items-center justify-center pt-4">
+            <div className="flex w-full flex-row items-center justify-center">
               <Button
                 className="h-12 w-full rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c]"
                 disabled={

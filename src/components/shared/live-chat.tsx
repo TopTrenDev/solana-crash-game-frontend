@@ -24,17 +24,12 @@ export type HistoryItemProps = {
 const HistoryItem = ({ name, message, avatar, time }: HistoryItemProps) => {
   return (
     <div className="flex items-center gap-1 px-3 py-1">
-      <div className="relative"></div>
-      <div className="flex flex-1 flex-col justify-between rounded-lg bg-[#4a278d4f] px-2 py-1">
-        <div>
-          <span className="text-sm font-medium text-gray300">
-            {name ?? 'User:'}
-          </span>
-          <span className="text-xs font-medium text-gray500"> {time}</span>
-        </div>
-        <div className="max-w-[234px] rounded-sm text-[12px] font-medium text-gray200">
-          {message}
-        </div>
+      <div className="flex items-center justify-start gap-2">
+        <span className="text-[12px] font-medium text-gray500"> {time}</span>
+        <span className="text-[12px] font-medium text-[#7f7fd1]">
+          {name ?? 'User'}:
+        </span>
+        <span className="text-[14px] text-white">{message}</span>
       </div>
     </div>
   );
@@ -123,7 +118,7 @@ const LiveChat = () => {
   }, [inView]);
 
   return (
-    <div className="m-2 flex h-full w-full flex-col items-stretch justify-between gap-0 bg-[#463E7A]">
+    <div className="m-2 flex h-full w-full flex-col items-stretch justify-start bg-[#463E7A]">
       <div className="flex items-center gap-3 rounded-t-lg bg-[#191939] p-3">
         <span className="text-base font-medium text-gray300">LIVE CHAT</span>
         <div
@@ -135,11 +130,11 @@ const LiveChat = () => {
           }}
         ></div>
       </div>
-      <div className="flex min-h-[200px] flex-1 flex-col items-stretch gap-4 bg-[#2C2852]">
+      <div className="flex max-h-[185px] flex-1 flex-col items-stretch gap-4 bg-[#2C2852]">
         <ScrollArea
-          className={`py-3 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
+          className={`py-1 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
         >
-          <div className="flex flex-col">
+          <div className="flex w-full flex-col">
             <div ref={lastMessageRef}></div>
             {chatState?.chatHistory &&
               Array.isArray(chatState?.chatHistory) &&
