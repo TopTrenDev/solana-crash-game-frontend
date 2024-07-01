@@ -10,7 +10,7 @@ import BiggistWinner from './biggistWinner';
 export default function Home() {
   return (
     <>
-      <Header isApp={true} />
+      <Header isApp={false} />
       <div className="">
         {/* <div className="bg-[url('/src/assets/img/mid-cloud.svg')] bg-bottom"> */}
         <Slider />

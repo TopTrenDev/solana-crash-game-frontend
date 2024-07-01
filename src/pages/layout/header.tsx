@@ -38,7 +38,7 @@ export default function Header({ isApp }: HeaderProps) {
           <p className="text-white">Bustalot</p>
         </Link>
       </div>
-      {!isApp && (
+      {isApp && (
         <div className="flex">
           {tabItems.map((item, index) => (
             <div
@@ -55,6 +55,31 @@ export default function Header({ isApp }: HeaderProps) {
       )}
       <div className="ml-4 mr-8 flex items-center gap-1 md:ml-6">
         {isApp ? (
+          userData?.username !== '' ? (
+            <div className="flex items-center gap-4">
+              <UserNav />
+            </div>
+          ) : (
+            <>
+              <Button
+                className="rounded-[12px] border-b-2 border-t-2 border-b-[#292447] border-t-[#6f62c0] bg-[#463E7A] px-[24px] py-[16px] hover:bg-[#6f62c0]"
+                onClick={handleLogin}
+              >
+                <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+                  Login
+                </span>
+              </Button>
+              <Button
+                className="rounded-[12px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-[24px] py-[16px] hover:bg-[#caab5c]"
+                onClick={handleRegister}
+              >
+                <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+                  Register
+                </span>
+              </Button>
+            </>
+          )
+        ) : (
           <Link
             className="rounded-[12px] border-b-4 border-t-4 border-b-[#6e32b8] border-t-[#be8afd] bg-[#9945FF] px-[24px] py-[16px] text-[16px] text-[#fff] hover:bg-[#a376da]"
             to={'/play'}
@@ -63,29 +88,6 @@ export default function Header({ isApp }: HeaderProps) {
               Play
             </span>
           </Link>
-        ) : userData?.username !== '' ? (
-          <div className="flex items-center gap-4">
-            <UserNav />
-          </div>
-        ) : (
-          <>
-            <Button
-              className="rounded-[12px] border-b-2 border-t-2 border-b-[#292447] border-t-[#6f62c0] bg-[#463E7A] px-[24px] py-[16px] hover:bg-[#6f62c0]"
-              onClick={handleLogin}
-            >
-              <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
-                Login
-              </span>
-            </Button>
-            <Button
-              className="rounded-[12px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-[24px] py-[16px] hover:bg-[#caab5c]"
-              onClick={handleRegister}
-            >
-              <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
-                Register
-              </span>
-            </Button>
-          </>
         )}
       </div>
     </div>

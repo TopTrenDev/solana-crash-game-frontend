@@ -168,21 +168,35 @@ export default function CrashGameSection() {
       setAvaliableBet(false);
     });
 
+    const calculateTotals = (bets) => {
+      const totals = { usk: 0, kuji: 0, kart: 0 };
+      bets.forEach((bet) => {
+        if (totals[bet.denom] !== undefined) {
+          totals[bet.denom] += bet.betAmount;
+        }
+      });
+      return totals;
+    };
+
+    crashSocket.on(ECrashSocketEvent.GAME_STATUS, (data) => {
+      setBetData(data.players);
+      const totals = calculateTotals(data.players);
+      setTotalAmount((prevAmounts) => ({
+        usk: (prevAmounts?.usk || 0) + totals.usk,
+        kuji: (prevAmounts?.kuji || 0) + totals.kuji,
+        kart: (prevAmounts?.kart || 0) + totals.kart
+      }));
+    });
+
     crashSocket.on(
       ECrashSocketEvent.GAME_BETS,
       (bets: FormattedPlayerBetType[]) => {
         setBetData((prev: BetType[]) => [...bets, ...prev]);
-        const totalUsk = bets
-          .filter((bet) => bet.denom === 'usk')
-          .reduce((acc, item) => acc + item.betAmount, 0);
-
-        const totalKuji = bets
-          .filter((bet) => bet.denom === 'kuji')
-          .reduce((acc, item) => acc + item.betAmount, 0);
-
+        const totals = calculateTotals(bets);
         setTotalAmount((prevAmounts) => ({
-          usk: (prevAmounts?.usk || 0) + totalUsk,
-          kuji: (prevAmounts?.kuji || 0) + totalKuji
+          usk: (prevAmounts?.usk || 0) + totals.usk,
+          kuji: (prevAmounts?.kuji || 0) + totals.kuji,
+          kart: (prevAmounts?.kart || 0) + totals.kart
         }));
       }
     );
@@ -192,7 +206,7 @@ export default function CrashGameSection() {
       setAutoBet(true);
     });
 
-    crashSocket.on(ECrashSocketEvent.CRASHGAME_JOIN_SUCCESS, (data) => {
+    crashSocket.on(ECrashSocketEvent.CRASHGAME_JOIN_SUCCESS, () => {
       setAvaliableBet(true);
     });
 
@@ -228,9 +242,9 @@ export default function CrashGameSection() {
             <span className="sr-only">Open sidebar</span>
             <MenuIcon className="h-6 w-6" aria-hidden="true" />\
           </button> */}
-          <Header />
+          <Header isApp={true} />
         </div>
-        <div className="flex h-full w-full py-8">
+        <div className="flex h-full w-full px-[80px] py-[44px]">
           <div className="flex h-full w-3/4 flex-col justify-between gap-6">
             <div className="flex h-1/2 w-full">
               <div className="m-[5px] flex h-full w-1/3 flex-col justify-between rounded-lg bg-[#463E7A]">
@@ -283,6 +297,7 @@ export default function CrashGameSection() {
               betData={betData}
               betCashout={betCashout}
               totalAmount={totalAmount}
+              crashStatus={crashStatus}
               selectBoard={selectBoard}
               setSelectBoard={setSelectBoard}
             />

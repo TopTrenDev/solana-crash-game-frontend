@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { boardMode } from '@/constants/data';
+import { ECrashStatus } from '@/constants/status';
 import { BetType } from '@/types';
 import { cn } from '@/utils/utils';
 
@@ -10,6 +11,7 @@ interface BetBoardProps {
   betData: BetType[];
   betCashout: BetType[];
   totalAmount: any;
+  crashStatus: ECrashStatus;
   selectBoard: string;
   setSelectBoard: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -18,6 +20,7 @@ export default function BetBoard({
   betData,
   betCashout,
   totalAmount,
+  crashStatus,
   selectBoard,
   setSelectBoard
 }: BetBoardProps) {
@@ -81,7 +84,11 @@ export default function BetBoard({
                               (item) => item.playerID === player.playerID
                             )?.stoppedAt ?? 0) / 100
                           ).toFixed(2) + 'x') ||
-                          'betting'}
+                          (crashStatus === ECrashStatus.END ? (
+                            <span className="text-purple">failed</span>
+                          ) : (
+                            <span>betting</span>
+                          ))}
                       </TableCell>
                       <TableCell className="w-1/6 text-center">
                         <div className="flex w-full flex-row items-center justify-center gap-1 text-center">
@@ -111,6 +118,8 @@ export default function BetBoard({
                               player.betAmount
                             ).toFixed(2)}
                           </div>
+                        ) : crashStatus === ECrashStatus.END ? (
+                          <span className="text-purple">failed</span>
                         ) : (
                           <span>betting</span>
                         )}

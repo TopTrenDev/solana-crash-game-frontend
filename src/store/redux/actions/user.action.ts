@@ -1,4 +1,8 @@
-import { INIT_USER_DATA, USER_DATA } from '../reducers/user.reducer';
+import {
+  INIT_USER_DATA,
+  SITE_BALANCE_STATUS,
+  USER_DATA
+} from '../reducers/user.reducer';
 
 export type TUserData = {
   userData: {
@@ -19,5 +23,11 @@ export function initUserData() {
   return {
     type: INIT_USER_DATA,
     payload: null
+  };
+}
+export function siteBalanceStatus(data: boolean) {
+  return {
+    type: SITE_BALANCE_STATUS,
+    payload: data
   };
 }
