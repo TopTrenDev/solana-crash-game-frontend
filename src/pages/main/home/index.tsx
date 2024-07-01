@@ -1,7 +1,7 @@
 import Header from '@/pages/layout/header';
 import Footer from '@/pages/layout/footer';
 import Slider from './slider';
-import Bustalot from './bustalot';
+import Description from './description';
 import Feature from './feature';
 import Prove from './prove';
 import LearnMore from './learnMore';
@@ -14,7 +14,7 @@ export default function Home() {
       <div className="">
         {/* <div className="bg-[url('/src/assets/img/mid-cloud.svg')] bg-bottom"> */}
         <Slider />
-        <Bustalot />
+        <Description />
       </div>
       <Feature />
       <Prove />

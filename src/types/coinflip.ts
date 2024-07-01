@@ -17,7 +17,7 @@ export enum ECoinflipSocketEvent {
   COINFLIPGAME_JOINED = 'coinflipgame-joined',
   COINFLIPGAME_ROLLING = 'coinflipgame-rolling',
   COINFLIPGAME_ROLLED = 'coinflipgame-rolled',
-  UPDATE_WALLET = 'update-wallet',
+  UPDATE_CREDIT = 'update-credit',
   GAME_CREATION_ERROR = 'game-creation-error'
 }
 
@@ -43,7 +43,7 @@ export interface ICoinflipServerToClientEvents {
     coinflipResult: boolean[];
     isEarn: boolean;
   }) => void;
-  [ECoinflipSocketEvent.UPDATE_WALLET]: (amount: number) => void;
+  [ECoinflipSocketEvent.UPDATE_CREDIT]: (amount: number) => void;
   [ECoinflipSocketEvent.GAME_CREATION_ERROR]: (message: string) => void;
 }
 

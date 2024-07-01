@@ -9,6 +9,7 @@ import { ModalType } from '@/types/modal';
 import useModal from '@/hooks/use-modal';
 import { useAppSelector } from '@/store/redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { TITLE } from '@/config';
 
 export default function BankrollModal() {
   const { open, type } = useAppSelector((state: any) => state.modal);
@@ -37,7 +38,7 @@ export default function BankrollModal() {
           <div className="flex w-full flex-col gap-6">
             <div className="flex w-full justify-between">
               <h3 className="w-1/3 text-[16px] font-normal">
-                Bustalot's bankroll:
+                {TITLE}'s bankroll:
               </h3>
               <h3 className="text-[16px] font-semibold">$841.47784094</h3>
             </div>

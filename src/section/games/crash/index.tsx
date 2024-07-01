@@ -1,12 +1,7 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useRef, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
-import {
-  BetType,
-  CrashHistoryData,
-  FormattedPlayerBetType,
-  ICrashHistoryRecord
-} from '@/types';
+import { BetType, FormattedPlayerBetType, ICrashHistoryRecord } from '@/types';
 import {
   ECrashSocketEvent,
   ICrashClientToServerEvents,
@@ -16,14 +11,7 @@ import {
 import { ECrashStatus } from '@/constants/status';
 import { getAccessToken } from '@/utils/axios';
 import useToast from '@/hooks/use-toast';
-import {
-  roundArray,
-  tokens,
-  IToken,
-  betMode,
-  boardMode,
-  displayMode
-} from '@/constants/data';
+import { tokens, IToken, betMode, displayMode } from '@/constants/data';
 import Header from '@/pages/layout/header';
 import GraphicDisplay from '@/section/games/crash/graphic-display';
 import BetBoard from './bet-board';
@@ -36,7 +24,6 @@ export default function CrashGameSection() {
 
   const toast = useToast();
   const [selectMode, setSelectMode] = useState<string>(betMode[0]);
-  const [selectBoard, setSelectBoard] = useState<string>(boardMode[0]);
   const [selectDisplay, setSelectDisplay] = useState<string>(displayMode[0]);
   const [selectedToken, setSelectedToken] = useState<IToken>(tokens[0]);
   const [betData, setBetData] = useState<BetType[]>([]);
@@ -47,8 +34,7 @@ export default function CrashGameSection() {
   const [avaliableBet, setAvaliableBet] = useState<boolean>(false);
   const [autoBet, setAutoBet] = useState<boolean>(true);
   const [autoCashoutAmount, setAutoCashoutAmount] = useState<number>(1);
-  const [totalAmount, setTotalAmount] = useState<any>();
-  const [round, setRound] = useState<number>(roundArray[0]);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
   const [avaliableAutoCashout, setAvaliableAutoCashout] =
     useState<boolean>(false);
 
@@ -139,10 +125,7 @@ export default function CrashGameSection() {
       stopCrashBgVideo();
       setBetData([]);
       setBetCashout([]);
-      setTotalAmount({
-        usk: 0,
-        kuji: 0
-      });
+      setTotalAmount(0);
     });
 
     crashSocket.on(ECrashSocketEvent.GAME_START, (data) => {
@@ -169,11 +152,9 @@ export default function CrashGameSection() {
     });
 
     const calculateTotals = (bets) => {
-      const totals = { usk: 0, kuji: 0, kart: 0 };
+      let totals = 0;
       bets.forEach((bet) => {
-        if (totals[bet.denom] !== undefined) {
-          totals[bet.denom] += bet.betAmount;
-        }
+        totals += bet.betAmount;
       });
       return totals;
     };
@@ -181,11 +162,7 @@ export default function CrashGameSection() {
     crashSocket.on(ECrashSocketEvent.GAME_STATUS, (data) => {
       setBetData(data.players);
       const totals = calculateTotals(data.players);
-      setTotalAmount((prevAmounts) => ({
-        usk: (prevAmounts?.usk || 0) + totals.usk,
-        kuji: (prevAmounts?.kuji || 0) + totals.kuji,
-        kart: (prevAmounts?.kart || 0) + totals.kart
-      }));
+      setTotalAmount((prev) => prev + totals);
     });
 
     crashSocket.on(
@@ -193,11 +170,7 @@ export default function CrashGameSection() {
       (bets: FormattedPlayerBetType[]) => {
         setBetData((prev: BetType[]) => [...bets, ...prev]);
         const totals = calculateTotals(bets);
-        setTotalAmount((prevAmounts) => ({
-          usk: (prevAmounts?.usk || 0) + totals.usk,
-          kuji: (prevAmounts?.kuji || 0) + totals.kuji,
-          kart: (prevAmounts?.kart || 0) + totals.kart
-        }));
+        setTotalAmount((prev) => prev + totals);
       }
     );
 
@@ -267,8 +240,6 @@ export default function CrashGameSection() {
                   setAutoCashoutAmount={setAutoCashoutAmount}
                   avaliableAutoCashout={avaliableAutoCashout}
                   setAvaliableAutoCashout={setAvaliableAutoCashout}
-                  round={round}
-                  setRound={setRound}
                   socket={socket!}
                 />
               </div>
@@ -298,8 +269,6 @@ export default function CrashGameSection() {
               betCashout={betCashout}
               totalAmount={totalAmount}
               crashStatus={crashStatus}
-              selectBoard={selectBoard}
-              setSelectBoard={setSelectBoard}
             />
           </div>
         </div>

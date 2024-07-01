@@ -12,22 +12,19 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-import BoomPNG from '@/assets/img/boom.svg';
 import EarnedPNG from '@/assets/img/earned.png';
 import RocketPNG from '@/assets/img/rocket.png';
 import FlameSpriteSheetPNG from '@/assets/img/flame.png';
 import ChartImage from '@/assets/img/chart_bg.png';
 import { ECrashStatus } from '@/constants/status';
 import {
+  cn,
   formatMillisecondsShort,
   initialLabel,
   numberFormat
 } from '@/utils/utils';
 import GrowingNumber from '../../../components/shared/growing-number';
 import { ICrashHistoryRecord, ITick } from '@/types';
-
-// import { getTangentAngle } from '@/utils';
-// import { q, aM } from 'chart.js/dist/chunks/helpers.core';
 
 ChartJS.register(
   CategoryScale,
@@ -383,51 +380,50 @@ export default function GraphicDisplay({
         <div className={`relative h-full w-full`}>
           {crashStatus === ECrashStatus.NONE && (
             <div className="crash-status-shadow absolute left-[30%] top-[40%] flex flex-col items-center justify-center gap-5">
-              <div className=" text-6xl font-extrabold uppercase text-[#f5b95a] delay-100">
+              <div className=" text-6xl font-extrabold uppercase text-[#fff] delay-100">
                 Starting...
               </div>
             </div>
           )}
-          {crashStatus === ECrashStatus.PROGRESS && (
-            <label
-              className={`absolute z-50 flex h-full w-full flex-col items-center justify-start py-8 text-[4rem] font-bold`}
-            >
-              <span className="text-[16px] font-medium text-white">
-                Current payout
-              </span>
-              <span
+          {(crashStatus === ECrashStatus.PROGRESS ||
+            crashStatus === ECrashStatus.END) && (
+            <div className="crash-status-shadow absolute left-[40%] top-10 flex flex-col gap-2">
+              <div
+                className={`font-semibold text-[#fff] ${crashStatus === ECrashStatus.PROGRESS ? 'ml-8' : 'ml-14'}`}
+              >
+                {crashStatus === ECrashStatus.PROGRESS
+                  ? 'Current payout'
+                  : 'Crashed'}
+              </div>
+              <div
+                className={cn(
+                  'w-full text-6xl font-extrabold',
+                  crashStatus === ECrashStatus.END && 'crashed-value'
+                )}
                 style={{
-                  color: `rgb(255, ${Math.max(Number((1 - crTick.cur / 20) * 255), 0)}, ${Math.max(
-                    Number((1 - crTick.cur / 20) * 255),
-                    0
-                  )} )`
+                  color:
+                    crashStatus === ECrashStatus.END
+                      ? '#ff2f51'
+                      : `rgb(255, ${Math.max(Number((1 - crTick.cur / 20) * 255), 0)}, ${Math.max(Number((1 - crTick.cur / 20) * 255), 0)} )`
                 }}
               >
-                <GrowingNumber start={crTick.prev} end={crTick.cur} />x
-              </span>
-            </label>
+                {crashStatus === ECrashStatus.END ? (
+                  <>@{crBust}x</>
+                ) : (
+                  <>
+                    <GrowingNumber start={crTick.prev} end={crTick.cur} />x
+                  </>
+                )}
+              </div>
+            </div>
           )}
           {crashStatus === ECrashStatus.PREPARE && prepareTime > 0 && (
             <div className="crash-status-shadow absolute left-[20%] top-[40%] flex flex-col items-center justify-center gap-5">
               <div className="text-xl font-semibold uppercase text-white">
                 preparing round
               </div>
-              <div className="text-6xl font-extrabold uppercase text-[#f5b95a] delay-100">
+              <div className="bg-gradient-to-r from-[#9E00FF] to-[#14F195] bg-clip-text text-6xl font-extrabold uppercase text-transparent text-white delay-100">
                 starting in {formatMillisecondsShort(prepareTime)}
-              </div>
-            </div>
-          )}
-          {crashStatus === ECrashStatus.END && (
-            <div
-              className={`absolute flex h-full w-full scale-100 items-center justify-center opacity-100 transition-all duration-300 ease-in-out`}
-            >
-              <div className="absolute flex h-full w-full items-center justify-center">
-                <img src={BoomPNG} width={300} />
-              </div>
-              <div className="absolute top-0 flex h-full w-full items-center justify-center">
-                <label className="text-6xl font-extrabold text-[#fff]">
-                  {crBust}x
-                </label>
               </div>
             </div>
           )}

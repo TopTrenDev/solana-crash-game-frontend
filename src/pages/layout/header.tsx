@@ -6,6 +6,7 @@ import { ModalType } from '@/types/modal';
 import { useAppSelector } from '@/store/redux';
 import { tabItems } from '@/constants/data';
 import logo from '@/assets/img/logo.svg';
+import { TITLE } from '@/config';
 
 interface HeaderProps {
   isApp: boolean;
@@ -35,7 +36,7 @@ export default function Header({ isApp }: HeaderProps) {
           className="via-green-500 flex bg-gradient-to-r from-[#9E00FF] to-[#14F195] bg-clip-text text-[24px] font-semibold text-transparent"
         >
           <img className="mr-[11px]" src={logo} alt="" />
-          <p className="text-white">Bustalot</p>
+          <p className="text-white">{TITLE}</p>
         </Link>
       </div>
       {isApp && (

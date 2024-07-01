@@ -1,6 +1,6 @@
 import { Alert } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
 import { BsInfoCircleFill } from 'react-icons/bs';
+
 export default () => {
   return (
     <div className="container">
