@@ -1,16 +1,16 @@
 import { ICoinPlayer } from './coinflip';
 import {
   FormattedGameHistoryType,
-  PendingBetType,
-  FormattedPlayerBetType
-} from './crashGame';
+  FormattedPlayerBetType,
+  PendingBetType
+} from './crash';
 
 export interface ServerToClientEvents {
   error: (data: string) => void;
   'user banned': () => void;
   'notify-error': (data: string) => void;
   'game-join-error': (data: string) => void;
-  'update-wallet': (data: number) => void;
+  'update-credit': (data: number) => void;
   'bet-cashout-error': (data: string) => void;
   'bet-cashout-success': (result: any) => void;
   'game-call-bot-error': (error: string) => void;
@@ -90,7 +90,7 @@ export interface InterServerEvents {
   //common Events
 }
 
-export interface InterCoinflipGameServerEvents { }
+export interface InterCoinflipGameServerEvents {}
 
 export interface SocketData {
   lastAccess?: number;

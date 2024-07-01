@@ -1,5 +1,6 @@
 import logo from '@/assets/img/logo.svg';
 import { Button } from '@/components/ui/button';
+import { TITLE } from '@/config';
 
 const Footer = () => {
   return (
@@ -9,14 +10,14 @@ const Footer = () => {
           <div className="mx-12 py-8">
             <div className="via-green-500 flex items-center bg-gradient-to-r from-[#9E00FF] to-[#14F195] bg-clip-text text-[24px] font-semibold text-transparent">
               <img className="mr-[11px]" src={logo} alt="" />
-              <p className="font-clash-grotesk text-2xl text-white">Bustalot</p>
+              <p className="font-clash-grotesk text-2xl text-white">{TITLE}</p>
             </div>
             <p className="py-4 text-lg text-[#BDC9D4]">
-              bustabit is an online multiplayer bitcoin gambling game consisting
+              {TITLE} is an online multiplayer solana gambling game consisting
               of an increasing curve that can crash anytime. It's fun and
               thrilling. It can also make you millions.
             </p>
-            <p className="text-lg">©Bustalot 2024</p>
+            <p className="text-lg">©{TITLE} 2024</p>
           </div>
           <div className="mx-12 py-8 text-sm">
             <p className="pb-4 text-[#BDC9D4]">Menu</p>

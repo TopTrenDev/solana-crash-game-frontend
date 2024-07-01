@@ -75,7 +75,7 @@ export const navItems: NavItemGroup[] = [
 
 export const tabItems = [
   { name: 'bankroll', modal: ModalType.BANKROLL },
-  { name: 'backtesting', modal: ModalType.BACKTESTING },
+  // { name: 'backtesting', modal: ModalType.BACKTESTING },
   { name: 'stats', modal: ModalType.STATS },
   { name: 'leaderboard', modal: ModalType.LEADERBOARD }
 ];
@@ -100,7 +100,6 @@ export type Employee = {
 };
 
 export const betMode = ['Manual', 'Auto'];
-export const boardMode = ['All', 'High Win'];
 export const displayMode = ['Chat', 'History'];
 
 export const autoScripts = [
@@ -114,8 +113,6 @@ export const autoScripts = [
 ];
 
 export const multiplerArray = [1 / 2, 2, 4, 8];
-
-export const roundArray = [5, 10, 15, 20, 10000];
 
 export const minesAmountPresets = [2, 3, 5, 10, 24];
 

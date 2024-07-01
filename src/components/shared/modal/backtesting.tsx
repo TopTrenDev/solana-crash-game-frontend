@@ -49,7 +49,7 @@ export default function BacktestingModal() {
             <span>
               Note that historical games are generated using bustabit's current
               hash-chain. If you are interested in the technical details of our
-              provably fair system, have a look at this thread on the Bitcoin
+              provably fair system, have a look at this thread on the Solana
               forums and at this illustrative demo.
             </span>
             <span>

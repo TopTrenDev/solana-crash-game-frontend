@@ -14,7 +14,8 @@ export enum EChatSocketEvent {
   RECEIVE_MSG = 'message',
   DISCONNECT_CHAT = 'disconnect',
   RECEIVE_CHAT_HISTORY = 'send-chat-history',
-  GET_CHAT_HISTORY = 'get-chat-history'
+  GET_CHAT_HISTORY = 'get-chat-history',
+  NOTIFY_ERROR = 'notify-error'
 }
 
 export interface IChatClientToServerEvents {
@@ -26,6 +27,7 @@ export interface IChatClientToServerEvents {
 
 export interface IChatServerToClientEvents {
   [EChatSocketEvent.RECEIVE_MSG]: (data: IChat) => void;
+  [EChatSocketEvent.NOTIFY_ERROR]: (data: string) => void;
   [EChatSocketEvent.RECEIVE_CHAT_HISTORY]: (data: {
     message: string;
     chatHistories: IChat[];

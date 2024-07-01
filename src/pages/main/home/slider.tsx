@@ -7,6 +7,7 @@ import Rocket from '@/assets/img/rocket.svg';
 import Jupiter from '@/assets/img/jupiter.svg';
 import Mars from '@/assets/img/mars.svg';
 import Moon from '@/assets/img/moon.svg';
+import { TITLE } from '@/config';
 
 export default function Slider() {
   return (
@@ -106,12 +107,12 @@ export default function Slider() {
         />
         <div className="mx-auto flex max-w-[745px] flex-col items-center text-white max-md:mt-20">
           <h3 className="font-clash-display text-center text-6xl max-sm:text-4xl">
-            What's Bustalot?
+            What's {TITLE}?
           </h3>
           <p className="font-clash-grotesk py-4 text-center text-xl text-[#BDC9D4]">
-            bustabit is an online multiplayer bitcoin gambling game consisting
-            of an increasing curve that can crash anytime. It's fun and
-            thrilling. It can also make you millions.
+            {TITLE} is an online multiplayer solana gambling game consisting of
+            an increasing curve that can crash anytime. It's fun and thrilling.
+            It can also make you millions.
           </p>
           <Button className="mx-auto rounded-[12px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#d89fee] bg-[#9945FF] px-[24px] py-[16px] hover:bg-[#b977df]">
             <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">

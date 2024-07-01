@@ -15,6 +15,13 @@ export function receiveMsg(msg: IChat) {
   };
 }
 
+export function receiveError(error: string) {
+  return {
+    type: EChatSocketAction.ERROR,
+    payload: error
+  };
+}
+
 export function sendMsg(msg: string) {
   return {
     type: EChatSocketAction.SEND_MSG,

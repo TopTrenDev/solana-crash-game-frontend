@@ -2,13 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  IToken,
-  autoScripts,
-  betMode,
-  roundArray,
-  tokens
-} from '@/constants/data';
+import { IToken, autoScripts, betMode, tokens } from '@/constants/data';
 import { ECrashStatus } from '@/constants/status';
 import { cn } from '@/utils/utils';
 import useToast from '@/hooks/use-toast';
@@ -43,8 +37,6 @@ interface BetActionProps {
   setAutoCashoutAmount: React.Dispatch<React.SetStateAction<number>>;
   avaliableAutoCashout: boolean;
   setAvaliableAutoCashout: React.Dispatch<React.SetStateAction<boolean>>;
-  round: number;
-  setRound: React.Dispatch<React.SetStateAction<number>>;
   socket: Socket;
 }
 
@@ -66,8 +58,6 @@ export default function BetAction({
   setAutoCashoutAmount,
   avaliableAutoCashout,
   setAvaliableAutoCashout,
-  round,
-  setRound,
   socket
 }: BetActionProps) {
   const toast = useToast();
@@ -106,9 +96,7 @@ export default function BetAction({
       if (betAmount > 0) {
         const joinParams = {
           cashoutPoint: Number(autoCashoutPoint).valueOf() * 100,
-          count: Number(round).valueOf(),
-          betAmount: Number(betAmount).valueOf(),
-          denom: selectedToken.name
+          betAmount: Number(betAmount).valueOf()
         };
         socket?.emit('auto-crashgame-bet', joinParams);
       } else {
@@ -219,7 +207,7 @@ export default function BetAction({
             </div>
             <div className="flex w-full flex-row items-center justify-center">
               <Button
-                className="h-12 w-full rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c]"
+                className="h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c]"
                 disabled={
                   isAutoMode
                     ? false
@@ -241,7 +229,9 @@ export default function BetAction({
               <div className="flex w-full justify-end">Hotkeys: OFF</div>
               <div className="flex w-full items-center justify-between">
                 <span>Target Profit:</span>
-                <span className="text-white">2 bits</span>
+                <span className="text-white">
+                  {betAmount * autoCashoutPoint} sola
+                </span>
               </div>
               <div className="flex w-full items-center justify-between">
                 <span>Win Chance:</span>
