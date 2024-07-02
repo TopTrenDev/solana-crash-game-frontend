@@ -41,6 +41,16 @@ export default function Header({ isApp }: HeaderProps) {
       </div>
       {isApp && (
         <div className="hidden lg:flex">
+          {userData?.username !== '' && (
+            <div
+              className={
+                'min-h-full cursor-pointer rounded-none border-b-2 border-b-transparent px-6 py-5 text-[14px] font-medium uppercase text-[#fff] duration-300 hover:bg-transparent hover:text-[#9E00FF]'
+              }
+              onClick={() => handleModalOpen(ModalType.DEPOSIT)}
+            >
+              {'deposit'}
+            </div>
+          )}
           {tabItems.map((item, index) => (
             <div
               key={index}
