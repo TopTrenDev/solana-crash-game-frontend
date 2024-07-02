@@ -11,17 +11,21 @@ interface BetBoardProps {
   betCashout: BetType[];
   totalAmount: any;
   crashStatus: ECrashStatus;
+  className?: string;
 }
 
 export default function BetBoard({
   betData,
   betCashout,
   totalAmount,
-  crashStatus
+  crashStatus,
+  className
 }: BetBoardProps) {
   return (
-    <div className="flex h-full w-full flex-col rounded-lg bg-[#463E7A]">
-      <div className="flex w-full flex-row items-center justify-center">
+    <div
+      className={`flex h-full w-full flex-col rounded-lg bg-[#463E7A] ${className}`}
+    >
+      <div className="hidden w-full flex-row items-center justify-center lg:flex">
         <Button
           className={cn(
             'min-h-full w-1/2 rounded-lg rounded-tr-lg bg-[#463E7A] p-6 font-semibold text-white shadow-none hover:bg-transparent'

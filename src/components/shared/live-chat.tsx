@@ -35,7 +35,11 @@ const HistoryItem = ({ name, message, avatar, time }: HistoryItemProps) => {
   );
 };
 
-const LiveChat = () => {
+interface LiveChatProps {
+  className?: string;
+}
+
+const LiveChat = ({ className }: LiveChatProps) => {
   const [inputStr, setInputStr] = useState('');
   const [emojiIsOpened, setEmojiIsOpened] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -118,7 +122,9 @@ const LiveChat = () => {
   }, [inView]);
 
   return (
-    <div className="m-2 flex h-full w-full flex-col items-stretch justify-start bg-[#463E7A]">
+    <div
+      className={`m-2 h-full w-full flex-col items-stretch justify-start bg-[#463E7A] ${className}`}
+    >
       <div className="flex items-center gap-3 rounded-t-lg bg-[#191939] p-3">
         <span className="text-base font-medium text-gray300">LIVE CHAT</span>
         <div
@@ -130,7 +136,7 @@ const LiveChat = () => {
           }}
         ></div>
       </div>
-      <div className="flex max-h-[185px] flex-1 flex-col items-stretch gap-4 bg-[#2C2852]">
+      <div className="flex max-h-[185px] min-h-[150px] flex-1 flex-col items-stretch gap-4 bg-[#2C2852]">
         <ScrollArea
           className={`py-1 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
         >

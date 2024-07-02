@@ -87,15 +87,15 @@ export default function GraphicDisplay({
         backgroundColor: getGradintColor,
         lineTension: 0.8,
         fill: true
-      },
-      {
-        label: '',
-        pointBorderWidth: 0,
-        pointHoverRadius: 0,
-        borderColor: graphColor,
-        borderWidth: 0,
-        data: [1, MAX_Y]
       }
+      // {
+      //   label: '',
+      //   pointBorderWidth: 0,
+      //   pointHoverRadius: 0,
+      //   borderColor: graphColor,
+      //   borderWidth: 0,
+      //   data: [1, MAX_Y]
+      // }
     ]
   });
 
@@ -183,6 +183,10 @@ export default function GraphicDisplay({
           ctx.fillRect(0, 0, chart.width, chart.height);
 
           const lastXValue = chart.data.datasets[0].data.length - 1;
+
+          console.log('>>>>>', chart.data.datasets[0].data);
+          console.log('x', lastXValue);
+          console.log('y', lastYValue);
 
           // Draw the rocket at its new position
           const xP = scales.x.getPixelForValue(lastXValue);
@@ -299,7 +303,15 @@ export default function GraphicDisplay({
   };
 
   useEffect(() => {
-    setYValue((values) => [...values, Number(crTick.cur)]);
+    if (yValue.length == 0) {
+      let yArray: number[] = [];
+      for (let i = 1; i < Number(crTick.cur); i = i + 0.02) {
+        yArray.push(i);
+      }
+      setYValue(yArray);
+    } else {
+      setYValue((values) => [...values, Number(crTick.cur)]);
+    }
   }, [crTick]);
 
   useEffect(() => {
@@ -380,7 +392,7 @@ export default function GraphicDisplay({
         <div className={`relative h-full w-full`}>
           {crashStatus === ECrashStatus.NONE && (
             <div className="crash-status-shadow absolute left-[30%] top-[40%] flex flex-col items-center justify-center gap-5">
-              <div className=" text-6xl font-extrabold uppercase text-[#fff] delay-100">
+              <div className="text-[30px] font-extrabold uppercase text-[#fff] delay-100 xl:text-6xl">
                 Starting...
               </div>
             </div>

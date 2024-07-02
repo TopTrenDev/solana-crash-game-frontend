@@ -74,6 +74,7 @@ export const navItems: NavItemGroup[] = [
 ];
 
 export const tabItems = [
+  { name: 'deposit', modal: ModalType.DEPOSIT },
   { name: 'bankroll', modal: ModalType.BANKROLL },
   // { name: 'backtesting', modal: ModalType.BACKTESTING },
   { name: 'stats', modal: ModalType.STATS },
@@ -100,7 +101,6 @@ export type Employee = {
 };
 
 export const betMode = ['Manual', 'Auto'];
-export const displayMode = ['Chat', 'History'];
 
 export const autoScripts = [
   'Flat Bet',
@@ -171,18 +171,4 @@ export const tokens: Array<IToken> = [
   { name: 'SOL', value: '2' }
 ];
 
-export type TokenBalances = {
-  usk: number;
-  kuji: number;
-  kart: number;
-};
-
-export const initialBalance = { usk: 0, kuji: 0, kart: 0 };
-
 export const finance = ['Deposit', 'Withdraw'];
-
-export const denoms = {
-  kuji: 'ukuji',
-  usk: 'factory/kujira1sr9xfmzc8yy5gz00epspscxl0zu7ny02gv94rx/kartelUSk',
-  kart: 'factory/kujira1sr9xfmzc8yy5gz00epspscxl0zu7ny02gv94rx/kartel'
-};

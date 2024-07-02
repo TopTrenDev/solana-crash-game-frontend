@@ -2,12 +2,12 @@ import { BsRocket } from 'react-icons/bs';
 import { FaUsers } from 'react-icons/fa';
 import { FaBalanceScale } from 'react-icons/fa';
 import { FaRegCreditCard } from 'react-icons/fa';
-import { Button } from '@/components/ui/button';
 import Rocket from '@/assets/img/rocket.svg';
 import Jupiter from '@/assets/img/jupiter.svg';
 import Mars from '@/assets/img/mars.svg';
 import Moon from '@/assets/img/moon.svg';
 import { TITLE } from '@/config';
+import { Link } from 'react-router-dom';
 
 export default function Slider() {
   return (
@@ -114,11 +114,14 @@ export default function Slider() {
             an increasing curve that can crash anytime. It's fun and thrilling.
             It can also make you millions.
           </p>
-          <Button className="mx-auto rounded-[12px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#d89fee] bg-[#9945FF] px-[24px] py-[16px] hover:bg-[#b977df]">
+          <Link
+            to="/play"
+            className="mx-auto rounded-[12px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#d89fee] bg-[#9945FF] px-[24px] py-[16px] hover:bg-[#b977df]"
+          >
             <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
               Play
             </span>
-          </Button>
+          </Link>
         </div>
       </div>
     </div>

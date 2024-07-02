@@ -23,7 +23,7 @@ export default function StatsModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
-      <DialogContent className="w-[800px] !max-w-[800px] gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm">
+      <DialogContent className="gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm lg:w-[800px] lg:!max-w-[800px]">
         <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
           <DialogTitle className="text-center text-[24px] font-semibold uppercase">
             Statistics
@@ -33,7 +33,7 @@ export default function StatsModal() {
             <span className="sr-only">Close</span>
           </DialogClose>
         </DialogHeader>
-        <div className="flex flex-col items-center gap-10 rounded-b-[8px] bg-[#2C2852] px-[128px] py-[36px]">
+        <div className="flex max-h-[300px] flex-col items-center gap-10 overflow-scroll rounded-b-[8px] bg-[#2C2852] px-[25px] py-[36px] lg:px-[128px]">
           <div className="flex w-full flex-col gap-6">
             <div className="flex w-full justify-between">
               <h3 className="w-1/3 text-[16px] font-normal">Users</h3>

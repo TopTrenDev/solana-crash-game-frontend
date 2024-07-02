@@ -1,4 +1,4 @@
-import logo from '@/assets/img/logo.svg';
+import logo from '/assets/logo.svg';
 import { Button } from '@/components/ui/button';
 import { TITLE } from '@/config';
 

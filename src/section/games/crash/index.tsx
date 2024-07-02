@@ -11,7 +11,7 @@ import {
 import { ECrashStatus } from '@/constants/status';
 import { getAccessToken } from '@/utils/axios';
 import useToast from '@/hooks/use-toast';
-import { tokens, IToken, betMode, displayMode } from '@/constants/data';
+import { tokens, IToken, betMode } from '@/constants/data';
 import Header from '@/pages/layout/header';
 import GraphicDisplay from '@/section/games/crash/graphic-display';
 import BetBoard from './bet-board';
@@ -24,7 +24,7 @@ export default function CrashGameSection() {
 
   const toast = useToast();
   const [selectMode, setSelectMode] = useState<string>(betMode[0]);
-  const [selectDisplay, setSelectDisplay] = useState<string>(displayMode[0]);
+  const [selectDisplay, setSelectDisplay] = useState<number>(1);
   const [selectedToken, setSelectedToken] = useState<IToken>(tokens[0]);
   const [betData, setBetData] = useState<BetType[]>([]);
   const [betAmount, setBetAmount] = useState<number>(0);
@@ -207,20 +207,10 @@ export default function CrashGameSection() {
   return (
     <ScrollArea className="h-full">
       <div className="flex h-screen flex-col items-stretch">
-        <div className="relative z-10 flex h-16 flex-shrink-0 shadow">
-          {/* <button
-            className="h-full bg-dark bg-opacity-30 px-4 text-gray-300 bg-blend-multiply focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 xl:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <span className="sr-only">Open sidebar</span>
-            <MenuIcon className="h-6 w-6" aria-hidden="true" />\
-          </button> */}
-          <Header isApp={true} />
-        </div>
-        <div className="flex h-full w-full px-[80px] py-[44px]">
-          <div className="flex h-full w-3/4 flex-col justify-between gap-6">
-            <div className="flex h-1/2 w-full">
-              <div className="m-[5px] flex h-full w-1/3 flex-col justify-between rounded-lg bg-[#463E7A]">
+        <div className="flex h-full w-full px-[20px] py-[44px] lg:px-[80px]">
+          <div className="flex h-full w-full flex-col justify-between gap-6 lg:w-3/4">
+            <div className="flex h-full w-full max-md:flex-col-reverse md:h-1/2">
+              <div className="m-[5px] flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:w-1/3">
                 <BetAction
                   selectMode={selectMode}
                   setSelectMode={setSelectMode}
@@ -243,7 +233,7 @@ export default function CrashGameSection() {
                   socket={socket!}
                 />
               </div>
-              <div className="relative m-[5px] h-full w-2/3 rounded-md">
+              <div className="w-3/3 relative m-[5px] h-full rounded-md lg:w-2/3">
                 <GraphicDisplay
                   crashStatus={crashStatus}
                   crTick={crTick}
@@ -260,10 +250,14 @@ export default function CrashGameSection() {
                 liveChatOpen={liveChatOpen}
                 setLiveChatOpen={setLiveChatOpen}
                 crashHistoryRecords={crashHistoryRecords}
+                betData={betData}
+                betCashout={betCashout}
+                totalAmount={totalAmount}
+                crashStatus={crashStatus}
               />
             </div>
           </div>
-          <div className="flex h-full w-1/4 flex-col p-[5px]">
+          <div className="hidden h-full w-1/4 flex-col p-[5px] lg:flex">
             <BetBoard
               betData={betData}
               betCashout={betCashout}
