@@ -74,7 +74,6 @@ export const navItems: NavItemGroup[] = [
 ];
 
 export const tabItems = [
-  { name: 'deposit', modal: ModalType.DEPOSIT },
   { name: 'bankroll', modal: ModalType.BANKROLL },
   // { name: 'backtesting', modal: ModalType.BACKTESTING },
   { name: 'stats', modal: ModalType.STATS },

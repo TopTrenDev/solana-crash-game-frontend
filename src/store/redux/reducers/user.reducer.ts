@@ -3,7 +3,7 @@ export const INIT_USER_DATA = 'INIT_USER_DATA';
 export const SITE_BALANCE_STATUS = 'SITE_BALANCE_STATUS';
 
 export interface UserState {
-  userData: { username: string; userEmail: string; _id: string };
+  userData: { username: string; email: string; _id: string };
 }
 
 interface UserAction {
@@ -12,24 +12,24 @@ interface UserAction {
 }
 
 const initialState: any = {
-  userData: { username: '', userEmail: '', _id: '' },
+  userData: { username: '', email: '', _id: '' },
   siteBalanceStatus: true
 };
 
 const userReducer = (state: any = initialState, action: UserAction): any => {
   switch (action.type) {
-
     case USER_DATA:
       return {
         userData: {
           username: action.payload.username,
-          userEmail: action.payload.userEmail,
+          email: action.payload.eamil,
+          wallet: action.payload.wallet.publicKey,
           _id: action.payload._id
         }
       };
 
     case INIT_USER_DATA:
-      return { userData: { username: '', userEmail: '', _id: '' } };
+      return { userData: { username: '', email: '', _id: '' } };
 
     case SITE_BALANCE_STATUS:
       return { ...state, siteBalanceStatus: action.payload };
