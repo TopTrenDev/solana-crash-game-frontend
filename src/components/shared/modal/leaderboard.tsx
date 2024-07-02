@@ -26,7 +26,7 @@ export default function LeaderboardModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
-      <DialogContent className="w-[800px] !max-w-[800px] gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm">
+      <DialogContent className="gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm lg:w-[800px] lg:!max-w-[800px]">
         <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
           <DialogTitle className="text-center text-[24px] font-semibold uppercase">
             Leaderboard

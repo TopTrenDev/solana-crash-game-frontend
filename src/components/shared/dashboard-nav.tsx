@@ -9,9 +9,12 @@ import {
 } from '../ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { usePathname } from '@/hooks';
+import { ModalType } from '@/types/modal';
+import useModal from '@/hooks/use-modal';
 
 type DashboardNavProps = {
-  items: NavItemGroup[];
+  items: any[];
+  // items: NavItemGroup[];
   setOpen?: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -21,7 +24,8 @@ type DashboardNavItemProps = {
 };
 
 type DashboardNavGroupProps = {
-  item: NavItemGroup;
+  item: any;
+  // item: NavItemGroup;
 };
 
 const DashboardNavItem = ({ item, setOpen }: DashboardNavItemProps) => {
@@ -42,29 +46,47 @@ const DashboardNavItem = ({ item, setOpen }: DashboardNavItemProps) => {
   );
 };
 
-const DashboardNavGroup = ({ item }: DashboardNavGroupProps) => {
-  const [isOpen, setOpen] = useState(true);
+// const DashboardNavGroup = ({ item }: DashboardNavGroupProps) => {
+//   const [isOpen, setOpen] = useState(true);
 
-  const Icon = isOpen ? ChevronDown : ChevronUp;
+//   const Icon = isOpen ? ChevronDown : ChevronUp;
+
+//   return (
+//     <Collapsible
+//       className="w-full data-[state='closed']:!h-6"
+//       open={isOpen}
+//       onOpenChange={setOpen}
+//     >
+//       <CollapsibleTrigger asChild>
+//         <div className=" flex  w-full cursor-pointer select-none items-center justify-between text-sm font-medium text-gray500">
+//           <div className="text-sm font-medium uppercase">{item.title}</div>
+//           <Icon className="h-4 w-4" />
+//         </div>
+//       </CollapsibleTrigger>
+//       <CollapsibleContent className="mt-6 flex flex-col gap-2 transition-transform duration-100 ease-out">
+//         {item.items.map((subitem, index) => (
+//           <DashboardNavItem key={index} item={subitem} setOpen={setOpen} />
+//         ))}
+//       </CollapsibleContent>
+//     </Collapsible>
+//   );
+// };
+
+const DashboardNavGroup = ({ item }: DashboardNavGroupProps) => {
+  const modal = useModal();
+  const handleModalOpen = async (modalType: ModalType) => {
+    modal.open(modalType);
+  };
 
   return (
-    <Collapsible
-      className="w-full data-[state='closed']:!h-6"
-      open={isOpen}
-      onOpenChange={setOpen}
+    <div
+      className={
+        'min-h-full cursor-pointer rounded-none border-b-2 border-b-transparent px-6 py-5 text-[14px] font-medium uppercase text-[#fff] duration-300 hover:bg-transparent hover:text-[#9E00FF]'
+      }
+      onClick={() => handleModalOpen(item.modal)}
     >
-      <CollapsibleTrigger asChild>
-        <div className=" flex  w-full cursor-pointer select-none items-center justify-between text-sm font-medium text-gray500">
-          <div className="text-sm font-medium uppercase">{item.title}</div>
-          <Icon className="h-4 w-4" />
-        </div>
-      </CollapsibleTrigger>
-      <CollapsibleContent className="mt-6 flex flex-col gap-2 transition-transform duration-100 ease-out">
-        {item.items.map((subitem, index) => (
-          <DashboardNavItem key={index} item={subitem} setOpen={setOpen} />
-        ))}
-      </CollapsibleContent>
-    </Collapsible>
+      {item.name}
+    </div>
   );
 };
 

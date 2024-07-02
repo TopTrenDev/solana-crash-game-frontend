@@ -24,7 +24,7 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
         </Table>
       </CardHeader>
       <CardContent className="rounded-b-lg bg-[#2C2852] px-2 py-0">
-        <ScrollArea className="max-h-[230px] p-0">
+        <ScrollArea className="max-h-[230px] min-h-[180px] p-0">
           <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-hidden ">
             <TableBody>
               {crashHistoryRecords.map((history, index) => (

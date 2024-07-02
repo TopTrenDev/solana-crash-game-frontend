@@ -5,7 +5,7 @@ import useModal from '@/hooks/use-modal';
 import { ModalType } from '@/types/modal';
 import { useAppSelector } from '@/store/redux';
 import { tabItems } from '@/constants/data';
-import logo from '@/assets/img/logo.svg';
+import logo from '/assets/logo.svg';
 import { TITLE } from '@/config';
 
 interface HeaderProps {
@@ -29,18 +29,18 @@ export default function Header({ isApp }: HeaderProps) {
   };
 
   return (
-    <div className="flex flex-1 items-center justify-between bg-dark bg-opacity-30 px-[80px] py-[28px] bg-blend-multiply">
-      <div className="flex">
+    <div className="flex flex-1 items-center justify-end bg-dark bg-opacity-30 px-[20px] py-[28px] bg-blend-multiply lg:justify-between lg:px-[80px]">
+      <div className="hidden w-[50px] lg:flex lg:w-[120px]">
         <Link
           to="/"
           className="via-green-500 flex bg-gradient-to-r from-[#9E00FF] to-[#14F195] bg-clip-text text-[24px] font-semibold text-transparent"
         >
           <img className="mr-[11px]" src={logo} alt="" />
-          <p className="text-white">{TITLE}</p>
+          <p className="hidden text-white lg:block">{TITLE}</p>
         </Link>
       </div>
       {isApp && (
-        <div className="flex">
+        <div className="hidden lg:flex">
           {tabItems.map((item, index) => (
             <div
               key={index}

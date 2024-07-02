@@ -1,5 +1,5 @@
-import AppProvider from './provider';
 import AppRouter from './routes';
+import { AppProvider, SolanaWalletProvider } from './provider';
 import Modal from './components/shared/modal';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,21 +10,23 @@ export default function App() {
   return (
     <AppProvider>
       <Provider store={store}>
-        <ToastContainer
-          position="top-right"
-          autoClose={2000}
-          hideProgressBar
-          newestOnTop={false}
-          limit={1}
-          rtl={false}
-          closeOnClick
-          pauseOnFocusLoss={false}
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-        <Modal />
-        <AppRouter />
+        <SolanaWalletProvider>
+          <ToastContainer
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar
+            newestOnTop={false}
+            limit={1}
+            rtl={false}
+            closeOnClick
+            pauseOnFocusLoss={false}
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+          <Modal />
+          <AppRouter />
+        </SolanaWalletProvider>
       </Provider>
     </AppProvider>
   );
