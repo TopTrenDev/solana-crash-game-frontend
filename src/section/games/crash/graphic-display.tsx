@@ -184,9 +184,9 @@ export default function GraphicDisplay({
 
           const lastXValue = chart.data.datasets[0].data.length - 1;
 
-          console.log('>>>>>', chart.data.datasets[0].data);
-          console.log('x', lastXValue);
-          console.log('y', lastYValue);
+          // console.log('>>>>>', chart.data.datasets[0].data);
+          // console.log('x', lastXValue);
+          // console.log('y', lastYValue);
 
           // Draw the rocket at its new position
           const xP = scales.x.getPixelForValue(lastXValue);
@@ -220,10 +220,11 @@ export default function GraphicDisplay({
   ) => {
     const rocketImage = new Image();
     rocketImage.src = RocketPNG;
+    const rocketWidth = window.innerWidth > 500 ? 150 : 50;
     const rocket = {
       src: rocketImage,
-      width: 150,
-      height: 150,
+      width: rocketWidth,
+      height: rocketWidth,
       rotationAngle: 90 - angle
     };
     if (!y) return;
@@ -268,19 +269,18 @@ export default function GraphicDisplay({
       return;
     }
 
+    const frameWidth = window.innerWidth > 500 ? 50 : 20;
+
     // Flame animation parameters
-    const frameWidth = 157; // Adjust according to your sprite sheet
-    const frameHeight = 203; // Adjust according to your sprite sheet
-    const totalFrames = 13; // Adjust according to your sprite sheet
-    let flameWidth = 50; // Adjust according to your layout
-    let flameHeight = 50; // Adjust according to your layout
+    let flameWidth = frameWidth; // Adjust according to your layout
+    let flameHeight = frameWidth; // Adjust according to your layout
 
     if (y < scales.y.getPixelForValue(MAX_Y + 0.5)) {
       flameWidth *= 1.2;
       flameHeight *= 1.2;
     }
     // Calculate the current frame
-    const currentFrame = Math.floor((Math.random() * 10) % totalFrames);
+    const currentFrame = Math.floor((Math.random() * 10) % flame.totalFrames);
 
     // ctx.drawImage(flame.spriteSheet, 0, 0, 157, 203, -20, 10, 30, 30)
     // Draw the flame animation`
@@ -291,9 +291,9 @@ export default function GraphicDisplay({
     ctx.drawImage(
       flame.spriteSheet,
       0,
-      currentFrame * frameHeight + 15,
-      frameWidth,
-      frameHeight,
+      currentFrame * flame.frameHeight + 15,
+      flame.frameWidth,
+      flame.frameHeight,
       -flameWidth / 2 - 2,
       -flameHeight / 2 + 40,
       flameWidth,
@@ -391,25 +391,23 @@ export default function GraphicDisplay({
       <div className="relative h-full w-full">
         <div className={`relative h-full w-full`}>
           {crashStatus === ECrashStatus.NONE && (
-            <div className="crash-status-shadow absolute left-[30%] top-[40%] flex flex-col items-center justify-center gap-5">
-              <div className="text-[30px] font-extrabold uppercase text-[#fff] delay-100 xl:text-6xl">
+            <div className="crash-status-shadow absolute left-[35%] top-10 flex flex-col items-center justify-center gap-5 lg:left-0">
+              <div className="text-[12px] font-extrabold uppercase text-[#fff] delay-100 xl:text-6xl">
                 Starting...
               </div>
             </div>
           )}
           {(crashStatus === ECrashStatus.PROGRESS ||
             crashStatus === ECrashStatus.END) && (
-            <div className="crash-status-shadow absolute left-[40%] top-10 flex flex-col gap-2">
-              <div
-                className={`font-semibold text-[#fff] ${crashStatus === ECrashStatus.PROGRESS ? 'ml-8' : 'ml-14'}`}
-              >
+            <div className="crash-status-shadow absolute left-[35%] top-10 flex w-[100px] flex-col items-center gap-2 lg:left-0 lg:w-full">
+              <div className={`font-semibold text-[#fff]`}>
                 {crashStatus === ECrashStatus.PROGRESS
                   ? 'Current payout'
                   : 'Crashed'}
               </div>
               <div
                 className={cn(
-                  'w-full text-6xl font-extrabold',
+                  'w-full justify-center text-center text-[15px] font-extrabold md:text-6xl',
                   crashStatus === ECrashStatus.END && 'crashed-value'
                 )}
                 style={{
@@ -430,11 +428,11 @@ export default function GraphicDisplay({
             </div>
           )}
           {crashStatus === ECrashStatus.PREPARE && prepareTime > 0 && (
-            <div className="crash-status-shadow absolute left-[20%] top-[40%] flex flex-col items-center justify-center gap-5">
-              <div className="text-xl font-semibold uppercase text-white">
+            <div className="crash-status-shadow absolute left-[35%] top-10 flex w-[100px] flex-col items-center justify-center gap-5 lg:left-0 lg:w-full">
+              <div className="text-center text-[10px] font-semibold uppercase text-white md:text-xl">
                 preparing round
               </div>
-              <div className="bg-gradient-to-r from-[#9E00FF] to-[#14F195] bg-clip-text text-6xl font-extrabold uppercase text-transparent text-white delay-100">
+              <div className="bg-gradient-to-r from-[#9E00FF] to-[#14F195] bg-clip-text text-center text-[12px] font-extrabold uppercase text-transparent text-white delay-100 md:text-6xl">
                 starting in {formatMillisecondsShort(prepareTime)}
               </div>
             </div>
@@ -455,7 +453,7 @@ export default function GraphicDisplay({
           </div>
           {crashHistoryRecords.length > 0 && (
             <div
-              className={`absolute bottom-0 flex w-full items-center justify-start overflow-hidden px-[24px] py-[16px] opacity-100 transition-all duration-300 ease-in-out`}
+              className={`absolute bottom-0 flex w-full items-center justify-start overflow-hidden px-[12px] py-[8px] opacity-100 transition-all duration-300 ease-in-out lg:px-[24px] lg:py-[16px]`}
             >
               {crashHistoryRecords.map((item, _index) => {
                 return (
