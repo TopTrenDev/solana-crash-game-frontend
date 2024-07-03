@@ -245,7 +245,7 @@ export default function BetAction({
           <div className="flex h-full w-full flex-col gap-4">
             <div className="flex w-full">
               <div className="flex w-1/2 items-center justify-start">
-                <span className="w-6/12 text-[16px] font-semibold text-[#fff]">
+                <span className="w-6/12 text-[12px] font-semibold text-[#fff] lg:text-[16px]">
                   My Scripts
                 </span>
                 <QuestionMarkCircledIcon
@@ -273,18 +273,27 @@ export default function BetAction({
               {autoScripts.map((script) => (
                 <div
                   key={script}
-                  className="flex w-full items-center justify-between rounded-[8px] bg-[#463E7A] p-1 text-[12px] font-semibold text-[#fff]"
+                  className="flex w-full items-center justify-between rounded-[8px] bg-[#463E7A] p-1 text-[8px] font-semibold text-[#fff] lg:text-[12px]"
                 >
                   <p className="ml-2 w-1/2">{script}</p>
                   <div className="flex w-1/2 justify-end gap-2">
                     <Button className="h-full rounded-[6px] border-b-2 border-t-2 border-b-[#1b6345] border-t-[#39d896] bg-[#14F195] p-1 hover:bg-[#39d896]">
-                      <PlayIcon color="#fff" width={14} height={14} />
+                      <PlayIcon
+                        color="#fff"
+                        className="h-3 w-3 lg:h-5 lg:w-5"
+                      />
                     </Button>
                     <Button className="h-full rounded-[6px] border-b-2 border-t-2 border-b-[#1e4e6e] border-t-[#73c3f8] bg-[#3498DB] p-1 hover:bg-[#73c3f8]">
-                      <EyeOpenIcon color="#fff" width={14} height={14} />
+                      <EyeOpenIcon
+                        color="#fff"
+                        className="h-3 w-3 lg:h-5 lg:w-5"
+                      />
                     </Button>
                     <Button className="h-full rounded-[6px] border-b-2 border-t-2 border-b-[#742023] border-t-[#ff767b] bg-[#E83035] p-1 hover:bg-[#ff767b]">
-                      <EraserIcon color="#fff" width={14} height={14} />
+                      <EraserIcon
+                        color="#fff"
+                        className="h-3 w-3 lg:h-5 lg:w-5"
+                      />
                     </Button>
                   </div>
                 </div>
