@@ -2,6 +2,7 @@ export * from './socket';
 export * from './chat';
 export * from './vipLevel';
 export * from './crash';
+export * from './user';
 
 export interface NavItem {
   title: string;

@@ -85,7 +85,7 @@ const DepositModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
-      <DialogContent className="!max-w-[800px] gap-0 rounded-lg border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm lg:w-[800px]">
+      <DialogContent className="gap-0 rounded-lg border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm md:!max-w-[500px] lg:w-[800px] lg:!max-w-[800px]">
         <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
           <DialogTitle className="text-center text-[24px] font-semibold uppercase">
             {finance.map((item, index) => (

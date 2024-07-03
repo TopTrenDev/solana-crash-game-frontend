@@ -209,8 +209,8 @@ export default function CrashGameSection() {
       <div className="flex h-screen flex-col items-stretch">
         <div className="flex h-full w-full px-[20px] py-[44px] lg:px-[80px]">
           <div className="flex h-full w-full flex-col justify-between gap-6 lg:w-3/4">
-            <div className="flex h-full w-full max-md:flex-col-reverse md:h-1/2">
-              <div className="m-[5px] flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:w-1/3">
+            <div className="flex h-full w-full gap-6 max-lg:flex-col-reverse lg:h-1/2">
+              <div className="m-0 flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:m-[5px] lg:w-1/3">
                 <BetAction
                   selectMode={selectMode}
                   setSelectMode={setSelectMode}
@@ -233,7 +233,7 @@ export default function CrashGameSection() {
                   socket={socket!}
                 />
               </div>
-              <div className="w-3/3 relative m-[5px] h-full rounded-md lg:w-2/3">
+              <div className="w-3/3 relative m-0 h-full rounded-md lg:m-[5px] lg:w-2/3">
                 <GraphicDisplay
                   crashStatus={crashStatus}
                   crTick={crTick}

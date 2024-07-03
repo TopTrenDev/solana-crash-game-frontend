@@ -142,7 +142,7 @@ export default function BetAction({
           {betMode.map((item, index) => (
             <Button
               className={cn(
-                'min-h-full w-1/2 rounded-tr-lg border-none bg-[#191939] p-6 font-semibold text-[#9688CC] shadow-none hover:bg-[#191939] hover:text-white',
+                'min-h-full w-1/2 rounded-tr-lg border-none bg-[#191939] p-5 font-semibold text-[#9688CC] shadow-none hover:bg-[#191939] hover:text-white',
                 selectMode === item &&
                   'rounded-lg border-none bg-[#463E7A] text-white hover:bg-[#463E7A]'
               )}
@@ -245,7 +245,7 @@ export default function BetAction({
           <div className="flex h-full w-full flex-col gap-4">
             <div className="flex w-full">
               <div className="flex w-1/2 items-center justify-start">
-                <span className="w-6/12 text-[12px] font-semibold text-[#fff] lg:text-[16px]">
+                <span className="w-6/12 text-[10px] font-semibold text-[#fff] lg:text-[16px]">
                   My Scripts
                 </span>
                 <QuestionMarkCircledIcon

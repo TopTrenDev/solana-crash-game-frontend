@@ -7,12 +7,22 @@ import { useAppSelector } from '@/store/redux';
 import { tabItems } from '@/constants/data';
 import logo from '/assets/logo.svg';
 import { TITLE } from '@/config';
+import { useEffect, useState } from 'react';
+import { Socket, io } from 'socket.io-client';
+import { getAccessToken } from '@/utils/axios';
+import {
+  EUserSocketEvent,
+  IUserClientToServerEvents,
+  IUserServerToClientEvents
+} from '@/types';
 
 interface HeaderProps {
   isApp: boolean;
 }
 
 export default function Header({ isApp }: HeaderProps) {
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [creditBalance, setCreditBalance] = useState<string>('0.000');
   const modal = useModal();
   const userData = useAppSelector((store: any) => store.user.userData);
 
@@ -27,6 +37,29 @@ export default function Header({ isApp }: HeaderProps) {
   const handleModalOpen = async (modalType: ModalType) => {
     modal.open(modalType);
   };
+
+  useEffect(() => {
+    if (socket && userData?.username) {
+      socket.emit(EUserSocketEvent.CREDIT_BALANCE, userData._id);
+    }
+  }, [socket, userData]);
+
+  useEffect(() => {
+    const userSocket: Socket<
+      IUserServerToClientEvents,
+      IUserClientToServerEvents
+    > = io(`${import.meta.env.VITE_SERVER_URL}/user`);
+
+    userSocket.on(
+      EUserSocketEvent.CREDIT_BALANCE,
+      (data: { username: string; credit: number }) => {
+        if (userData?.username === data.username)
+          setCreditBalance(data.credit.toFixed(3));
+      }
+    );
+
+    setSocket(userSocket);
+  }, []);
 
   return (
     <div className="flex flex-1 items-center justify-end bg-dark bg-opacity-30 px-[20px] py-[28px] bg-blend-multiply lg:justify-between lg:px-[80px]">
@@ -68,6 +101,7 @@ export default function Header({ isApp }: HeaderProps) {
         {isApp ? (
           userData?.username !== '' ? (
             <div className="flex items-center gap-4">
+              <span className="text-[#fff]">{creditBalance}</span>
               <UserNav />
             </div>
           ) : (

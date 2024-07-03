@@ -391,7 +391,7 @@ export default function GraphicDisplay({
       <div className="relative h-full w-full">
         <div className={`relative h-full w-full`}>
           {crashStatus === ECrashStatus.NONE && (
-            <div className="crash-status-shadow absolute left-[35%] top-10 flex flex-col items-center justify-center gap-5 lg:left-0">
+            <div className="crash-status-shadow absolute top-10 flex w-full flex-col items-center justify-center gap-5">
               <div className="text-[12px] font-extrabold uppercase text-[#fff] delay-100 xl:text-6xl">
                 Starting...
               </div>
@@ -469,7 +469,11 @@ export default function GraphicDisplay({
             </div>
           )}
 
-          <Line className="rounded-lg" data={data} {...(config as object)} />
+          <Line
+            className="w-full rounded-lg bg-[#463E7A] p-2"
+            data={data}
+            {...(config as object)}
+          />
         </div>
       </div>
     </div>
