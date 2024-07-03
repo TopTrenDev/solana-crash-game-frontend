@@ -5,3 +5,19 @@ export interface IChatUser {
   hasVerifiedAccount: boolean;
   createdAt: Date;
 }
+
+export enum EUserSocketEvent {
+  CREDIT_BALANCE = 'credit-balance'
+}
+
+export interface IUserServerToClientEvents {
+  [EUserSocketEvent.CREDIT_BALANCE]: (data: {
+    username: string;
+    credit: number;
+  }) => void;
+}
+
+export interface IUserClientToServerEvents {
+  auth: (token: string) => void;
+  [EUserSocketEvent.CREDIT_BALANCE]: (userId: string) => void;
+}

@@ -136,7 +136,7 @@ const LiveChat = ({ className }: LiveChatProps) => {
           }}
         ></div>
       </div>
-      <div className="flex max-h-[185px] min-h-[150px] flex-1 flex-col items-stretch gap-4 bg-[#2C2852]">
+      <div className="flex h-[92%] flex-1 flex-col items-stretch gap-4 bg-[#2C2852] lg:max-h-[185px] lg:min-h-[150px]">
         <ScrollArea
           className={`py-1 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
         >

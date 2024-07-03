@@ -11,6 +11,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { usePathname } from '@/hooks';
 import { ModalType } from '@/types/modal';
 import useModal from '@/hooks/use-modal';
+import { useAppSelector } from '@/store/redux';
 
 type DashboardNavProps = {
   items: any[];
@@ -95,8 +96,15 @@ export default function DashboardNav({ items, setOpen }: DashboardNavProps) {
     return null;
   }
 
+  const userData = useAppSelector((store: any) => store.user.userData);
+  const deposit = {
+    name: 'deposit',
+    modal: ModalType.DEPOSIT
+  };
+
   return (
     <nav className="flex w-full flex-col gap-7">
+      {userData?.username !== '' && <DashboardNavGroup item={deposit} />}
       {items.map((item) => (
         <DashboardNavGroup key={item.title} item={item} />
       ))}
