@@ -15,6 +15,8 @@ import {
   IUserClientToServerEvents,
   IUserServerToClientEvents
 } from '@/types';
+import { useDispatch } from 'react-redux';
+import { userActions } from '@/store/redux/actions';
 
 interface HeaderProps {
   isApp: boolean;
@@ -22,8 +24,8 @@ interface HeaderProps {
 
 export default function Header({ isApp }: HeaderProps) {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [creditBalance, setCreditBalance] = useState<string>('0.000');
   const modal = useModal();
+  const dispatch = useDispatch();
   const userData = useAppSelector((store: any) => store.user.userData);
 
   const handleLogin = async () => {
@@ -53,8 +55,14 @@ export default function Header({ isApp }: HeaderProps) {
     userSocket.on(
       EUserSocketEvent.CREDIT_BALANCE,
       (data: { username: string; credit: number }) => {
-        if (userData?.username === data.username)
-          setCreditBalance(data.credit.toFixed(3));
+        if (userData?.username === data.username) {
+          dispatch(
+            userActions.userData({
+              ...userData,
+              credit: data.credit
+            })
+          );
+        }
       }
     );
 
@@ -101,7 +109,9 @@ export default function Header({ isApp }: HeaderProps) {
         {isApp ? (
           userData?.username !== '' ? (
             <div className="flex items-center gap-4">
-              <span className="text-[#fff]">{creditBalance}</span>
+              <span className="text-[#fff]">
+                {Number(userData.credit).toFixed(3)}
+              </span>
               <UserNav />
             </div>
           ) : (

@@ -77,7 +77,12 @@ export default function LoginModal() {
       ]);
       if (resSignIn.responseObject.auth.accessToken) {
         setAccessToken(resSignIn.responseObject.auth.accessToken);
-        dispatch(userActions.userData(resSignIn.responseObject.user));
+        dispatch(
+          userActions.userData({
+            ...resSignIn.responseObject.user,
+            wallet: resSignIn.responseObject.user.wallet.publicKey
+          })
+        );
         toast.success('SignIn Success');
         modal.close(ModalType.LOGIN);
         return;
