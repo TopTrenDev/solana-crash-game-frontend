@@ -110,7 +110,7 @@ export default function RegisterModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
-      <DialogContent className="w-[800px] !max-w-[800px] gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm">
+      <DialogContent className="!max-w-[300px] gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm lg:w-[800px] lg:!max-w-[800px]">
         <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
           <DialogTitle className="text-center text-[24px] font-semibold uppercase">
             Register
@@ -122,7 +122,7 @@ export default function RegisterModal() {
         </DialogHeader>
         <Form {...registerForm}>
           <form onSubmit={registerForm.handleSubmit(handleSubmit)}>
-            <div className="flex flex-col items-center gap-7 rounded-b-lg bg-[#2C2852] px-[128px] py-[36px]">
+            <div className="flex flex-col items-center gap-7 rounded-b-lg bg-[#2C2852] px-[15px] py-[36px] lg:px-[128px]">
               <div className="flex w-full flex-col gap-3">
                 <div className="grid w-full flex-1 gap-1">
                   <p className="text-sm text-[#9688CC]">Username</p>
