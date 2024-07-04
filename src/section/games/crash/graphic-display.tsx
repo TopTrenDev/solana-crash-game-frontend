@@ -146,7 +146,7 @@ export default function GraphicDisplay({
             markWScale: 2,
             markStepSize: 2,
             maxTicks: 4,
-            minTicks: 2,
+            minTicks: 4,
             minStepSize: 1,
             stepSize: 1
           },
@@ -199,13 +199,7 @@ export default function GraphicDisplay({
           const angle = (Math.atan(dydt) / 3.14) * 180 - 30;
 
           drawRocket(ctx, xP, yP, angle);
-          drawFlameAnimation(
-            ctx,
-            scales.x.getPixelForValue(lastXValue),
-            scales.y.getPixelForValue(lastYValue as number),
-            angle,
-            scales
-          );
+          drawFlameAnimation(ctx, xP, yP, angle, scales);
         }
       }
     ]

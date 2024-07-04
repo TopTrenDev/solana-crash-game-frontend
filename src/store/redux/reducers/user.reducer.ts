@@ -12,7 +12,7 @@ interface UserAction {
 }
 
 const initialState: any = {
-  userData: { username: '', email: '', _id: '' },
+  userData: { username: '', email: '', wallet: '', credit: 0, _id: '' },
   siteBalanceStatus: true
 };
 
@@ -22,8 +22,9 @@ const userReducer = (state: any = initialState, action: UserAction): any => {
       return {
         userData: {
           username: action.payload.username,
-          email: action.payload.eamil,
-          wallet: action.payload.wallet.publicKey,
+          email: action.payload.email,
+          wallet: action.payload.wallet,
+          credit: action.payload.credit,
           _id: action.payload._id
         }
       };

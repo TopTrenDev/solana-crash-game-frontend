@@ -24,12 +24,11 @@ import { FaWallet, FaCopy } from 'react-icons/fa';
 const DepositModal = () => {
   const modal = useModal();
   const userData = useAppSelector((state: any) => state.user.userData);
+  const solBalance = (userData.credit / 1000).toFixed(3);
   const modalState = useAppSelector((state: any) => state.modal);
   const isOpen = modalState.open && modalState.type === ModalType.DEPOSIT;
   const toast = useToast();
   const [depositAmount, setDepositAmount] = useState('');
-  const [creditBalance, setCreditBalance] = useState<number>(0);
-  const [solanaBalance, setSolanaBalance] = useState<string>('0.000');
   const [selectedFinance, setSelectedFinance] = useState('Deposit');
 
   const [loading, setLoading] = useState(false);
@@ -46,13 +45,13 @@ const DepositModal = () => {
     }
   };
 
-  const handleBetAmountChange = (event) => {
+  const handleDepositAmountChange = (event) => {
     const inputValue = event.target.value;
     setDepositAmount(inputValue);
   };
 
   const handleWithdraw = async () => {
-    if (Number(depositAmount) > creditBalance) {
+    if (Number(depositAmount) > userData.credit) {
       toast.error(`Insufficient token`);
       return;
     }
@@ -109,7 +108,7 @@ const DepositModal = () => {
               <QRCode
                 size={256}
                 style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-                value={userData.wallet}
+                value={userData.wallet || 'No wallet'}
                 viewBox={`0 0 256 256`}
               />
             </div>
@@ -164,6 +163,17 @@ const DepositModal = () => {
         ) : (
           <div className="flex w-full items-center gap-10 rounded-b-[8px] bg-[#2C2852] px-[30px] py-[36px]">
             <div className="flex w-full flex-col gap-6">
+              <div className="flex w-full items-center justify-center gap-1">
+                <span className="text-[12px] text-gray-100">
+                  Your balance is
+                </span>
+                <span className="text-[13px] text-[#5fa369]">
+                  {userData.credit}
+                </span>
+                <span className="text-[12px] text-gray-100">sola = </span>
+                <span className="text-[13px] text-[#5fa369]">{solBalance}</span>
+                <span className="text-[12px] text-gray-100">Sol</span>
+              </div>
               <div className="flex w-full flex-col items-center justify-between gap-3">
                 <span className="text-[12px] text-gray-500">
                   Part of your balance may not be withdrawable if you have
@@ -171,25 +181,44 @@ const DepositModal = () => {
                   current game.
                 </span>
               </div>
-              <div className="flex flex-col gap-2">
-                <span className="text-xs text-white">Wallet address</span>
+              <div className="flex flex-col">
+                <span className="mb-[8px] text-xs text-white">
+                  Wallet address
+                </span>
                 <div className="relative">
                   <Input
-                    placeholder={'4qLQDSpCwGJSig3tDvkfUbgW1TJWgeABpr5BtR3r3vZo'}
-                    className="border border-none bg-[#463E7A] pl-[10rem] text-white placeholder:text-[#9083e6]"
+                    placeholder={'Input your solana address'}
+                    className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
                   />
-                  <div className="absolute left-0 top-0 flex h-full items-center justify-center rounded-l-lg bg-[#463E7A] px-4 text-gray500">
-                    Solana Address
-                  </div>
                 </div>
               </div>
-              <div className="flex w-full flex-col items-center justify-between gap-2 text-[12px] text-gray-500">
-                <span>There is no minimum deposit.</span>
-                <span>
-                  We only require a single confirmation in order to credit your
-                  deposit.
+              <div className="flex flex-col gap-2">
+                <span className="mb-[8px] text-xs text-white">
+                  Withdrawal amount
                 </span>
-                <span>A new deposit address is generated for each deposit</span>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    placeholder={'0'}
+                    min="0.000"
+                    max="10"
+                    className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
+                    onChange={handleDepositAmountChange}
+                  />
+                </div>
+                {Number(depositAmount) > Number(solBalance) && (
+                  <span className="text-[10px] text-red">
+                    You don't have enough balance.
+                  </span>
+                )}
+              </div>
+              <div className="flex w-full flex-col items-center justify-between gap-2 text-[12px] text-gray-500">
+                <span>
+                  Important: Your withdrawal will be sent from the hot wallet,
+                  do not withdraw to any site that uses the sending address, or
+                  returns to sender, because any returns will probably be
+                  credited to a different player.
+                </span>
               </div>
               <Button
                 className="w-full rounded-[12px] border-b-4 border-t-4 border-b-[#682fad] border-t-[#ba88f8] bg-[#9945FF] py-5 hover:bg-[#ad77f0]"
