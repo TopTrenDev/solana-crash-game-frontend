@@ -33,65 +33,67 @@ export default function StatsModal() {
             <span className="sr-only">Close</span>
           </DialogClose>
         </DialogHeader>
-        <div className="flex max-h-[300px] flex-col items-center gap-10 overflow-scroll rounded-b-[8px] bg-[#2C2852] px-[25px] py-[36px] lg:px-[128px]">
-          <div className="flex w-full flex-col gap-6">
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">Users</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
+        <div className="rounded-b-[8px] bg-[#2C2852] py-[36px]">
+          <div className="flex max-h-[300px] flex-col items-center gap-10 overflow-scroll px-[25px] lg:px-[128px]">
+            <div className="flex w-full flex-col gap-6">
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">Users</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">Bets</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">Bankroll</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">Wagered</h3>
+                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">
+                  Wagered (V2 Only)
+                </h3>
+                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">
+                  Return to Player (V2 Only){' '}
+                </h3>
+                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">
+                  Investor's profit
+                </h3>
+                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">
+                  Investor's all-time high profit
+                </h3>
+                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
+              <div className="flex w-full justify-between">
+                <h3 className="w-1/3 text-[16px] font-normal">Commission</h3>
+                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
+                <h3 className="text-[16px] font-semibold">152,678</h3>
+              </div>
             </div>
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">Bets</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
+            <div className="text-[16px] font-normal">
+              Interested in participating in the bankroll? Click{' '}
+              <a href="" className="text-[#9945FF]">
+                here
+              </a>{' '}
+              to invest!
             </div>
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">Bankroll</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
-            </div>
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">Wagered</h3>
-              <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
-            </div>
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">
-                Wagered (V2 Only)
-              </h3>
-              <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
-            </div>
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">
-                Return to Player (V2 Only){' '}
-              </h3>
-              <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
-            </div>
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">
-                Investor's profit
-              </h3>
-              <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
-            </div>
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">
-                Investor's all-time high profit
-              </h3>
-              <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
-            </div>
-            <div className="flex w-full justify-between">
-              <h3 className="w-1/3 text-[16px] font-normal">Commission</h3>
-              <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-              <h3 className="text-[16px] font-semibold">152,678</h3>
-            </div>
-          </div>
-          <div className="text-[16px] font-normal">
-            Interested in participating in the bankroll? Click{' '}
-            <a href="" className="text-[#9945FF]">
-              here
-            </a>{' '}
-            to invest!
           </div>
         </div>
       </DialogContent>

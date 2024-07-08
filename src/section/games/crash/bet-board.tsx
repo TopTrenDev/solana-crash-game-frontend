@@ -65,7 +65,7 @@ export default function BetBoard({
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="w-1/5 text-center">
+                      <TableCell className="w-1/5 text-center text-[#fff]">
                         {(betCashout?.find(
                           (item) => item.playerID === player.playerID
                         )?.stoppedAt &&
@@ -77,7 +77,7 @@ export default function BetBoard({
                           (crashStatus === ECrashStatus.END ? (
                             <span className="text-purple">failed</span>
                           ) : (
-                            <span>betting</span>
+                            <span className="text-gray300">betting</span>
                           ))}
                       </TableCell>
                       <TableCell className="w-1/5 text-center">

@@ -132,7 +132,8 @@ export enum ECrashSocketEvent {
   BET_CASHOUT_ERROR = 'bet-cashout-error',
   BET_CASHOUT_SUCCESS = 'bet-cashout-success',
   AUTO_CRASHGAME_JOIN_SUCCESS = 'auto-crashgame-join-success',
-  GAME_STATUS = 'game-status'
+  GAME_STATUS = 'game-status',
+  CREDIT_BALANCE = 'credit-balance'
 }
 
 export interface ICrashServerToClientEvents {
@@ -171,6 +172,10 @@ export interface ICrashServerToClientEvents {
   [ECrashSocketEvent.GAME_STATUS]: (data: {
     players: FormattedPlayerBetType[];
     game_status: number;
+  }) => void;
+  [ECrashSocketEvent.CREDIT_BALANCE]: (data: {
+    username: string;
+    credit: number;
   }) => void;
 }
 

@@ -12,27 +12,30 @@ import { ECrashStatus } from '@/constants/status';
 import { getAccessToken } from '@/utils/axios';
 import useToast from '@/hooks/use-toast';
 import { tokens, IToken, betMode } from '@/constants/data';
-import Header from '@/pages/layout/header';
 import GraphicDisplay from '@/section/games/crash/graphic-display';
 import BetBoard from './bet-board';
 import BetAction from './bet-action';
 import BetDisplay from './bet-display';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/store/redux';
+import { userActions } from '@/store/redux/actions';
 
 export default function CrashGameSection() {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
   const crashBgVideoPlayer = useRef<HTMLVideoElement>(null);
+  const dispatch = useDispatch();
+  const userData = useAppSelector((store: any) => store.user.userData);
 
   const toast = useToast();
   const [selectMode, setSelectMode] = useState<string>(betMode[0]);
+  const [autoBet, setAutoBet] = useState<boolean>(true);
   const [selectDisplay, setSelectDisplay] = useState<number>(1);
   const [selectedToken, setSelectedToken] = useState<IToken>(tokens[0]);
   const [betData, setBetData] = useState<BetType[]>([]);
   const [betAmount, setBetAmount] = useState<number>(0);
-  const [autoCashoutPoint, setAutoCashoutPoint] = useState<number>(1.05);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [betCashout, setBetCashout] = useState<BetType[]>([]);
   const [avaliableBet, setAvaliableBet] = useState<boolean>(false);
-  const [autoBet, setAutoBet] = useState<boolean>(true);
   const [autoCashoutAmount, setAutoCashoutAmount] = useState<number>(1);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [avaliableAutoCashout, setAvaliableAutoCashout] =
@@ -68,21 +71,6 @@ export default function CrashGameSection() {
       socket.emit('auth', getAccessToken());
     }
   }, [getAccessToken()]);
-
-  useEffect(() => {
-    const handleJoinSuccess = (data) => {
-      toast.success(data);
-      if (data === 'Autobet has been canceled.') {
-        setAutoBet(true);
-      } else {
-        setAutoBet(false);
-      }
-    };
-    socket?.on('auto-crashgame-join-success', handleJoinSuccess);
-    return () => {
-      socket?.off('auto-crashgame-join-success', handleJoinSuccess);
-    };
-  }, [socket, toast]);
 
   useEffect(() => {
     const crashSocket: Socket<
@@ -176,7 +164,6 @@ export default function CrashGameSection() {
 
     crashSocket.on(ECrashSocketEvent.GAME_JOIN_ERROR, (data) => {
       toast.error(data);
-      setAutoBet(true);
     });
 
     crashSocket.on(ECrashSocketEvent.CRASHGAME_JOIN_SUCCESS, () => {
@@ -186,6 +173,20 @@ export default function CrashGameSection() {
     crashSocket.on(ECrashSocketEvent.BET_CASHOUT, (data) => {
       setBetCashout((prev) => [...prev, data?.userdata]);
     });
+
+    crashSocket.on(
+      ECrashSocketEvent.CREDIT_BALANCE,
+      (data: { username: string; credit: number }) => {
+        if (userData?.username === data.username) {
+          dispatch(
+            userActions.userData({
+              ...userData,
+              credit: data.credit
+            })
+          );
+        }
+      }
+    );
 
     crashSocket.emit('auth', getAccessToken());
 
@@ -214,18 +215,16 @@ export default function CrashGameSection() {
                 <BetAction
                   selectMode={selectMode}
                   setSelectMode={setSelectMode}
+                  autoBet={autoBet}
+                  setAutoBet={setAutoBet}
                   selectedToken={selectedToken}
                   setSelectedToken={setSelectedToken}
                   betAmount={betAmount}
                   setBetAmount={setBetAmount}
-                  autoBet={autoBet}
-                  setAutoBet={setAutoBet}
                   crashStatus={crashStatus}
                   setCrashStatus={setCrashStatus}
                   avaliableBet={avaliableBet}
                   setAvaliableBet={setAvaliableBet}
-                  autoCashoutPoint={autoCashoutPoint}
-                  setAutoCashoutPoint={setAutoCashoutPoint}
                   autoCashoutAmount={autoCashoutAmount}
                   setAutoCashoutAmount={setAutoCashoutAmount}
                   avaliableAutoCashout={avaliableAutoCashout}
