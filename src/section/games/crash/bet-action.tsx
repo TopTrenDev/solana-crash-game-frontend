@@ -17,22 +17,21 @@ import {
 } from '@radix-ui/react-icons';
 import { useAppDispatch } from '@/store/redux';
 import { userActions } from '@/store/redux/actions';
+import { useState } from 'react';
 
 interface BetActionProps {
   selectMode: string;
   setSelectMode: React.Dispatch<React.SetStateAction<string>>;
+  autoBet: boolean;
+  setAutoBet: React.Dispatch<React.SetStateAction<boolean>>;
   selectedToken: IToken;
   setSelectedToken: React.Dispatch<React.SetStateAction<IToken>>;
   betAmount: number;
   setBetAmount: React.Dispatch<React.SetStateAction<number>>;
-  autoBet: boolean;
-  setAutoBet: React.Dispatch<React.SetStateAction<boolean>>;
   crashStatus: ECrashStatus;
   setCrashStatus: React.Dispatch<React.SetStateAction<ECrashStatus>>;
   avaliableBet: boolean;
   setAvaliableBet: React.Dispatch<React.SetStateAction<boolean>>;
-  autoCashoutPoint: number;
-  setAutoCashoutPoint: React.Dispatch<React.SetStateAction<number>>;
   autoCashoutAmount: number;
   setAutoCashoutAmount: React.Dispatch<React.SetStateAction<number>>;
   avaliableAutoCashout: boolean;
@@ -43,17 +42,15 @@ interface BetActionProps {
 export default function BetAction({
   selectMode,
   setSelectMode,
+  autoBet,
+  setAutoBet,
   selectedToken,
   setSelectedToken,
   betAmount,
   setBetAmount,
-  autoBet,
-  setAutoBet,
   crashStatus,
   avaliableBet,
   setAvaliableBet,
-  autoCashoutPoint,
-  setAutoCashoutPoint,
   autoCashoutAmount,
   setAutoCashoutAmount,
   avaliableAutoCashout,
@@ -62,6 +59,7 @@ export default function BetAction({
 }: BetActionProps) {
   const toast = useToast();
   const dispatch = useAppDispatch();
+  const [autoCashoutPoint, setAutoCashoutPoint] = useState<number>(0);
 
   const isAutoMode = selectMode === 'auto';
 
@@ -79,33 +77,11 @@ export default function BetAction({
     }
   };
 
-  // const handleMultiplierClick = (multiplier) => {
-  //   const newValue = betAmount * multiplier;
-  //   setBetAmount(newValue);
-  // };
-
   const handleAutoCashoutPointChange = (event) => {
     const inputValue = event.target.value;
     if (inputValue === '') {
       setAutoCashoutPoint(0);
     } else setAutoCashoutPoint(inputValue);
-  };
-
-  const handleAutoBet = async () => {
-    if (autoBet) {
-      if (betAmount > 0) {
-        const joinParams = {
-          cashoutPoint: Number(autoCashoutPoint).valueOf() * 100,
-          betAmount: Number(betAmount).valueOf()
-        };
-        socket?.emit('auto-crashgame-bet', joinParams);
-      } else {
-        setAutoBet(false);
-      }
-    } else {
-      setAutoBet(true);
-      socket?.emit('cancel-auto-bet');
-    }
   };
 
   const handleStartBet = async () => {
@@ -119,8 +95,7 @@ export default function BetAction({
         target: avaliableAutoCashout
           ? Number(autoCashoutAmount) * 100
           : 1000000,
-        betAmount: Number(betAmount).valueOf(),
-        denom: selectedToken.name
+        betAmount: Number(betAmount).valueOf()
       };
       socket?.emit('join-crash-game', joinParams);
       return () => clearTimeout(balanceTimeout);
@@ -132,6 +107,28 @@ export default function BetAction({
     if (avaliableBet) {
       setAvaliableBet(false);
       socket?.emit('bet-cashout');
+    }
+  };
+
+  const handleAutoBet = async () => {
+    if (autoBet) {
+      if (betAmount > 0) {
+        dispatch(userActions.siteBalanceStatus(true));
+        const balanceTimeout = setTimeout(() => {
+          dispatch(userActions.siteBalanceStatus(false));
+        }, 2000);
+        const joinParams = {
+          cashoutPoint: Number(autoCashoutPoint).valueOf() * 100,
+          betAmount: Number(betAmount).valueOf()
+        };
+        socket?.emit('auto-crashgame-bet', joinParams);
+        return () => clearTimeout(balanceTimeout);
+      } else {
+        setAutoBet(false);
+      }
+    } else {
+      setAutoBet(true);
+      socket?.emit('cancel-auto-bet');
     }
   };
 
@@ -165,7 +162,7 @@ export default function BetAction({
                   value={betAmount}
                   onChange={handleBetAmountChange}
                   className="h-10 border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
-                  disabled={isAutoMode && !autoBet}
+                  disabled={isAutoMode}
                 />
                 <div className="absolute right-0 top-0 flex h-full items-center justify-center text-gray500">
                   <Tabs className="h-full">
@@ -174,10 +171,10 @@ export default function BetAction({
                         <TabsTrigger
                           key={index}
                           asChild
-                          disabled={isAutoMode && !autoBet}
+                          disabled={isAutoMode}
                           value={t.value}
                           onClick={() => setSelectedToken(t)}
-                          className={`${selectedToken === t ? 'rounded-[6px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] text-white hover:bg-[#caab5c]' : 'text-[#9688CC]'} h-full text-[10px]`}
+                          className={`h-full rounded-[6px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] text-[10px] text-white hover:bg-[#caab5c]`}
                         >
                           <div className="flex cursor-pointer items-center">
                             {t.name}
@@ -196,6 +193,7 @@ export default function BetAction({
                   type="number"
                   value={autoCashoutPoint}
                   onChange={handleAutoCashoutPointChange}
+                  placeholder="1.05"
                   min={1.05}
                   max={1000}
                   className="h-10 w-full border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
@@ -209,12 +207,10 @@ export default function BetAction({
               <Button
                 className="h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c]"
                 disabled={
-                  isAutoMode
-                    ? false
-                    : (crashStatus !== ECrashStatus.PREPARE && !avaliableBet) ||
-                      (crashStatus !== ECrashStatus.PROGRESS && avaliableBet)
+                  (crashStatus !== ECrashStatus.PREPARE && !avaliableBet) ||
+                  (crashStatus !== ECrashStatus.PROGRESS && avaliableBet)
                 }
-                onClick={isAutoMode ? handleAutoBet : handleStartBet}
+                onClick={autoCashoutPoint ? handleAutoBet : handleStartBet}
               >
                 {isAutoMode
                   ? autoBet
@@ -222,7 +218,7 @@ export default function BetAction({
                     : 'Cancel'
                   : avaliableBet
                     ? 'Cash Out'
-                    : 'Bet'}
+                    : 'Place Bet'}
               </Button>
             </div>
             <div className="flex h-full w-full flex-col items-center justify-start gap-2 text-[10px] text-[#9688CC]">
@@ -230,7 +226,7 @@ export default function BetAction({
               <div className="flex w-full items-center justify-between">
                 <span>Target Profit:</span>
                 <span className="text-white">
-                  {betAmount * autoCashoutPoint} sola
+                  {(betAmount * autoCashoutPoint).toFixed(3)} sola
                 </span>
               </div>
               <div className="flex w-full items-center justify-between">

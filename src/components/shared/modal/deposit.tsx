@@ -19,21 +19,21 @@ import { useAppSelector } from '@/store/redux';
 import LoadingIcon from '../loading-icon';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import Logo from '/assets/logo.svg';
-import { FaWallet, FaCopy } from 'react-icons/fa';
+import { FaWallet, FaCopy, FaKey } from 'react-icons/fa';
 
 const DepositModal = () => {
   const modal = useModal();
   const userData = useAppSelector((state: any) => state.user.userData);
-  const solBalance = (userData.credit / 1000).toFixed(3);
+  const solBalance = (userData.credit / 1100).toFixed(3);
   const modalState = useAppSelector((state: any) => state.modal);
   const isOpen = modalState.open && modalState.type === ModalType.DEPOSIT;
   const toast = useToast();
-  const [depositAmount, setDepositAmount] = useState('');
-  const [selectedFinance, setSelectedFinance] = useState('Deposit');
+  const [walletAddress, setWalletAddress] = useState<string>('');
+  const [depositAmount, setDepositAmount] = useState<string>('');
+  const [selectedFinance, setSelectedFinance] = useState<string>('Deposit');
+  const [password, setPassword] = useState<string>('');
 
   const [loading, setLoading] = useState(false);
-
-  const aesWrapper = AESWrapper.getInstance();
 
   const onCopyText = () => {
     toast.success('Copied');
@@ -45,9 +45,18 @@ const DepositModal = () => {
     }
   };
 
+  const handleAddressChange = (event) => {
+    const inputValue = event.target.value;
+    setWalletAddress(inputValue);
+  };
+
   const handleDepositAmountChange = (event) => {
     const inputValue = event.target.value;
     setDepositAmount(inputValue);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
   };
 
   const handleWithdraw = async () => {
@@ -103,15 +112,19 @@ const DepositModal = () => {
           </DialogClose>
         </DialogHeader>
         {selectedFinance === finance[0] ? (
-          <div className="flex w-full items-center gap-10 rounded-b-[8px] bg-[#2C2852] px-[30px] py-[36px]">
-            <div className="flex items-start">
-              <QRCode
-                size={256}
-                style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-                value={userData.wallet || 'No wallet'}
-                viewBox={`0 0 256 256`}
-              />
-            </div>
+          <div className="flex w-full flex-col items-center gap-10 rounded-b-[8px] bg-[#2C2852] px-[30px] py-[36px] lg:flex-row">
+            <QRCode
+              size={120}
+              value={userData.wallet || 'No wallet'}
+              viewBox={`0 0 120 120`}
+              className="block w-full max-w-full lg:hidden"
+            />
+            <QRCode
+              size={256}
+              value={userData.wallet || 'No wallet'}
+              viewBox={`0 0 256 256`}
+              className="hidden w-full max-w-full lg:block"
+            />
             <div className="flex w-full flex-col gap-6">
               <div className="flex w-full flex-col items-center justify-between gap-3">
                 <span>
@@ -168,7 +181,7 @@ const DepositModal = () => {
                   Your balance is
                 </span>
                 <span className="text-[13px] text-[#5fa369]">
-                  {userData.credit}
+                  {userData.credit.toFixed(3)}
                 </span>
                 <span className="text-[12px] text-gray-100">sola = </span>
                 <span className="text-[13px] text-[#5fa369]">{solBalance}</span>
@@ -188,6 +201,8 @@ const DepositModal = () => {
                 <div className="relative">
                   <Input
                     placeholder={'Input your solana address'}
+                    value={walletAddress}
+                    onChange={handleAddressChange}
                     className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
                   />
                 </div>
@@ -202,6 +217,7 @@ const DepositModal = () => {
                     placeholder={'0'}
                     min="0.000"
                     max="10"
+                    value={depositAmount}
                     className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
                     onChange={handleDepositAmountChange}
                   />
@@ -211,6 +227,20 @@ const DepositModal = () => {
                     You don't have enough balance.
                   </span>
                 )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <Input
+                    placeholder={'Password'}
+                    type="password"
+                    value={password}
+                    className="rounded-l-lg border border-none bg-[#463E7A] pl-[50px] text-white placeholder:text-[#9083e6]"
+                    onChange={handlePasswordChange}
+                  />
+                  <div className="absolute left-0 top-0 flex h-full items-center rounded-l-lg bg-[#362e68] px-2">
+                    <FaKey className="h-5 w-6" />
+                  </div>
+                </div>
               </div>
               <div className="flex w-full flex-col items-center justify-between gap-2 text-[12px] text-gray-500">
                 <span>
@@ -222,8 +252,8 @@ const DepositModal = () => {
               </div>
               <Button
                 className="w-full rounded-[12px] border-b-4 border-t-4 border-b-[#682fad] border-t-[#ba88f8] bg-[#9945FF] py-5 hover:bg-[#ad77f0]"
-                // onClick={handleDeposit}
-                disabled={depositAmount === ''}
+                onClick={handleWithdraw}
+                disabled={depositAmount === '' || password === ''}
               >
                 {selectedFinance}
                 {loading && <LoadingIcon />}
