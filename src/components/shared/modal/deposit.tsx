@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import QRCode from 'react-qr-code';
 import {
@@ -13,13 +13,13 @@ import { ModalType } from '@/types/modal';
 import useModal from '@/hooks/use-modal';
 import { Input } from '@/components/ui/input';
 import useToast from '@/hooks/use-toast';
-import AESWrapper from '@/lib/encryption/aes-wrapper';
-import { finance, tokens } from '@/constants/data';
+import { finance } from '@/constants/data';
 import { useAppSelector } from '@/store/redux';
 import LoadingIcon from '../loading-icon';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import Logo from '/assets/logo.svg';
 import { FaWallet, FaCopy, FaKey } from 'react-icons/fa';
+import { axiosPost } from '@/utils/axios';
+import { BACKEND_API_ENDPOINT } from '@/utils/constant';
 
 const DepositModal = () => {
   const modal = useModal();
@@ -60,36 +60,22 @@ const DepositModal = () => {
   };
 
   const handleWithdraw = async () => {
-    if (Number(depositAmount) > userData.credit) {
-      toast.error(`Insufficient token`);
-      return;
-    }
-    // if (account) {
-    //   try {
-    //     setLoading(true);
-    //     await updateBalance('withdraw');
-    //     refreshBalances();
-    //   } catch (err) {
-    //     console.log(err);
-    //     setLoading(false);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // }
-  };
-
-  const updateBalance = async (type: string, txHash?: string) => {
+    setLoading(true);
     try {
-    } catch (error) {
-      console.error('Failed to update balance:', error);
+      const resWithdraw = await axiosPost([
+        BACKEND_API_ENDPOINT.deposit.withdraw,
+        { data: { walletAddress, amount: Number(depositAmount), password } }
+      ]);
+      if (resWithdraw.responseObject) {
+        console.log('withdraw link', resWithdraw.responseObject.txLink);
+        toast.success('Successfully withdrawn');
+      }
+    } catch (e) {
+      toast.error('Withdraw failed');
+    } finally {
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      updateBalance('get');
-    }
-  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
@@ -181,7 +167,7 @@ const DepositModal = () => {
                   Your balance is
                 </span>
                 <span className="text-[13px] text-[#5fa369]">
-                  {userData.credit.toFixed(3)}
+                  {userData?.credit.toFixed(3)}
                 </span>
                 <span className="text-[12px] text-gray-100">sola = </span>
                 <span className="text-[13px] text-[#5fa369]">{solBalance}</span>
@@ -204,6 +190,7 @@ const DepositModal = () => {
                     value={walletAddress}
                     onChange={handleAddressChange}
                     className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -220,6 +207,7 @@ const DepositModal = () => {
                     value={depositAmount}
                     className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
                     onChange={handleDepositAmountChange}
+                    disabled={loading}
                   />
                 </div>
                 {Number(depositAmount) > Number(solBalance) && (
@@ -236,6 +224,7 @@ const DepositModal = () => {
                     value={password}
                     className="rounded-l-lg border border-none bg-[#463E7A] pl-[50px] text-white placeholder:text-[#9083e6]"
                     onChange={handlePasswordChange}
+                    disabled={loading}
                   />
                   <div className="absolute left-0 top-0 flex h-full items-center rounded-l-lg bg-[#362e68] px-2">
                     <FaKey className="h-5 w-6" />
@@ -253,7 +242,7 @@ const DepositModal = () => {
               <Button
                 className="w-full rounded-[12px] border-b-4 border-t-4 border-b-[#682fad] border-t-[#ba88f8] bg-[#9945FF] py-5 hover:bg-[#ad77f0]"
                 onClick={handleWithdraw}
-                disabled={depositAmount === '' || password === ''}
+                disabled={depositAmount === '' || password === '' || loading}
               >
                 {selectedFinance}
                 {loading && <LoadingIcon />}

@@ -1,22 +1,21 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import UserNav from '@/components/shared/user-nav';
 import { Button } from '@/components/ui/button';
 import useModal from '@/hooks/use-modal';
 import { ModalType } from '@/types/modal';
 import { useAppSelector } from '@/store/redux';
+import { userActions } from '@/store/redux/actions';
 import { tabItems } from '@/constants/data';
 import logo from '/assets/logo.svg';
 import { TITLE } from '@/config';
-import { useEffect, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
-import { getAccessToken } from '@/utils/axios';
 import {
   EUserSocketEvent,
   IUserClientToServerEvents,
   IUserServerToClientEvents
 } from '@/types';
-import { useDispatch } from 'react-redux';
-import { userActions } from '@/store/redux/actions';
 
 interface HeaderProps {
   isApp: boolean;

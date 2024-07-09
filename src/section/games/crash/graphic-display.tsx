@@ -57,6 +57,7 @@ interface GraphicDisplayProps {
   crashStatus: ECrashStatus;
   crTick: ITick;
   crBust: number;
+  crElapsed: number;
   prepareTime: number;
   crashHistoryRecords: ICrashHistoryRecord[];
 }
@@ -65,6 +66,7 @@ export default function GraphicDisplay({
   crashStatus,
   crTick,
   crBust,
+  crElapsed,
   prepareTime,
   crashHistoryRecords
 }: GraphicDisplayProps) {
@@ -279,7 +281,10 @@ export default function GraphicDisplay({
     // ctx.drawImage(flame.spriteSheet, 0, 0, 157, 203, -20, 10, 30, 30)
     // Draw the flame animation`
     ctx.save(); // Save the current canvas state
-    ctx.translate(x, y); // Move the canvas origin to the rocket position
+    ctx.translate(
+      window.innerWidth > 500 ? x : x + 12,
+      window.innerWidth > 500 ? y : y - 8
+    ); // Move the canvas origin to the rocket position
     ctx.rotate((flame.rotationAngle * Math.PI) / 180); // Rotate the canvas
 
     ctx.drawImage(
@@ -297,16 +302,24 @@ export default function GraphicDisplay({
   };
 
   useEffect(() => {
-    if (yValue.length == 0) {
+    const growthFunc = (ms: number) =>
+      Math.floor(100 * Math.pow(Math.E, 0.00006 * ms));
+    const calculateGamePayout = (ms: number): number => {
+      const gamePayout = Math.floor(100 * growthFunc(ms)) / 100;
+      return Math.max(gamePayout, 1);
+    };
+
+    if (yValue.length === 0) {
       let yArray: number[] = [];
-      for (let i = 1; i < Number(crTick.cur); i = i + 0.02) {
-        yArray.push(i);
+      for (let i = crElapsed; i > 0; i -= 158) {
+        const point = calculateGamePayout(i) / 100;
+        yArray.push(point);
       }
-      setYValue(yArray);
+      setYValue(yArray.reverse());
     } else {
-      setYValue((values) => [...values, Number(crTick.cur)]);
+      setYValue((values) => [...values, crTick.cur]);
     }
-  }, [crTick]);
+  }, [crTick.cur, crElapsed]);
 
   useEffect(() => {
     if (crashStatus === ECrashStatus.END) {
