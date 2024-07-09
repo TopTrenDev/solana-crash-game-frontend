@@ -41,7 +41,11 @@ export default function CrashGameSection() {
   const [avaliableAutoCashout, setAvaliableAutoCashout] =
     useState<boolean>(false);
 
-  const [crTick, setCrTick] = useState<ITick>({ prev: 1, cur: 1 });
+  const [crTick, setCrTick] = useState<ITick>({
+    prev: 1,
+    cur: 1
+  });
+  const [crElapsed, setCrElapsed] = useState<number>(0);
   const [crBust, setCrBust] = useState<number>(1);
   const [prepareTime, setPrepareTime] = useState<number>(0);
   const [crashStatus, setCrashStatus] = useState<ECrashStatus>(
@@ -99,13 +103,18 @@ export default function CrashGameSection() {
       }
     );
 
-    crashSocket.on(ECrashSocketEvent.GAME_TICK, (tick) => {
-      setCrashStatus(ECrashStatus.PROGRESS);
-      setCrTick((prev) => ({
-        prev: prev.cur,
-        cur: tick
-      }));
-    });
+    crashSocket.on(
+      ECrashSocketEvent.GAME_TICK,
+      (tick: { e: number; p: number }) => {
+        // console.log('e', tick.e, 'p', tick.p);
+        setCrashStatus(ECrashStatus.PROGRESS);
+        setCrTick((prev) => ({
+          prev: prev.cur,
+          cur: tick.p
+        }));
+        setCrElapsed(tick.e);
+      }
+    );
 
     crashSocket.on(ECrashSocketEvent.GAME_STARTING, (data) => {
       setCrashStatus(ECrashStatus.PREPARE);
@@ -134,6 +143,7 @@ export default function CrashGameSection() {
         ...prev
       ]);
       setCrBust(data.game.crashPoint!);
+      setCrElapsed(0);
       setCrashStatus(ECrashStatus.END);
       stopCrashBgVideo();
       setAvaliableBet(false);
@@ -172,6 +182,10 @@ export default function CrashGameSection() {
 
     crashSocket.on(ECrashSocketEvent.BET_CASHOUT, (data) => {
       setBetCashout((prev) => [...prev, data?.userdata]);
+    });
+
+    crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
+      setAvaliableBet(true);
     });
 
     crashSocket.on(
@@ -237,6 +251,7 @@ export default function CrashGameSection() {
                   crashStatus={crashStatus}
                   crTick={crTick}
                   crBust={crBust}
+                  crElapsed={crElapsed}
                   prepareTime={prepareTime}
                   crashHistoryRecords={crashHistoryRecords}
                 />

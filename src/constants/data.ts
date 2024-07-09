@@ -74,7 +74,7 @@ export const navItems: NavItemGroup[] = [
 ];
 
 export const tabItems = [
-  { name: 'bankroll', modal: ModalType.BANKROLL },
+  // { name: 'bankroll', modal: ModalType.BANKROLL },
   // { name: 'backtesting', modal: ModalType.BACKTESTING },
   { name: 'stats', modal: ModalType.STATS },
   { name: 'leaderboard', modal: ModalType.LEADERBOARD }
@@ -166,7 +166,7 @@ export const tokens: Array<IToken> = [
   {
     name: 'sola',
     value: '1'
-  },
+  }
 ];
 
 export const finance = ['Deposit', 'Withdraw'];

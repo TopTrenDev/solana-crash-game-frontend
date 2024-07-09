@@ -9,17 +9,42 @@ import { ModalType } from '@/types/modal';
 import useModal from '@/hooks/use-modal';
 import { useAppSelector } from '@/store/redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { BACKEND_API_ENDPOINT } from '@/utils/constant';
+import { axiosGet } from '@/utils/axios';
+import { useEffect, useState } from 'react';
+
+interface IStats {
+  users: number;
+  bankroll: number;
+  wager: number;
+}
 
 export default function StatsModal() {
   const { open, type } = useAppSelector((state: any) => state.modal);
   const isOpen = open && type === ModalType.STATS;
   const modal = useModal();
+  const [stats, setStats] = useState<IStats>({
+    users: 0,
+    bankroll: 0,
+    wager: 0
+  });
 
   const hanndleOpenChange = async () => {
     if (isOpen) {
       modal.close(ModalType.STATS);
     }
   };
+
+  const handleGetStats = async () => {
+    const resGetStats = await axiosGet([BACKEND_API_ENDPOINT.stats.base, {}]);
+    if (resGetStats.responseObject) {
+      setStats(resGetStats.responseObject);
+    }
+  };
+
+  useEffect(() => {
+    handleGetStats();
+  }, []);
 
   return (
     <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
@@ -38,53 +63,22 @@ export default function StatsModal() {
             <div className="flex w-full flex-col gap-6">
               <div className="flex w-full justify-between">
                 <h3 className="w-1/3 text-[16px] font-normal">Users</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
-              </div>
-              <div className="flex w-full justify-between">
-                <h3 className="w-1/3 text-[16px] font-normal">Bets</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
+                <h3 className="text-[16px] font-semibold">
+                  {stats.users.toLocaleString()}
+                </h3>
               </div>
               <div className="flex w-full justify-between">
                 <h3 className="w-1/3 text-[16px] font-normal">Bankroll</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
+                <h3 className="text-[16px] font-semibold">
+                  {stats.bankroll.toLocaleString()} SOL
+                </h3>
               </div>
               <div className="flex w-full justify-between">
                 <h3 className="w-1/3 text-[16px] font-normal">Wagered</h3>
                 <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
-              </div>
-              <div className="flex w-full justify-between">
-                <h3 className="w-1/3 text-[16px] font-normal">
-                  Wagered (V2 Only)
+                <h3 className="text-[16px] font-semibold">
+                  {stats.wager.toLocaleString()} SOL
                 </h3>
-                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
-              </div>
-              <div className="flex w-full justify-between">
-                <h3 className="w-1/3 text-[16px] font-normal">
-                  Return to Player (V2 Only){' '}
-                </h3>
-                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
-              </div>
-              <div className="flex w-full justify-between">
-                <h3 className="w-1/3 text-[16px] font-normal">
-                  Investor's profit
-                </h3>
-                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
-              </div>
-              <div className="flex w-full justify-between">
-                <h3 className="w-1/3 text-[16px] font-normal">
-                  Investor's all-time high profit
-                </h3>
-                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
-              </div>
-              <div className="flex w-full justify-between">
-                <h3 className="w-1/3 text-[16px] font-normal">Commission</h3>
-                <h3 className="text-[16px] font-normal text-[#9688CC]">100%</h3>
-                <h3 className="text-[16px] font-semibold">152,678</h3>
               </div>
             </div>
             <div className="text-[16px] font-normal">
