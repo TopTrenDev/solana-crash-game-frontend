@@ -93,7 +93,10 @@ export default function BetAction({
 
       const joinParams = {
         target: autoCashoutPoint ? Number(autoCashoutPoint) * 100 : 1000000,
-        betAmount: Number(betAmount).valueOf()
+        betAmount:
+          selectedToken === tokens[0]
+            ? Number(betAmount).valueOf()
+            : Number(betAmount * 1000).valueOf()
       };
       socket?.emit('join-crash-game', joinParams);
       return () => clearTimeout(balanceTimeout);
@@ -164,7 +167,7 @@ export default function BetAction({
                 />
                 <div className="absolute right-0 top-0 flex h-full items-center justify-center text-gray500">
                   <Tabs className="h-full">
-                    <TabsList className="h-full rounded-[6px] bg-[#191939]">
+                    <TabsList className="h-full gap-2 rounded-[6px] bg-[#191939]">
                       {tokens.map((t, index) => (
                         <TabsTrigger
                           key={index}
@@ -172,7 +175,7 @@ export default function BetAction({
                           disabled={isAutoMode}
                           value={t.value}
                           onClick={() => setSelectedToken(t)}
-                          className={`h-full rounded-[6px] border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] text-[10px] text-white hover:bg-[#caab5c]`}
+                          className={`h-full rounded-[6px] ${selectedToken === t ? 'border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] hover:bg-[#caab5c]' : ''} text-[10px] text-white`}
                         >
                           <div className="flex cursor-pointer items-center">
                             {t.name}

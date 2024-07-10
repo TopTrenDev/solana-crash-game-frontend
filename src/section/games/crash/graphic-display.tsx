@@ -180,8 +180,10 @@ export default function GraphicDisplay({
             chart.data.datasets[0].data.length - 1
           ] as number;
           if (!lastYValue) lastYValue = 0;
-          const alpha = 0.6;
-          ctx.fillStyle = `rgba(255, 0, 0, ${Math.min((alpha * lastYValue) / 20, 0.6)})`; // Adjust the alpha (last parameter) for the desired transparency
+
+          // becoming red color
+          ctx.fillStyle = `rgba(0, 0, 0, 0.1)`; // Adjust the alpha (last parameter) for the desired transparency
+
           ctx.fillRect(0, 0, chart.width, chart.height);
 
           const lastXValue = chart.data.datasets[0].data.length - 1;

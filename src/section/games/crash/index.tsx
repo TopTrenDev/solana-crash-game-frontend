@@ -184,9 +184,9 @@ export default function CrashGameSection() {
       setBetCashout((prev) => [...prev, data?.userdata]);
     });
 
-    crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
-      setAvaliableBet(true);
-    });
+    // crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
+    //   setAvaliableBet(true);
+    // });
 
     crashSocket.on(
       ECrashSocketEvent.CREDIT_BALANCE,
