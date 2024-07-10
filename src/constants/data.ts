@@ -166,6 +166,10 @@ export const tokens: Array<IToken> = [
   {
     name: 'sola',
     value: '1'
+  },
+  {
+    name: 'SOL',
+    value: '2'
   }
 ];
 
