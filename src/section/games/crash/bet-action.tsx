@@ -205,8 +205,7 @@ export default function BetAction({
               <Button
                 className="h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c]"
                 disabled={
-                  (crashStatus !== ECrashStatus.PREPARE &&
-                    (!avaliableBet || autoCashoutPoint)) ||
+                  (crashStatus !== ECrashStatus.PREPARE && !avaliableBet) ||
                   (crashStatus !== ECrashStatus.PROGRESS && avaliableBet)
                 }
                 onClick={handleStartBet}
