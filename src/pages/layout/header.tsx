@@ -109,7 +109,7 @@ export default function Header({ isApp }: HeaderProps) {
           userData?.username !== '' ? (
             <div className="flex items-center gap-4">
               <span className="text-[#fff]">
-                {Number(userData.credit).toFixed(3)}
+                SOLA: {Number(userData.credit).toFixed(3)}
               </span>
               <UserNav />
             </div>

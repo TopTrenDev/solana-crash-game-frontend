@@ -18,6 +18,7 @@ import {
 import { useAppDispatch } from '@/store/redux';
 import { userActions } from '@/store/redux/actions';
 import { useState } from 'react';
+import { ITick } from '@/types';
 
 interface BetActionProps {
   selectMode: string;
@@ -36,6 +37,10 @@ interface BetActionProps {
   setAutoCashoutAmount: React.Dispatch<React.SetStateAction<number>>;
   avaliableAutoCashout: boolean;
   setAvaliableAutoCashout: React.Dispatch<React.SetStateAction<boolean>>;
+  isBetted: boolean;
+  setIsBetted: React.Dispatch<React.SetStateAction<boolean>>;
+  availableFirstBet: boolean;
+  crTick: ITick;
   socket: Socket;
 }
 
@@ -55,11 +60,16 @@ export default function BetAction({
   setAutoCashoutAmount,
   avaliableAutoCashout,
   setAvaliableAutoCashout,
+  isBetted,
+  setIsBetted,
+  availableFirstBet,
+  crTick,
   socket
 }: BetActionProps) {
   const toast = useToast();
   const dispatch = useAppDispatch();
-  const [autoCashoutPoint, setAutoCashoutPoint] = useState<number>(0);
+  const [autoCashoutPoint, setAutoCashoutPoint] = useState<number>(2);
+  const [multiplierError, setMultiplierError] = useState<string>('');
 
   const isAutoMode = selectMode === 'auto';
 
@@ -79,9 +89,23 @@ export default function BetAction({
 
   const handleAutoCashoutPointChange = (event) => {
     const inputValue = event.target.value;
+    console.log('>>>>>', inputValue[0]);
     if (inputValue === '') {
       setAutoCashoutPoint(0);
-    } else setAutoCashoutPoint(inputValue);
+      setMultiplierError('No payout');
+    } else if (inputValue[0] === '0') {
+      setAutoCashoutPoint(inputValue);
+      setMultiplierError('Payout is not a valid multiplier.');
+    } else if (
+      inputValue.indexOf('.') > 0 &&
+      inputValue.split('.')[1].length > 2
+    ) {
+      setAutoCashoutPoint(inputValue);
+      setMultiplierError('Payout is not a valid multiplier.');
+    } else {
+      setAutoCashoutPoint(inputValue);
+      setMultiplierError('');
+    }
   };
 
   const handleStartBet = async () => {
@@ -163,7 +187,7 @@ export default function BetAction({
                   value={betAmount}
                   onChange={handleBetAmountChange}
                   className="h-10 border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
-                  disabled={isAutoMode}
+                  disabled={isAutoMode || isBetted}
                 />
                 <div className="absolute right-0 top-0 flex h-full items-center justify-center text-gray500">
                   <Tabs className="h-full">
@@ -172,7 +196,7 @@ export default function BetAction({
                         <TabsTrigger
                           key={index}
                           asChild
-                          disabled={isAutoMode}
+                          disabled={isAutoMode || isBetted}
                           value={t.value}
                           onClick={() => setSelectedToken(t)}
                           className={`h-full rounded-[6px] ${selectedToken === t ? 'border-b-2 border-t-2 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] hover:bg-[#caab5c]' : ''} text-[10px] text-white`}
@@ -194,32 +218,32 @@ export default function BetAction({
                   type="number"
                   value={autoCashoutPoint}
                   onChange={handleAutoCashoutPointChange}
+                  disabled={isBetted}
                   placeholder="1.05"
                   min={1.05}
                   max={1000}
+                  step={0.01}
                   className="h-10 w-full border-none bg-[#463E7A] font-bold text-white placeholder:text-gray-700"
                 />
                 <span className="absolute right-0 top-0 flex h-full items-center justify-center rounded-r-lg bg-[#605499] px-[14px] text-white">
-                  multiplier
+                  x
                 </span>
               </div>
+              <span className="text-[12px] text-red">{multiplierError}</span>
             </div>
             <div className="flex w-full flex-row items-center justify-center">
               <Button
-                className="h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c]"
-                disabled={
-                  (crashStatus !== ECrashStatus.PREPARE && !avaliableBet) ||
-                  (crashStatus !== ECrashStatus.PROGRESS && avaliableBet)
-                }
+                className={`h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c] ${avaliableBet ? 'border-b-[#5c3921] border-t-[#e79a77] bg-[#ee4d0e] hover:bg-[#ca7f5c]' : ''}`}
+                disabled={multiplierError !== ''}
                 onClick={handleStartBet}
               >
-                {isAutoMode
-                  ? autoBet
-                    ? 'Auto Bet'
-                    : 'Cancel'
+                {isBetted
+                  ? 'Betting(Cancel)'
                   : avaliableBet
-                    ? 'Cash Out'
-                    : 'Place Bet'}
+                    ? (betAmount * crTick.cur).toFixed(3) + 'SOLA'
+                    : availableFirstBet
+                      ? 'Cashouting'
+                      : 'Place Bet'}
               </Button>
             </div>
             <div className="flex h-full w-full flex-col items-center justify-start gap-2 text-[10px] text-[#9688CC]">
@@ -227,12 +251,18 @@ export default function BetAction({
               <div className="flex w-full items-center justify-between">
                 <span>Target Profit:</span>
                 <span className="text-white">
-                  {(betAmount * autoCashoutPoint).toFixed(3)} sola
+                  {multiplierError
+                    ? '???'
+                    : (betAmount * (autoCashoutPoint - 1)).toFixed(3) + 'sola'}
                 </span>
               </div>
               <div className="flex w-full items-center justify-between">
                 <span>Win Chance:</span>
-                <span className="text-white">38.5%</span>
+                <span className="text-white">
+                  {multiplierError
+                    ? '???'
+                    : (99 / autoCashoutPoint).toFixed(2) + '%'}
+                </span>
               </div>
             </div>
           </div>

@@ -29,6 +29,8 @@ export default function CrashGameSection() {
   const toast = useToast();
   const [selectMode, setSelectMode] = useState<string>(betMode[0]);
   const [autoBet, setAutoBet] = useState<boolean>(true);
+  const [isBetted, setIsBetted] = useState<boolean>(false);
+  const [availableFirstBet, setAvailableFirstBet] = useState<boolean>(false);
   const [selectDisplay, setSelectDisplay] = useState<number>(1);
   const [selectedToken, setSelectedToken] = useState<IToken>(tokens[0]);
   const [betData, setBetData] = useState<BetType[]>([]);
@@ -43,7 +45,7 @@ export default function CrashGameSection() {
 
   const [crTick, setCrTick] = useState<ITick>({
     prev: 1,
-    cur: 1
+    cur: 1.01
   });
   const [crElapsed, setCrElapsed] = useState<number>(0);
   const [crBust, setCrBust] = useState<number>(1);
@@ -131,6 +133,11 @@ export default function CrashGameSection() {
       playCrashBgVideo();
     });
 
+    crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
+      setAvailableFirstBet(false);
+      if (!isBetted) setAvaliableBet(false);
+    });
+
     crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
       setCrashHistoryRecords((prev) => [
         {
@@ -142,11 +149,14 @@ export default function CrashGameSection() {
         },
         ...prev
       ]);
+      setCrTick({ prev: 1, cur: 1.01 });
       setCrBust(data.game.crashPoint!);
       setCrElapsed(0);
       setCrashStatus(ECrashStatus.END);
       stopCrashBgVideo();
       setAvaliableBet(false);
+      setIsBetted(false);
+      setAvailableFirstBet(false);
     });
 
     const calculateTotals = (bets) => {
@@ -177,16 +187,20 @@ export default function CrashGameSection() {
     });
 
     crashSocket.on(ECrashSocketEvent.CRASHGAME_JOIN_SUCCESS, () => {
-      setAvaliableBet(true);
+      if (!isBetted) setAvaliableBet(true);
     });
 
     crashSocket.on(ECrashSocketEvent.BET_CASHOUT, (data) => {
       setBetCashout((prev) => [...prev, data?.userdata]);
     });
 
-    // crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
-    //   setAvaliableBet(true);
-    // });
+    crashSocket.on(ECrashSocketEvent.NEXT_ROUND_JOIN_SUCCESS, () => {
+      setIsBetted(true);
+    });
+
+    crashSocket.on(ECrashSocketEvent.NEXT_ROUND_JOIN_CANCEL, () => {
+      setIsBetted(false);
+    });
 
     crashSocket.on(
       ECrashSocketEvent.CREDIT_BALANCE,
@@ -212,6 +226,7 @@ export default function CrashGameSection() {
 
   useEffect(() => {
     if (crashStatus === ECrashStatus.PREPARE) {
+      setAvailableFirstBet(true);
       const intervalId = window.setInterval(updatePrepareCountDown, 100);
       setDownIntervalId(intervalId);
     } else {
@@ -243,6 +258,10 @@ export default function CrashGameSection() {
                   setAutoCashoutAmount={setAutoCashoutAmount}
                   avaliableAutoCashout={avaliableAutoCashout}
                   setAvaliableAutoCashout={setAvaliableAutoCashout}
+                  isBetted={isBetted}
+                  setIsBetted={setIsBetted}
+                  availableFirstBet={availableFirstBet}
+                  crTick={crTick}
                   socket={socket!}
                 />
               </div>

@@ -133,7 +133,9 @@ export enum ECrashSocketEvent {
   BET_CASHOUT_SUCCESS = 'bet-cashout-success',
   AUTO_CRASHGAME_JOIN_SUCCESS = 'auto-crashgame-join-success',
   GAME_STATUS = 'game-status',
-  CREDIT_BALANCE = 'credit-balance'
+  CREDIT_BALANCE = 'credit-balance',
+  NEXT_ROUND_JOIN_SUCCESS = 'next-round-join-success',
+  NEXT_ROUND_JOIN_CANCEL = 'next-round-join-cancel'
 }
 
 export interface ICrashServerToClientEvents {
@@ -177,6 +179,8 @@ export interface ICrashServerToClientEvents {
     username: string;
     credit: number;
   }) => void;
+  [ECrashSocketEvent.NEXT_ROUND_JOIN_SUCCESS]: () => void;
+  [ECrashSocketEvent.NEXT_ROUND_JOIN_CANCEL]: () => void;
 }
 
 export interface ICrashClientToServerEvents {
