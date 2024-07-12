@@ -50,7 +50,7 @@ export default function BetBoard({
           </Table>
         </CardHeader>
         <CardContent className="h-full overflow-hidden bg-[#2C2852] p-0">
-          <ScrollArea className="h-full p-0">
+          <ScrollArea className="h-full max-h-52 min-h-10 p-0">
             <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-hidden">
               <TableBody>
                 {betData

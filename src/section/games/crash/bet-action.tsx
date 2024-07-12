@@ -242,7 +242,7 @@ export default function BetAction({
                   : avaliableBet
                     ? (betAmount * crTick.cur).toFixed(3) + 'SOLA'
                     : availableFirstBet
-                      ? 'Cashouting'
+                      ? 'Cashout'
                       : 'Place Bet'}
               </Button>
             </div>

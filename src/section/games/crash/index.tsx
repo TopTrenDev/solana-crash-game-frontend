@@ -34,7 +34,7 @@ export default function CrashGameSection() {
   const [selectDisplay, setSelectDisplay] = useState<number>(1);
   const [selectedToken, setSelectedToken] = useState<IToken>(tokens[0]);
   const [betData, setBetData] = useState<BetType[]>([]);
-  const [betAmount, setBetAmount] = useState<number>(0);
+  const [betAmount, setBetAmount] = useState<number>(10);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [betCashout, setBetCashout] = useState<BetType[]>([]);
   const [avaliableBet, setAvaliableBet] = useState<boolean>(false);
@@ -131,6 +131,7 @@ export default function CrashGameSection() {
       setCrashStatus(ECrashStatus.PROGRESS);
       setCrTick({ prev: 1, cur: 1 });
       playCrashBgVideo();
+      setAvailableFirstBet(false);
     });
 
     crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
@@ -149,7 +150,6 @@ export default function CrashGameSection() {
         },
         ...prev
       ]);
-      setCrTick({ prev: 1, cur: 1.01 });
       setCrBust(data.game.crashPoint!);
       setCrElapsed(0);
       setCrashStatus(ECrashStatus.END);
@@ -226,7 +226,9 @@ export default function CrashGameSection() {
 
   useEffect(() => {
     if (crashStatus === ECrashStatus.PREPARE) {
-      setAvailableFirstBet(true);
+      if (isBetted) setAvailableFirstBet(true);
+
+      setCrTick({ prev: 1, cur: 1.01 });
       const intervalId = window.setInterval(updatePrepareCountDown, 100);
       setDownIntervalId(intervalId);
     } else {
@@ -236,11 +238,11 @@ export default function CrashGameSection() {
 
   return (
     <ScrollArea className="h-full">
-      <div className="flex h-screen flex-col items-stretch">
-        <div className="flex h-full w-full px-[20px] py-[44px] lg:px-[80px]">
+      <div className="flex h-screen w-full flex-col items-stretch">
+        <div className="flex h-full w-full gap-2 px-[20px] py-[44px] lg:p-[40px]">
           <div className="flex h-full w-full flex-col justify-between gap-6 lg:w-3/4">
             <div className="flex h-full w-full gap-6 max-lg:flex-col-reverse lg:h-1/2">
-              <div className="m-0 flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:m-[5px] lg:w-1/3">
+              <div className="m-0 flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:w-1/3">
                 <BetAction
                   selectMode={selectMode}
                   setSelectMode={setSelectMode}
@@ -290,7 +292,7 @@ export default function CrashGameSection() {
               />
             </div>
           </div>
-          <div className="hidden h-full w-1/4 flex-col p-[5px] lg:flex">
+          <div className="hidden h-full w-1/4 flex-col lg:flex">
             <BetBoard
               betData={betData}
               betCashout={betCashout}
