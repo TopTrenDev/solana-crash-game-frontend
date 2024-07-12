@@ -177,7 +177,7 @@ export default function BetAction({
         </div>
       </div>
       {selectMode === betMode[0] ? (
-        <Card className="m-2 rounded-lg border-none bg-[#2C2852] bg-opacity-80 p-3 text-[#9688CC] shadow-none">
+        <Card className="m-2 overflow-scroll rounded-lg border-none bg-[#2C2852] bg-opacity-80 p-3 text-[#9688CC] shadow-none">
           <div className="flex h-full w-full flex-col gap-4">
             <div className="flex flex-col">
               <p className="w-6/12 text-sm">Bet</p>
