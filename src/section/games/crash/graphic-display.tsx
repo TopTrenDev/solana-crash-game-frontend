@@ -145,12 +145,12 @@ export default function GraphicDisplay({
               return numberFormat(Number(value), 2) + 'x';
             },
             markW: 5,
-            markWScale: 2,
+            markWScale: 6,
             markStepSize: 2,
             maxTicks: 4,
             minTicks: 4,
             minStepSize: 1,
-            stepSize: 1
+            stepSize: 2
           },
           min: 1,
           max:

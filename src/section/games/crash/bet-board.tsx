@@ -25,7 +25,7 @@ export default function BetBoard({
   const userData = useAppSelector((store: any) => store.user.userData);
   return (
     <div
-      className={`flex h-full w-full flex-col rounded-lg bg-[#463E7A] ${className}`}
+      className={`flex h-full w-full flex-col overflow-auto rounded-lg bg-[#463E7A] ${className}`}
     >
       <div className="hidden w-full flex-row items-center justify-center lg:flex">
         <Button
