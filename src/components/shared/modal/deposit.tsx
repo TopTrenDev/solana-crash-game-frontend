@@ -162,16 +162,23 @@ const DepositModal = () => {
         ) : (
           <div className="flex w-full items-center gap-10 rounded-b-[8px] bg-[#2C2852] px-[30px] py-[36px]">
             <div className="flex w-full flex-col gap-6">
-              <div className="flex w-full items-center justify-center gap-1">
+              <div className="flex w-full flex-col items-center justify-center gap-1">
                 <span className="text-[12px] text-gray-100">
-                  Your balance is
+                  1 SOL = 1000 sola + fee(100 sola) = 1100 sola
                 </span>
-                <span className="text-[13px] text-[#5fa369]">
-                  {userData?.credit.toFixed(3)}
-                </span>
-                <span className="text-[12px] text-gray-100">sola = </span>
-                <span className="text-[13px] text-[#5fa369]">{solBalance}</span>
-                <span className="text-[12px] text-gray-100">Sol</span>
+                <div className="flex w-full items-center justify-center gap-1">
+                  <span className="text-[12px] text-gray-100">
+                    Your balance is
+                  </span>
+                  <span className="text-[13px] text-[#5fa369]">
+                    {userData?.credit.toFixed(3)}
+                  </span>
+                  <span className="text-[12px] text-gray-100">sola = </span>
+                  <span className="text-[13px] text-[#5fa369]">
+                    {solBalance}
+                  </span>
+                  <span className="text-[12px] text-gray-100">Sol</span>
+                </div>
               </div>
               <div className="flex w-full flex-col items-center justify-between gap-3">
                 <span className="text-[12px] text-gray-500">
