@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { ECrashStatus } from '@/constants/status';
+import { useAppSelector } from '@/store/redux';
 import { BetType } from '@/types';
 import { cn } from '@/utils/utils';
 
@@ -21,6 +22,7 @@ export default function BetBoard({
   crashStatus,
   className
 }: BetBoardProps) {
+  const userData = useAppSelector((store: any) => store.user.userData);
   return (
     <div
       className={`flex h-full w-full flex-col rounded-lg bg-[#463E7A] ${className}`}
@@ -56,7 +58,7 @@ export default function BetBoard({
                   .map((player, index) => (
                     <TableRow
                       key={index}
-                      className="px-2 text-gray300 hover:bg-transparent"
+                      className={`px-2 text-gray300 hover:bg-transparent ${userData?.username === player.username ? 'bg-[#7b3db6] hover:bg-[#7b3db6]' : ''} `}
                     >
                       <TableCell className="w-2/5">
                         <div className="flex items-center gap-2">
