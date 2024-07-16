@@ -7,5 +7,6 @@ export enum ModalType {
   BANKROLL = 'bankroll',
   BACKTESTING = 'backtesting',
   STATS = 'stats',
-  LEADERBOARD = 'leaderboard'
+  LEADERBOARD = 'leaderboard',
+  USERINFO = 'userinfo'
 }

@@ -13,20 +13,33 @@ import { chatActions } from '@/store/redux/actions';
 import { useAppDispatch, useAppSelector } from '@/store/redux';
 import { getAccessToken } from '@/utils/axios';
 import { useInView } from 'react-intersection-observer';
+import useModal from '@/hooks/use-modal';
+import useTempuser from '@/hooks/use-tempuser';
+
+import { ModalType } from '@/types/modal';
 
 export type HistoryItemProps = {
   name: string;
   time: string;
   message: string;
   avatar: string;
+  id: string;
 };
 
-const HistoryItem = ({ name, message, avatar, time }: HistoryItemProps) => {
+const HistoryItem = ({ name, message, avatar, time, id }: HistoryItemProps) => {
+
+  const modal = useModal();
+  const tempUser = useTempuser();
+  const openModal = () => {
+    modal.open(ModalType.USERINFO);
+    tempUser.save(id);
+  }
+
   return (
     <div className="flex items-center gap-1 px-3 py-1">
       <div className="flex items-center justify-start gap-2">
         <span className="text-[12px] font-medium text-gray500"> {time}</span>
-        <span className="text-[12px] font-medium text-[#7f7fd1]">
+        <span className="text-[12px] font-medium text-[#7f7fd1] cursor-pointer hover:text-gray500" onClick={() => openModal()}>
           {name ?? 'User'}:
         </span>
         <span className="text-[14px] text-white">{message}</span>
@@ -151,6 +164,7 @@ const LiveChat = ({ className }: LiveChatProps) => {
                     avatar={chat.user?.avatar}
                     time={formatTime(chat.sentAt.toString())}
                     message={chat.message}
+                    id={chat.user?._id}
                   />
                   <div ref={ref}></div>
                 </React.Fragment>
