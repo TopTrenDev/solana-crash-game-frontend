@@ -6,6 +6,7 @@ import LeaderboardModal from './leaderboard';
 import LoginModal from './login';
 import RegisterModal from './register';
 import StatsModal from './stats';
+import UserInfoModal from './userinfo';
 
 const Modal = () => {
   return (
@@ -18,6 +19,7 @@ const Modal = () => {
       <BacktestingModal />
       <StatsModal />
       <LeaderboardModal />
+      <UserInfoModal />
     </>
   );
 };
