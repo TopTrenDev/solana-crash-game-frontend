@@ -1,7 +1,7 @@
 export enum ModalType {
   LOGIN = 'login',
   REGISTER = 'register',
-  DEPOSIT = 'deposit',
+  CASHIER = 'cashier',
   ADDGOLD = 'addGold',
   WALLETCONNECT = 'wallectConnect',
   BANKROLL = 'bankroll',

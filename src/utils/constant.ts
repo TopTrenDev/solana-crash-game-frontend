@@ -4,9 +4,10 @@ export const BACKEND_API_ENDPOINT = {
     register: '/auth/register',
     login: '/auth/login'
   },
-  deposit: {
-    base: '/deposit',
-    withdraw: '/deposit/withdraw'
+  cashier: {
+    base: '/cashier',
+    withdraw: '/cashier/withdraw',
+    tips: '/cashier/tips'
   },
   stats: {
     base: '/stats'

@@ -17,21 +17,31 @@ import { finance } from '@/constants/data';
 import { useAppSelector } from '@/store/redux';
 import LoadingIcon from '../loading-icon';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { FaWallet, FaCopy, FaKey } from 'react-icons/fa';
+import { FaWallet, FaCopy, FaKey, FaUser, FaCoins } from 'react-icons/fa';
 import { axiosPost } from '@/utils/axios';
 import { BACKEND_API_ENDPOINT } from '@/utils/constant';
+import { io, Socket } from 'socket.io-client';
+import {
+  EUserSocketEvent,
+  IUserClientToServerEvents,
+  IUserServerToClientEvents
+} from '@/types';
 
-const DepositModal = () => {
+const CashierModal = () => {
   const modal = useModal();
   const userData = useAppSelector((state: any) => state.user.userData);
   const solBalance = (userData.credit / 1100).toFixed(3);
   const modalState = useAppSelector((state: any) => state.modal);
-  const isOpen = modalState.open && modalState.type === ModalType.DEPOSIT;
+  const isOpen = modalState.open && modalState.type === ModalType.CASHIER;
   const toast = useToast();
+  const socket: Socket<IUserServerToClientEvents, IUserClientToServerEvents> =
+    io(`${import.meta.env.VITE_SERVER_URL}/user`);
   const [walletAddress, setWalletAddress] = useState<string>('');
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [selectedFinance, setSelectedFinance] = useState<string>('Deposit');
   const [password, setPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [tipsAmount, setTipsAmount] = useState<number>(100);
 
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +51,7 @@ const DepositModal = () => {
 
   const hanndleOpenChange = async () => {
     if (isOpen) {
-      modal.close(ModalType.DEPOSIT);
+      modal.close(ModalType.CASHIER);
     }
   };
 
@@ -59,19 +69,47 @@ const DepositModal = () => {
     setPassword(e.target.value);
   };
 
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const handleTipsAmountChange = (e) => {
+    setTipsAmount(e.target.value);
+  };
+
   const handleWithdraw = async () => {
     setLoading(true);
     try {
       const resWithdraw = await axiosPost([
-        BACKEND_API_ENDPOINT.deposit.withdraw,
+        BACKEND_API_ENDPOINT.cashier.withdraw,
         { data: { walletAddress, amount: Number(depositAmount), password } }
       ]);
       if (resWithdraw.responseObject) {
         console.log('withdraw link', resWithdraw.responseObject.txLink);
         toast.success('Successfully withdrawn');
+        socket.emit(EUserSocketEvent.CREDIT_BALANCE, userData._id);
       }
     } catch (e) {
       toast.error('Withdraw failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTips = async () => {
+    setLoading(true);
+    try {
+      const resWithdraw = await axiosPost([
+        BACKEND_API_ENDPOINT.cashier.tips,
+        { data: { username, tipsAmount, password } }
+      ]);
+      if (resWithdraw.responseObject) {
+        console.log('withdraw link', resWithdraw.responseObject.txLink);
+        toast.success('Successfully tipped');
+        socket.emit(EUserSocketEvent.CREDIT_BALANCE, userData._id);
+      }
+    } catch (e) {
+      toast.error('Tips failed');
     } finally {
       setLoading(false);
     }
@@ -159,7 +197,7 @@ const DepositModal = () => {
             </Button> */}
             </div>
           </div>
-        ) : (
+        ) : selectedFinance === finance[1] ? (
           <div className="flex w-full items-center gap-10 rounded-b-[8px] bg-[#2C2852] px-[30px] py-[36px]">
             <div className="flex w-full flex-col gap-6">
               <div className="flex w-full flex-col items-center justify-center gap-1">
@@ -256,10 +294,96 @@ const DepositModal = () => {
               </Button>
             </div>
           </div>
+        ) : (
+          <div className="flex w-full items-center gap-10 rounded-b-[8px] bg-[#2C2852] px-[30px] py-[36px]">
+            <div className="flex w-full flex-col items-center gap-6">
+              <div className="relative w-full">
+                <Input
+                  placeholder={'Username'}
+                  type="text"
+                  value={username}
+                  className="rounded-l-lg border border-none bg-[#463E7A] pl-[50px] text-white placeholder:text-[#9083e6]"
+                  onChange={handleUsernameChange}
+                  disabled={loading}
+                />
+                <div className="absolute left-0 top-0 flex h-full items-center rounded-l-lg bg-[#362e68] px-2">
+                  <FaUser className="h-5 w-6" />
+                </div>
+              </div>
+              <div className="flex w-full gap-4">
+                <div className="relative w-full">
+                  <Input
+                    placeholder={'100'}
+                    type="number"
+                    value={tipsAmount}
+                    className="rounded-lg border border-none bg-[#463E7A] pl-[50px] text-white placeholder:text-[#9083e6]"
+                    onChange={handleTipsAmountChange}
+                    disabled={loading}
+                    step={1}
+                  />
+                  <div className="absolute left-0 top-0 flex h-full items-center rounded-l-lg bg-[#362e68] px-2">
+                    <FaCoins className="h-5 w-6" />
+                  </div>
+                  <div className="absolute right-0 top-0 flex h-full items-center rounded-r-lg bg-[#362e68] px-4">
+                    sola
+                  </div>
+                </div>
+                <div className="flex cursor-pointer items-center justify-center rounded-lg bg-red px-4 py-2 hover:bg-rose-400">
+                  Max
+                </div>
+              </div>
+              <div className="relative w-full">
+                <Input
+                  placeholder={'Password'}
+                  type="password"
+                  value={password}
+                  className="rounded-l-lg border border-none bg-[#463E7A] pl-[50px] text-white placeholder:text-[#9083e6]"
+                  onChange={handlePasswordChange}
+                  disabled={loading}
+                />
+                <div className="absolute left-0 top-0 flex h-full items-center rounded-l-lg bg-[#362e68] px-2">
+                  <FaKey className="h-5 w-6" />
+                </div>
+              </div>
+              <div className="flex w-1/2 flex-col items-center justify-between gap-2 bg-[#463E7A] px-8 py-4 text-[12px] text-[#fff]">
+                <div className="flex w-full justify-start">
+                  <span className="w-3/5">Balance available to tip</span>
+                  <span className="w-2/5">
+                    {userData.credit.toFixed(3)} sola
+                  </span>
+                </div>
+                <div className="flex w-full justify-start">
+                  <span className="w-3/5">Amount to Tip</span>
+                  <span className="w-2/5">{tipsAmount} sola</span>
+                </div>
+                <div className="flex w-full justify-start">
+                  <span className="w-3/5">Tip Fee</span>
+                  <span className="w-2/5">{1} sola</span>
+                </div>
+                <div className="flex w-full justify-start">
+                  <span className="w-3/5">Total:</span>
+                  <span className="w-2/5">{tipsAmount + 1} sola</span>
+                </div>
+              </div>
+              <Button
+                className="w-full rounded-[12px] border-b-4 border-t-4 border-b-[#682fad] border-t-[#ba88f8] bg-[#9945FF] py-5 hover:bg-[#ad77f0]"
+                onClick={handleTips}
+                disabled={
+                  username === '' ||
+                  tipsAmount === 0 ||
+                  password === '' ||
+                  loading
+                }
+              >
+                {selectedFinance}
+                {loading && <LoadingIcon />}
+              </Button>
+            </div>
+          </div>
         )}
       </DialogContent>
     </Dialog>
   );
 };
 
-export default DepositModal;
+export default CashierModal;

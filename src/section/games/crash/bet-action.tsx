@@ -164,7 +164,7 @@ export default function BetAction({
           {betMode.map((item, index) => (
             <Button
               className={cn(
-                'min-h-full w-1/2 rounded-tr-lg border-none bg-[#191939] p-5 font-semibold text-[#9688CC] shadow-none hover:bg-[#191939] hover:text-white',
+                'min-h-full w-full rounded-tr-lg border-none bg-[#191939] p-5 font-semibold text-[#9688CC] shadow-none hover:bg-[#191939] hover:text-white',
                 selectMode === item &&
                   'rounded-lg border-none bg-[#463E7A] text-white hover:bg-[#463E7A]'
               )}

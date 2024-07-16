@@ -74,7 +74,7 @@ export const navItems: NavItemGroup[] = [
 ];
 
 export const tabItems = [
-  // { name: 'bankroll', modal: ModalType.BANKROLL },
+  { name: 'bankroll', modal: ModalType.BANKROLL },
   // { name: 'backtesting', modal: ModalType.BACKTESTING },
   { name: 'stats', modal: ModalType.STATS },
   { name: 'leaderboard', modal: ModalType.LEADERBOARD }
@@ -99,7 +99,7 @@ export type Employee = {
   profile_picture?: string | null;
 };
 
-export const betMode = ['Manual', 'Auto'];
+export const betMode = ['Manual'];
 
 export const autoScripts = [
   'Flat Bet',
@@ -173,4 +173,4 @@ export const tokens: Array<IToken> = [
   }
 ];
 
-export const finance = ['Deposit', 'Withdraw'];
+export const finance = ['Deposit', 'Withdraw', 'Tips'];
