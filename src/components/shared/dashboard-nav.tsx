@@ -98,8 +98,8 @@ export default function DashboardNav({ items, setOpen }: DashboardNavProps) {
 
   const userData = useAppSelector((store: any) => store.user.userData);
   const deposit = {
-    name: 'deposit',
-    modal: ModalType.DEPOSIT
+    name: 'cashier',
+    modal: ModalType.CASHIER
   };
 
   return (

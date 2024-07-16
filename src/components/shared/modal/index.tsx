@@ -1,7 +1,7 @@
 import AddGoldModal from './add-gold';
 import BacktestingModal from './backtesting';
 import BankrollModal from './bankroll';
-import DepositModal from './deposit';
+import CashierModal from './cashier';
 import LeaderboardModal from './leaderboard';
 import LoginModal from './login';
 import RegisterModal from './register';
@@ -12,7 +12,7 @@ const Modal = () => {
     <>
       <LoginModal />
       <RegisterModal />
-      <DepositModal />
+      <CashierModal />
       <AddGoldModal />
       <BankrollModal />
       <BacktestingModal />

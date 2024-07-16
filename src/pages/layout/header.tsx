@@ -86,9 +86,9 @@ export default function Header({ isApp }: HeaderProps) {
               className={
                 'min-h-full cursor-pointer rounded-none border-b-2 border-b-transparent px-6 py-5 text-[14px] font-medium uppercase text-[#fff] duration-300 hover:bg-transparent hover:text-[#9E00FF]'
               }
-              onClick={() => handleModalOpen(ModalType.DEPOSIT)}
+              onClick={() => handleModalOpen(ModalType.CASHIER)}
             >
-              {'deposit'}
+              {'cashier'}
             </div>
           )}
           {tabItems.map((item, index) => (
