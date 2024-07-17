@@ -77,8 +77,28 @@ export const tabItems = [
   { name: 'bankroll', modal: ModalType.BANKROLL },
   // { name: 'backtesting', modal: ModalType.BACKTESTING },
   { name: 'stats', modal: ModalType.STATS },
-  { name: 'leaderboard', modal: ModalType.LEADERBOARD }
+  { name: 'leaderboard', modal: ModalType.LEADERBOARD },
+  { name: 'help', modal: ModalType.HELP }
 ];
+
+
+export interface Ticket {
+  id: number,
+  name: string,
+  content: string
+}
+
+export const helpTickets: Ticket[] = [
+  {
+    id: 0, name: "I forgot my password.", content: "If you provided a recovery email address for your account you can request a reset email here. Unfortunately it is not possible to reset an account's password if you did not provide a recovery email address for it."
+  },
+  {
+    id: 1, name: "MY DEPOSIT HASN’T BEEN CREDITED.", content: "We credit a pending deposit transaction to your account after one confirmation (i.e. appears in one block). The speed at which transactions get confirmed depends on your transaction fee and the amount of other unconfirmed transactions on the Bitcoin network."
+  },
+  {
+    id: 2, name: "MY WITHDRAWAL HASN’T ARRIVED.", content: "We process your immediate withdrawals and have them broadcast on the blockchain as soon as possible. However, we are unable to guarantee instant confirmation. The speed at which transactions get confirmed depends on the transaction fee and the amount of other unconfirmed transactions on the Bitcoin network."
+  }
+]
 
 export type Employee = {
   id: number;
