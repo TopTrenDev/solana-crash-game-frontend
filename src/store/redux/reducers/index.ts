@@ -7,6 +7,7 @@ import modalReducer from './modal.reducer';
 import userReducer from './user.reducer';
 import minesReducer from './mines.reducer';
 import tempUserReducer from './tempuser.reducer';
+import tempGameReducer from './tempgame.reducer';
 
 export default () => {
   return combineReducers({
@@ -16,6 +17,7 @@ export default () => {
     modal: modalReducer,
     user: userReducer,
     mines: minesReducer,
-    tempuser: tempUserReducer
+    tempuser: tempUserReducer,
+    tempgame: tempGameReducer
   });
 };

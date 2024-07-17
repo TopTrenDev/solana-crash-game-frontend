@@ -13,6 +13,7 @@ import coinflipReducer from './reducers/coinflip.reducer';
 import minesReducer from './reducers/mines.reducer';
 import modalReducer from './reducers/modal.reducer';
 import tempUserReducer from './reducers/tempuser.reducer';
+import tempGameReducer from './reducers/tempgame.reducer';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -28,7 +29,8 @@ const rootReducer = combineReducers({
   coinflip: coinflipReducer,
   mines: minesReducer,
   modal: modalReducer,
-  tempuser: tempUserReducer
+  tempuser: tempUserReducer,
+  tempgame: tempGameReducer
 });
 
 const store = configureStore({

@@ -9,5 +9,6 @@ export enum ModalType {
   STATS = 'stats',
   LEADERBOARD = 'leaderboard',
   USERINFO = 'userinfo',
-  HELP = "help"
+  HELP = "help",
+  HISTORY = 'history'
 }

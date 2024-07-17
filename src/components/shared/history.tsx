@@ -2,12 +2,23 @@ import { Card, CardContent, CardHeader } from '../ui/card';
 import { Table, TableBody, TableCell, TableRow } from '../ui/table';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { ICrashHistoryRecord } from '@/types';
+import useModal from '@/hooks/use-modal';
+import useTempGame from '@/hooks/use-tempgame';
+import { ModalType } from '@/types/modal';
 
 interface HistoryProps {
   crashHistoryRecords: ICrashHistoryRecord[];
 }
 
 export default function History({ crashHistoryRecords }: HistoryProps) {
+  const modal = useModal();
+  const game = useTempGame();
+
+  const openHistoryModal = (gameId: string) => {
+    modal.open(ModalType.HISTORY)
+    game.save(gameId)
+  }
+
   return (
     <Card className="m-2 w-full rounded-lg border-none bg-[#463E7A] text-white shadow-none">
       <CardHeader className="flex flex-row items-center justify-between rounded-t-lg bg-[#191939] p-0 py-[12px] text-base font-semibold">
@@ -28,7 +39,7 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
           <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-hidden ">
             <TableBody>
               {crashHistoryRecords.map((history, index) => (
-                <TableRow key={index} className="text-[#fff]">
+                <TableRow key={index} className="text-[#fff] cursor-pointer" onClick={() => openHistoryModal(history.hash)}>
                   <TableCell
                     className={`w-1/5 text-center ${history.bust > 1.7 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
                   >
