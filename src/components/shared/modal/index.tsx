@@ -8,6 +8,7 @@ import RegisterModal from './register';
 import StatsModal from './stats';
 import UserInfoModal from './userinfo';
 import HelpModal from './help';
+import HistoryModal from './history';
 
 const Modal = () => {
   return (
@@ -22,6 +23,7 @@ const Modal = () => {
       <LeaderboardModal />
       <UserInfoModal />
       <HelpModal />
+      <HistoryModal />
     </>
   );
 };
