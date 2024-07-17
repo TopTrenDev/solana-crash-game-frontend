@@ -7,6 +7,7 @@ import LoginModal from './login';
 import RegisterModal from './register';
 import StatsModal from './stats';
 import UserInfoModal from './userinfo';
+import HelpModal from './help';
 
 const Modal = () => {
   return (
@@ -20,6 +21,7 @@ const Modal = () => {
       <StatsModal />
       <LeaderboardModal />
       <UserInfoModal />
+      <HelpModal />
     </>
   );
 };
