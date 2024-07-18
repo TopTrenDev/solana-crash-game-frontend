@@ -145,6 +145,7 @@ export default function HistoryModal() {
                     <td className='w-1/5 p-1 px-2'>Bet</td>
                     <td className='w-1/5 p-1 px-2'>Cashed out</td>
                     <td className='w-1/5 p-1 px-2'>Profit</td>
+                    <td className='w-1/5 p-1 px-2 text-center'>###</td>
                   </tr>
                 </thead>
                 <tbody>
