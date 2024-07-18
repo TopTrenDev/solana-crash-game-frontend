@@ -4,6 +4,15 @@ export interface IChatUser {
   avatar: string;
   hasVerifiedAccount: boolean;
   createdAt: Date;
+  stats: {
+    played: number;
+    profit: {
+      high: number;
+      low: number;
+      total: number;
+    }
+    wager: number;
+  }
 }
 
 export enum EUserSocketEvent {

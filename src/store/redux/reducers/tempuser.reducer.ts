@@ -1,17 +1,19 @@
+import { IChatUser } from "@/types";
+
 export const SAVE_USER = 'SAVE_USER';
 export const REMOVE_USER = 'REMOVE_USER';
 
 interface UserAction {
   type: string;
-  payload: string;
+  payload: IChatUser;
 }
 
 export interface TempUserState {
   isUser: boolean;
-  userId: string;
+  user: IChatUser | null;
 }
 
-const initialState: TempUserState = { isUser: false, userId: '' };
+const initialState: TempUserState = { isUser: false, user: null };
 
 const tempUserReducer = (
   state: TempUserState = initialState,
@@ -19,9 +21,9 @@ const tempUserReducer = (
 ): TempUserState => {
   switch (action.type) {
     case SAVE_USER:
-      return { isUser: true, userId: action.payload };
+      return { isUser: true, user: action.payload };
     case REMOVE_USER:
-      return { isUser: false, userId: '' };
+      return { isUser: false, user: null };
     default:
       return state;
   }
