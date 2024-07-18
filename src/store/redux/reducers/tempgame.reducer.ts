@@ -1,17 +1,19 @@
+import { ICrashHistoryRecord } from "@/types";
+
 export const SAVE_GAME = 'SAVE_GAME';
 export const REMOVE_GAME = 'REMOVE_GAME';
 
 interface GameAction {
   type: string;
-  payload: string;
+  payload: ICrashHistoryRecord;
 }
 
 export interface TempGameState {
   isGame: boolean;
-  gameId: string;
+  game: ICrashHistoryRecord | null;
 }
 
-const initialState: TempGameState = { isGame: false, gameId: '' };
+const initialState: TempGameState = { isGame: false, game: null };
 
 const tempGameReducer = (
   state: TempGameState = initialState,
@@ -19,9 +21,9 @@ const tempGameReducer = (
 ): TempGameState => {
   switch (action.type) {
     case SAVE_GAME:
-      return { isGame: true, gameId: action.payload };
+      return { isGame: true, game: action.payload };
     case REMOVE_GAME:
-      return { isGame: false, gameId: '' };
+      return { isGame: false, game: null };
     default:
       return state;
   }

@@ -107,6 +107,9 @@ export interface ICrashHistoryRecord {
   bet: number;
   profit: number;
   hash: string;
+  players: object;
+  _id: string;
+  created: string;
 }
 
 export interface AutoCrashGameData {

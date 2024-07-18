@@ -98,7 +98,10 @@ export default function CrashGameSection() {
               payout: 0,
               bet: 0,
               profit: 0,
-              hash: h.privateHash!
+              hash: h.privateHash!,
+              players: h.players,
+              _id: h._id,
+              created: h.created
             }
           ]);
         });
@@ -140,13 +143,17 @@ export default function CrashGameSection() {
     });
 
     crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
+      console.log("game end data => ", data)
       setCrashHistoryRecords((prev) => [
         {
           bust: data.game.crashPoint!,
           payout: 0,
           bet: 0,
           profit: 0,
-          hash: data.game.privateHash!
+          hash: data.game.privateHash!,
+          players: {},
+          _id: data.game._id,
+          created: data.game.createdAt
         },
         ...prev
       ]);

@@ -5,6 +5,7 @@ import { ICrashHistoryRecord } from '@/types';
 import useModal from '@/hooks/use-modal';
 import useTempGame from '@/hooks/use-tempgame';
 import { ModalType } from '@/types/modal';
+import { useEffect } from 'react';
 
 interface HistoryProps {
   crashHistoryRecords: ICrashHistoryRecord[];
@@ -14,9 +15,13 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
   const modal = useModal();
   const game = useTempGame();
 
-  const openHistoryModal = (gameId: string) => {
+  useEffect(() => {
+    console.log("creash history records => ", crashHistoryRecords)
+  }, [])
+
+  const openHistoryModal = (gameh: ICrashHistoryRecord) => {
     modal.open(ModalType.HISTORY)
-    game.save(gameId)
+    game.save(gameh)
   }
 
   return (
@@ -36,10 +41,10 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
       </CardHeader>
       <CardContent className="rounded-b-lg bg-[#2C2852] px-2 py-0">
         <ScrollArea className="max-h-60 min-h-10 p-0">
-          <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-hidden ">
+          <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-auto max-h-[250px]">
             <TableBody>
               {crashHistoryRecords.map((history, index) => (
-                <TableRow key={index} className="text-[#fff] cursor-pointer" onClick={() => openHistoryModal(history.hash)}>
+                <TableRow key={index} className="text-[#fff] cursor-pointer" onClick={() => openHistoryModal(history)}>
                   <TableCell
                     className={`w-1/5 text-center ${history.bust > 1.7 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
                   >
