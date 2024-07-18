@@ -1,7 +1,9 @@
-export function saveUser(userId: string) {
+import { IChatUser } from "@/types";
+
+export function saveUser(user: IChatUser) {
   return {
     type: 'SAVE_USER',
-    payload: userId
+    payload: user
   };
 }
 

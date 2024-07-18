@@ -17,22 +17,23 @@ import useModal from '@/hooks/use-modal';
 import useTempuser from '@/hooks/use-tempuser';
 
 import { ModalType } from '@/types/modal';
+import { IChatUser } from '@/types';
 
 export type HistoryItemProps = {
   name: string;
   time: string;
   message: string;
   avatar: string;
-  id: string;
+  user: IChatUser;
 };
 
-const HistoryItem = ({ name, message, avatar, time, id }: HistoryItemProps) => {
+const HistoryItem = ({ name, message, avatar, time, user }: HistoryItemProps) => {
 
   const modal = useModal();
   const tempUser = useTempuser();
   const openModal = () => {
     modal.open(ModalType.USERINFO);
-    tempUser.save(id);
+    tempUser.save(user);
   }
 
   return (
@@ -117,6 +118,7 @@ const LiveChat = ({ className }: LiveChatProps) => {
         Array.isArray(chatState?.chatHistory) &&
         chatState?.chatHistory.length > 0
       ) {
+        console.log("chatState?.chatHistory => ", chatState?.chatHistory)
         setTimeout(() => {
           ref.current?.scrollIntoView({
             behavior: 'smooth',
@@ -164,7 +166,7 @@ const LiveChat = ({ className }: LiveChatProps) => {
                     avatar={chat.user?.avatar}
                     time={formatTime(chat.sentAt.toString())}
                     message={chat.message}
-                    id={chat.user?._id}
+                    user={chat.user}
                   />
                   <div ref={ref}></div>
                 </React.Fragment>
