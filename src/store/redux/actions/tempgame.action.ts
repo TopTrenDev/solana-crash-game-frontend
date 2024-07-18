@@ -1,7 +1,9 @@
-export function saveGame(gameId: string) {
+import { ICrashHistoryRecord } from "@/types";
+
+export function saveGame(game: ICrashHistoryRecord) {
   return {
     type: 'SAVE_GAME',
-    payload: gameId
+    payload: game
   };
 }
 
