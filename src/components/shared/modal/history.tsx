@@ -11,47 +11,47 @@ import useTempGame from '@/hooks/use-tempgame';
 import { useAppSelector } from '@/store/redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
-import { SiNintendogamecube } from "react-icons/si";
+import { SiNintendogamecube } from 'react-icons/si';
 import { useEffect, useState } from 'react';
 
 interface Player {
-  name: string,
-  bet: number,
-  cashout: number,
-  profit: number,
-  betNum: number
+  name: string;
+  bet: number;
+  cashout: number;
+  profit: number;
+  betNum: number;
 }
 
 const Players: Player[] = [
   {
-    name: "Muneshwara",
+    name: 'Muneshwara',
     bet: 2,
     cashout: 9.51,
     profit: 17.02,
     betNum: 1478352168
   },
   {
-    name: "Muneshwara",
+    name: 'Muneshwara',
     bet: 2,
     cashout: 9.51,
     profit: 17.02,
     betNum: 1478352168
   },
   {
-    name: "Muneshwara",
+    name: 'Muneshwara',
     bet: 2,
     cashout: 9.51,
     profit: 17.02,
     betNum: 1478352168
   },
   {
-    name: "Muneshwara",
+    name: 'Muneshwara',
     bet: 2,
     cashout: 9.51,
     profit: 17.02,
     betNum: 1478352168
   }
-]
+];
 
 export default function HistoryModal() {
   const { open, type } = useAppSelector((state: any) => state.modal);
@@ -66,24 +66,24 @@ export default function HistoryModal() {
   const hanndleOpenChange = async () => {
     if (isOpen) {
       modal.close(ModalType.HISTORY);
-      gameh.remove()
+      gameh.remove();
     }
   };
 
   const nextGame = (next: boolean) => {
-    console.log("next game => ", next)
-  }
+    console.log('next game => ', next);
+  };
 
   const formatDate = (input: string) => {
     // Parse the input date string
     let date;
     if (!input) {
-      date = new Date()
+      date = new Date();
     } else {
       date = new Date(input);
     }
 
-    console.log("🚀 ~ formatDate ~ date:", date)
+    console.log('🚀 ~ formatDate ~ date:', date);
 
     // Define options for formatting the date
     const options = {
@@ -120,17 +120,17 @@ export default function HistoryModal() {
     }
 
     return { formattedDate, timeAgo };
-  }
+  };
 
   useEffect(() => {
     if (isGame) {
-      console.log("game id", game.players[Object.keys(game.players)[0]])
-      const input = "2024-07-16T12:35:51.771Z";
+      console.log('game id', game.players[Object.keys(game.players)[0]]);
+      const input = '2024-07-16T12:35:51.771Z';
       const { formattedDate, timeAgo } = formatDate(input);
-      console.log("🚀 ~ useEffect ~ timeAgo:", timeAgo)
-      console.log("🚀 ~ useEffect ~ formattedDate:", formattedDate)
+      console.log('🚀 ~ useEffect ~ timeAgo:', timeAgo);
+      console.log('🚀 ~ useEffect ~ formattedDate:', formattedDate);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   if (isGame) {
     return (
@@ -146,64 +146,84 @@ export default function HistoryModal() {
             </DialogClose>
           </DialogHeader>
           <div className="rounded-b-[8px] bg-[#2C2852] py-[26px]">
-            <div className="flex overflow-y-auto flex-col items-center gap-5 overflow-scroll px-[25px]">
-              <div className='flex w-full justify-between'>
-                <button className='flex items-center gap-2 p-2 border rounded-sm hover:bg-[#463E7A]' onClick={() => nextGame(false)}>
+            <div className="flex flex-col items-center gap-5 overflow-scroll overflow-y-auto px-[25px]">
+              <div className="flex w-full justify-between">
+                <button
+                  className="flex items-center gap-2 rounded-sm border p-2 hover:bg-[#463E7A]"
+                  onClick={() => nextGame(false)}
+                >
                   <FaArrowLeft />
                   Prev Game
                 </button>
-                <button className='flex items-center gap-2 p-2 border rounded-sm hover:bg-[#463E7A]' onClick={() => nextGame(true)}>
+                <button
+                  className="flex items-center gap-2 rounded-sm border p-2 hover:bg-[#463E7A]"
+                  onClick={() => nextGame(true)}
+                >
                   Next Game
                   <FaArrowRight />
                 </button>
               </div>
-              <div className='flex w-full items-center justify-between'>
-                <div className='flex items-center gap-1 text-[20px]'>
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-1 text-[20px]">
                   <SiNintendogamecube />
-                  Game # <span className='font-thin'>{game._id}</span>
+                  Game # <span className="font-thin">{game._id}</span>
                 </div>
-                <div className='flex items-center gap-1'>
-                  <span className='uppercase'>Bsted At:</span>
-                  <span className='font-thin'>{game.bust}x</span>
+                <div className="flex items-center gap-1">
+                  <span className="uppercase">Crashed At:</span>
+                  <span className="font-thin">{game.bust}x</span>
                 </div>
               </div>
-              <div className='flex w-full gap-1 items-center'>
-                <span className='uppercase font-bold'>Date: </span>
-                <span className='font-light'>{formatDate(game.created).formattedDate}</span>
-                <span className='text-sm font-thin'> {formatDate(game.created).timeAgo}</span>
+              <div className="flex w-full items-center gap-1">
+                <span className="font-bold uppercase">Date: </span>
+                <span className="font-light">
+                  {formatDate(game.created).formattedDate}
+                </span>
+                <span className="text-sm font-thin">
+                  {' '}
+                  {formatDate(game.created).timeAgo}
+                </span>
               </div>
               {/* <div className='flex w-full gap-1 items-center'>
                   <span className='uppercase font-bold'>Hash: </span>
                   <span className='font-light'>Wed, 17 Jul 2024 10:11:38 GMT</span>
                   <span className='text-sm font-thin'> 8 minutes ago</span>
                 </div> */}
-              <div className='w-full px-3 py-2 rounded-sm text-white text-sm font-thin border'>
-                {game._id}
+              <div className="w-full rounded-sm border px-3 py-2 text-sm font-thin text-white">
+                {game.hash}
               </div>
-              <div className='w-full pb-4'>
-                <div className='py-4 text-2xl'>Players</div>
-                <table className='w-full'>
-                  <thead className='w-full'>
-                    <tr className='w-full p-2 bg-[#463E7A]'>
-                      <td className='w-1/5 p-1 px-2'>Player</td>
-                      <td className='w-1/5 p-1 px-2'>Bet</td>
-                      <td className='w-1/5 p-1 px-2'>Cashed out</td>
-                      <td className='w-1/5 p-1 px-2'>Profit</td>
-                      <td className='w-1/5 p-1 px-2 text-center'>###</td>
+              <div className="w-full pb-4">
+                <div className="py-4 text-2xl">Players</div>
+                <table className="w-full">
+                  <thead className="w-full">
+                    <tr className="w-full bg-[#463E7A] p-2">
+                      <td className="w-1/5 p-1 px-2">Player</td>
+                      <td className="w-1/5 p-1 px-2">Bet</td>
+                      <td className="w-1/5 p-1 px-2">Cashed out</td>
+                      <td className="w-1/5 p-1 px-2">Profit</td>
+                      <td className="w-1/5 p-1 px-2 text-center">###</td>
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.keys(game.players).map((playerId, index) =>
-                        <tr key={index} className="hover:bg-[#5e568b]">
-                          <td className="w-1/5 p-1 px-2 cursor-pointer">{game.players[playerId].username}</td>
-                          <td className="w-1/5 p-1 px-2">{game.players[playerId].bet}</td>
-                          <td className="w-1/5 p-1 px-2">
-                            {game.players[playerId].cashout} <span className="font-light">x</span>
-                          </td>
-                          <td className="w-1/5 p-1 px-2">{game.players[playerId].profit}</td>
-                          <td className="w-1/5 p-1 px-2 text-center cursor-pointer">Bet #{game.players[playerId].betNum}</td>
-                        </tr>
-                    )}
+                    {Object.keys(game.players).map((playerId, index) => (
+                      <tr key={index} className="hover:bg-[#5e568b]">
+                        <td className="w-1/5 cursor-pointer p-1 px-2">
+                          {game.players[playerId].username}
+                        </td>
+                        <td className="w-1/5 p-1 px-2">
+                          {game.players[playerId].bet}
+                        </td>
+                        <td className="w-1/5 p-1 px-2">
+                          {game.players[playerId].cashout}{' '}
+                          <span className="font-light">x</span>
+                        </td>
+                        <td className="w-1/5 p-1 px-2">
+                          {game.players[playerId].profit}
+                        </td>
+                        <td className="w-1/5 cursor-pointer p-1 px-2 text-center">
+                          Bet #{game.players[playerId].betNum}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

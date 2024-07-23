@@ -27,20 +27,28 @@ export type HistoryItemProps = {
   user: IChatUser;
 };
 
-const HistoryItem = ({ name, message, avatar, time, user }: HistoryItemProps) => {
-
+const HistoryItem = ({
+  name,
+  message,
+  avatar,
+  time,
+  user
+}: HistoryItemProps) => {
   const modal = useModal();
   const tempUser = useTempuser();
   const openModal = () => {
     modal.open(ModalType.USERINFO);
     tempUser.save(user);
-  }
+  };
 
   return (
     <div className="flex items-center gap-1 px-3 py-1">
       <div className="flex items-center justify-start gap-2">
         <span className="text-[12px] font-medium text-gray500"> {time}</span>
-        <span className="text-[12px] font-medium text-[#7f7fd1] cursor-pointer hover:text-gray500" onClick={() => openModal()}>
+        <span
+          className="cursor-pointer text-[12px] font-medium text-[#7f7fd1] hover:text-gray500"
+          onClick={() => openModal()}
+        >
           {name ?? 'User'}:
         </span>
         <span className="text-[14px] text-white">{message}</span>
@@ -110,6 +118,7 @@ const LiveChat = ({ className }: LiveChatProps) => {
   }, []);
 
   useEffect(() => {
+    console.log('chatState?.chatHistory => ', chatState?.chatHistory);
     if (getMoreChat) {
       setGetMoreChat(false);
     } else {
@@ -118,7 +127,6 @@ const LiveChat = ({ className }: LiveChatProps) => {
         Array.isArray(chatState?.chatHistory) &&
         chatState?.chatHistory.length > 0
       ) {
-        console.log("chatState?.chatHistory => ", chatState?.chatHistory)
         setTimeout(() => {
           ref.current?.scrollIntoView({
             behavior: 'smooth',

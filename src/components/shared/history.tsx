@@ -16,13 +16,13 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
   const game = useTempGame();
 
   useEffect(() => {
-    console.log("creash history records => ", crashHistoryRecords)
-  }, [])
+    console.log('creash history records => ', crashHistoryRecords);
+  }, []);
 
   const openHistoryModal = (gameh: ICrashHistoryRecord) => {
-    modal.open(ModalType.HISTORY)
-    game.save(gameh)
-  }
+    modal.open(ModalType.HISTORY);
+    game.save(gameh);
+  };
 
   return (
     <Card className="m-2 w-full rounded-lg border-none bg-[#463E7A] text-white shadow-none">
@@ -30,7 +30,7 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
         <Table className="w-full table-fixed">
           <TableBody>
             <TableRow className="!bg-transparent">
-              <TableCell className="w-1/5 p-0 text-center">Bust</TableCell>
+              <TableCell className="w-1/5 p-0 text-center">Crash</TableCell>
               <TableCell className="w-1/5 p-0 text-center">@</TableCell>
               <TableCell className="w-1/5 p-0 text-center">Bet</TableCell>
               <TableCell className="w-1/5 p-0 text-center">Profit</TableCell>
@@ -41,10 +41,14 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
       </CardHeader>
       <CardContent className="rounded-b-lg bg-[#2C2852] px-2 py-0">
         <ScrollArea className="max-h-60 min-h-10 p-0">
-          <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-auto max-h-[250px]">
+          <Table className="relative max-h-[250px] table-fixed border-separate border-spacing-y-3 overflow-y-auto">
             <TableBody>
               {crashHistoryRecords.map((history, index) => (
-                <TableRow key={index} className="text-[#fff] cursor-pointer" onClick={() => openHistoryModal(history)}>
+                <TableRow
+                  key={index}
+                  className="cursor-pointer text-[#fff]"
+                  onClick={() => openHistoryModal(history)}
+                >
                   <TableCell
                     className={`w-1/5 text-center ${history.bust > 1.7 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
                   >

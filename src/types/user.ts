@@ -10,9 +10,10 @@ export interface IChatUser {
       high: number;
       low: number;
       total: number;
-    }
+    };
     wager: number;
-  }
+  };
+  histories: any[];
 }
 
 export enum EUserSocketEvent {
