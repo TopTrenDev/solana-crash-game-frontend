@@ -37,7 +37,7 @@ export default function CrashGameSection() {
   const [betAmount, setBetAmount] = useState<number>(10);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [betCashout, setBetCashout] = useState<BetType[]>([]);
-  const [avaliableBet, setAvaliableBet] = useState<boolean>(false);
+  const [availableBet, setAvailableBet] = useState<boolean>(false);
   const [autoCashoutAmount, setAutoCashoutAmount] = useState<number>(1);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [avaliableAutoCashout, setAvaliableAutoCashout] =
@@ -128,6 +128,7 @@ export default function CrashGameSection() {
       setBetData([]);
       setBetCashout([]);
       setTotalAmount(0);
+      setIsBetted(false);
     });
 
     crashSocket.on(ECrashSocketEvent.GAME_START, (data) => {
@@ -139,11 +140,11 @@ export default function CrashGameSection() {
 
     crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
       setAvailableFirstBet(false);
-      if (!isBetted) setAvaliableBet(false);
+      if (!isBetted) setAvailableBet(false);
     });
 
     crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
-      console.log("game end data => ", data)
+      console.log('game end data => ', data);
       setCrashHistoryRecords((prev) => [
         {
           bust: data.game.crashPoint!,
@@ -153,7 +154,7 @@ export default function CrashGameSection() {
           hash: data.game.privateHash!,
           players: {},
           _id: data.game._id,
-          created: data.game.createdAt
+          created: data.game.createdAt!
         },
         ...prev
       ]);
@@ -161,8 +162,7 @@ export default function CrashGameSection() {
       setCrElapsed(0);
       setCrashStatus(ECrashStatus.END);
       stopCrashBgVideo();
-      setAvaliableBet(false);
-      setIsBetted(false);
+      setAvailableBet(false);
       setAvailableFirstBet(false);
     });
 
@@ -194,7 +194,7 @@ export default function CrashGameSection() {
     });
 
     crashSocket.on(ECrashSocketEvent.CRASHGAME_JOIN_SUCCESS, () => {
-      if (!isBetted) setAvaliableBet(true);
+      if (!isBetted) setAvailableBet(true);
     });
 
     crashSocket.on(ECrashSocketEvent.BET_CASHOUT, (data) => {
@@ -261,8 +261,8 @@ export default function CrashGameSection() {
                   setBetAmount={setBetAmount}
                   crashStatus={crashStatus}
                   setCrashStatus={setCrashStatus}
-                  avaliableBet={avaliableBet}
-                  setAvaliableBet={setAvaliableBet}
+                  availableBet={availableBet}
+                  setAvailableBet={setAvailableBet}
                   autoCashoutAmount={autoCashoutAmount}
                   setAutoCashoutAmount={setAutoCashoutAmount}
                   avaliableAutoCashout={avaliableAutoCashout}
@@ -270,6 +270,7 @@ export default function CrashGameSection() {
                   isBetted={isBetted}
                   setIsBetted={setIsBetted}
                   availableFirstBet={availableFirstBet}
+                  setAvailableFirstBet={setAvailableFirstBet}
                   crTick={crTick}
                   socket={socket!}
                 />
