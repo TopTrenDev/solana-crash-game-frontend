@@ -17,7 +17,7 @@ import {
 } from '@radix-ui/react-icons';
 import { useAppDispatch } from '@/store/redux';
 import { userActions } from '@/store/redux/actions';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ITick } from '@/types';
 
 interface BetActionProps {
@@ -31,8 +31,8 @@ interface BetActionProps {
   setBetAmount: React.Dispatch<React.SetStateAction<number>>;
   crashStatus: ECrashStatus;
   setCrashStatus: React.Dispatch<React.SetStateAction<ECrashStatus>>;
-  avaliableBet: boolean;
-  setAvaliableBet: React.Dispatch<React.SetStateAction<boolean>>;
+  availableBet: boolean;
+  setAvailableBet: React.Dispatch<React.SetStateAction<boolean>>;
   autoCashoutAmount: number;
   setAutoCashoutAmount: React.Dispatch<React.SetStateAction<number>>;
   avaliableAutoCashout: boolean;
@@ -40,6 +40,7 @@ interface BetActionProps {
   isBetted: boolean;
   setIsBetted: React.Dispatch<React.SetStateAction<boolean>>;
   availableFirstBet: boolean;
+  setAvailableFirstBet: React.Dispatch<React.SetStateAction<boolean>>;
   crTick: ITick;
   socket: Socket;
 }
@@ -54,8 +55,8 @@ export default function BetAction({
   betAmount,
   setBetAmount,
   crashStatus,
-  avaliableBet,
-  setAvaliableBet,
+  availableBet,
+  setAvailableBet,
   autoCashoutAmount,
   setAutoCashoutAmount,
   avaliableAutoCashout,
@@ -63,6 +64,7 @@ export default function BetAction({
   isBetted,
   setIsBetted,
   availableFirstBet,
+  setAvailableFirstBet,
   crTick,
   socket
 }: BetActionProps) {
@@ -109,7 +111,7 @@ export default function BetAction({
   };
 
   const handleStartBet = async () => {
-    if (betAmount > 0 && !avaliableBet) {
+    if (betAmount > 0 && !availableBet) {
       dispatch(userActions.siteBalanceStatus(true));
       const balanceTimeout = setTimeout(() => {
         dispatch(userActions.siteBalanceStatus(false));
@@ -117,20 +119,18 @@ export default function BetAction({
 
       const joinParams = {
         target: autoCashoutPoint ? Number(autoCashoutPoint) * 100 : 1000000,
-        betAmount:
-          selectedToken === tokens[0]
-            ? Number(betAmount).valueOf()
-            : Number(betAmount * 1000).valueOf()
+        betAmount: Number(betAmount).valueOf()
       };
       socket?.emit('join-crash-game', joinParams);
       return () => clearTimeout(balanceTimeout);
     }
+
     if (!(betAmount > 0)) {
       toast.error('Bet amount must be greater than 0');
       return;
     }
-    if (avaliableBet) {
-      setAvaliableBet(false);
+    if (availableBet) {
+      setAvailableBet(false);
       socket?.emit('bet-cashout');
     }
   };
@@ -156,6 +156,11 @@ export default function BetAction({
       socket?.emit('cancel-auto-bet');
     }
   };
+
+  useEffect(() => {
+    if (selectedToken === tokens[0]) setBetAmount((prev) => prev * 1000);
+    else setBetAmount((prev) => prev / 1000);
+  }, [selectedToken]);
 
   return (
     <>
@@ -233,16 +238,18 @@ export default function BetAction({
             </div>
             <div className="flex w-full flex-row items-center justify-center">
               <Button
-                className={`h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c] ${avaliableBet ? 'border-b-[#5c3921] border-t-[#e79a77] bg-[#ee4d0e] hover:bg-[#ca7f5c]' : ''}`}
-                disabled={multiplierError !== ''}
+                className={`h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c] ${availableBet ? 'border-b-[#5c3921] border-t-[#e79a77] bg-[#ee4d0e] hover:bg-[#ca7f5c]' : ''}`}
+                disabled={
+                  multiplierError !== '' || crashStatus === ECrashStatus.PREPARE
+                }
                 onClick={handleStartBet}
               >
                 {isBetted
                   ? 'Betting(Cancel)'
-                  : avaliableBet
+                  : availableBet
                     ? (betAmount * crTick.cur).toFixed(3) + 'SOLA'
                     : availableFirstBet
-                      ? 'Cashout'
+                      ? 'Cashouting...'
                       : 'Place Bet'}
               </Button>
             </div>
@@ -253,7 +260,7 @@ export default function BetAction({
                 <span className="text-white">
                   {multiplierError
                     ? '???'
-                    : (betAmount * (autoCashoutPoint - 1)).toFixed(3) + 'sola'}
+                    : (betAmount * (autoCashoutPoint - 1)).toFixed(3) + ' sola'}
                 </span>
               </div>
               <div className="flex w-full items-center justify-between">

@@ -26,15 +26,15 @@ export default function BetBoard({
   className
 }: BetBoardProps) {
   const userData = useAppSelector((store: any) => store.user.userData);
-  
+
   const modal = useModal();
   const tempuser = useTempuser();
 
   const openModal = (userId: string) => {
-    modal.open(ModalType.USERINFO)
-    tempuser.save(userId)
-  }
-  
+    // modal.open(ModalType.USERINFO)
+    // tempuser.save(userId)
+  };
+
   return (
     <div
       className={`flex h-full w-full flex-col overflow-auto rounded-lg bg-[#463E7A] ${className}`}
@@ -73,7 +73,10 @@ export default function BetBoard({
                       className={`px-2 text-gray300 hover:bg-transparent ${userData?.username === player.username ? 'bg-[#7b3db6] hover:bg-[#7b3db6]' : ''} `}
                     >
                       <TableCell className="w-2/5">
-                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => openModal(player.playerID)}>
+                        <div
+                          className="flex cursor-pointer items-center gap-2"
+                          onClick={() => openModal(player.playerID)}
+                        >
                           <span className="text-[#14F195]">
                             {player.username}
                           </span>

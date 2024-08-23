@@ -41,7 +41,7 @@ const MAX_Y = 3;
 const chartBGImage = new Image();
 chartBGImage.src = ChartImage;
 
-const getGradintColor = (context: { chart: ChartJS }) => {
+const getGradientColor = (context: { chart: ChartJS }) => {
   const ctx = context.chart.ctx;
   const { chart } = context;
   if (!chart?.height) {
@@ -86,18 +86,10 @@ export default function GraphicDisplay({
         borderColor: graphColor,
         borderWidth: 3,
         data: yValue,
-        backgroundColor: getGradintColor,
+        backgroundColor: getGradientColor,
         lineTension: 0.8,
         fill: true
       }
-      // {
-      //   label: '',
-      //   pointBorderWidth: 0,
-      //   pointHoverRadius: 0,
-      //   borderColor: graphColor,
-      //   borderWidth: 0,
-      //   data: [1, MAX_Y]
-      // }
     ]
   });
 
@@ -336,7 +328,7 @@ export default function GraphicDisplay({
               borderColor: graphColor,
               borderWidth: 3,
               data: [],
-              backgroundColor: getGradintColor,
+              backgroundColor: getGradientColor,
               lineTension: 0,
               fill: true
             }
@@ -365,19 +357,11 @@ export default function GraphicDisplay({
             borderColor: graphColor,
             borderWidth: 2,
             data: yValue,
-            backgroundColor: getGradintColor,
+            backgroundColor: getGradientColor,
             lineTension: 0,
             pointStyle: false,
             fill: true
           }
-          // {
-          //   label: '',
-          //   pointBorderWidth: 0,
-          //   pointHoverRadius: 0,
-          //   borderColor: graphColor,
-          //   borderWidth: 0,
-          //   data: [1, MAX_Y]
-          // }
         ]
       };
 
