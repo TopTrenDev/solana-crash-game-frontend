@@ -64,20 +64,18 @@ export default function UserNav() {
             <p className="text-lg leading-none text-white">
               {userData?.username}
             </p>
-            <p className="text-xs leading-none text-white">
-              {userData?.userEmail}
-            </p>
+            <p className="text-xs leading-none text-white">{userData?.email}</p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuGroup>
+        {/* <DropdownMenuGroup>
           <DropdownMenuItem>Profile</DropdownMenuItem>
           <DropdownMenuItem>Billing</DropdownMenuItem>
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem onClick={toggleWalletConnection}>
-            {/* {account ? 'Disconnect Wallet' : 'Connect Wallet'} */}
+            {account ? 'Disconnect Wallet' : 'Connect Wallet'}
             Connect Wallet
           </DropdownMenuItem>
-        </DropdownMenuGroup>
+        </DropdownMenuGroup> */}
         <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

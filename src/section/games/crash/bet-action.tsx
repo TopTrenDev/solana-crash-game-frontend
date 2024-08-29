@@ -260,7 +260,7 @@ export default function BetAction({
                 <span className="text-white">
                   {multiplierError
                     ? '???'
-                    : (betAmount * (autoCashoutPoint - 1)).toFixed(3) + ' sola'}
+                    : `${(betAmount * (autoCashoutPoint - 1)).toFixed(3)} ${selectedToken.name}`}
                 </span>
               </div>
               <div className="flex w-full items-center justify-between">
