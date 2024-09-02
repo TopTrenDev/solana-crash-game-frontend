@@ -191,42 +191,6 @@ export default function HistoryModal() {
               <div className="w-full rounded-sm border px-3 py-2 text-sm font-thin text-white">
                 {game.hash}
               </div>
-              <div className="w-full pb-4">
-                <div className="py-4 text-2xl">Players</div>
-                <table className="w-full">
-                  <thead className="w-full">
-                    <tr className="w-full bg-[#463E7A] p-2">
-                      <td className="w-1/5 p-1 px-2">Player</td>
-                      <td className="w-1/5 p-1 px-2">Bet</td>
-                      <td className="w-1/5 p-1 px-2">Cashed out</td>
-                      <td className="w-1/5 p-1 px-2">Profit</td>
-                      <td className="w-1/5 p-1 px-2 text-center">###</td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.keys(game.players).map((playerId, index) => (
-                      <tr key={index} className="hover:bg-[#5e568b]">
-                        <td className="w-1/5 cursor-pointer p-1 px-2">
-                          {game.players[playerId].username}
-                        </td>
-                        <td className="w-1/5 p-1 px-2">
-                          {game.players[playerId].bet}
-                        </td>
-                        <td className="w-1/5 p-1 px-2">
-                          {game.players[playerId].cashout}{' '}
-                          <span className="font-light">x</span>
-                        </td>
-                        <td className="w-1/5 p-1 px-2">
-                          {game.players[playerId].profit}
-                        </td>
-                        <td className="w-1/5 cursor-pointer p-1 px-2 text-center">
-                          Bet #{game.players[playerId].betNum}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
           </div>
         </DialogContent>
