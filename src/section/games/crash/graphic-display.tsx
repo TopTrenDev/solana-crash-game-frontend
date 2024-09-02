@@ -455,7 +455,7 @@ export default function GraphicDisplay({
                     className={`mr-4 rounded-lg bg-[#00000033] px-[6px] py-[4px] font-bold ${item.bust > 1.7 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
                     style={{ opacity: 100 - _index * 7 + '%' }}
                   >
-                    {item.bust}x
+                    {item.bust.toFixed(2)}x
                   </span>
                 );
               })}
