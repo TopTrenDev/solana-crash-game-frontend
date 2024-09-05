@@ -1,5 +1,3 @@
-'use client';
-
 import { ReactNode, useCallback, useMemo } from 'react';
 import { WalletAdapterNetwork, WalletError } from '@solana/wallet-adapter-base';
 import {

@@ -7,140 +7,97 @@ import {
 } from '@/components/ui/dialog';
 import { ModalType } from '@/types/modal';
 import useModal from '@/hooks/use-modal';
-import useTempGame from '@/hooks/use-tempgame';
 import { useAppSelector } from '@/store/redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import { SiNintendogamecube } from 'react-icons/si';
-import { useEffect, useState } from 'react';
-
-interface Player {
-  name: string;
-  bet: number;
-  cashout: number;
-  profit: number;
-  betNum: number;
-}
-
-const Players: Player[] = [
-  {
-    name: 'Muneshwara',
-    bet: 2,
-    cashout: 9.51,
-    profit: 17.02,
-    betNum: 1478352168
-  },
-  {
-    name: 'Muneshwara',
-    bet: 2,
-    cashout: 9.51,
-    profit: 17.02,
-    betNum: 1478352168
-  },
-  {
-    name: 'Muneshwara',
-    bet: 2,
-    cashout: 9.51,
-    profit: 17.02,
-    betNum: 1478352168
-  },
-  {
-    name: 'Muneshwara',
-    bet: 2,
-    cashout: 9.51,
-    profit: 17.02,
-    betNum: 1478352168
-  }
-];
+import { useGame } from '@/contexts';
 
 export default function HistoryModal() {
   const { open, type } = useAppSelector((state: any) => state.modal);
-  const { isGame, game } = useAppSelector((state: any) => state.tempgame);
-
+  const { gameHistories, currentGame, setGameId } = useGame();
   const isOpen = open && type === ModalType.HISTORY;
   const modal = useModal();
-  const gameh = useTempGame();
 
-  const [players, setPlayers] = useState<Player[]>(Players);
-
-  const hanndleOpenChange = async () => {
-    if (isOpen) {
-      modal.close(ModalType.HISTORY);
-      gameh.remove();
-    }
-  };
-
-  const nextGame = (next: boolean) => {
-    console.log('next game => ', next);
-  };
-
-  const formatDate = (input: string) => {
-    // Parse the input date string
-    let date;
-    if (!input) {
-      date = new Date();
-    } else {
-      date = new Date(input);
-    }
-
-    console.log('🚀 ~ formatDate ~ date:', date);
-
-    // Define options for formatting the date
-    const options = {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      timeZone: 'GMT',
-      timeZoneName: 'short'
+  if (!currentGame) return;
+  else {
+    const handleOpenChange = async () => {
+      if (isOpen) {
+        modal.close(ModalType.HISTORY);
+        setGameId(-1);
+      }
     };
 
-    // Format the date using the specified options
-    //@ts-ignore
-    let formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
-    formattedDate = formattedDate.replace(/,/g, '');
+    const prevGame = () => {
+      setGameId((prev) => (prev - 1 <= 0 ? 0 : prev - 1));
+    };
 
-    // Calculate the time difference in minutes
-    const now = new Date();
-    //@ts-ignore
-    const diffMs = now - date;
-    const diffMinutes = Math.round(diffMs / 60000);
-    let timeAgo;
-    if (diffMinutes < 60) {
-      timeAgo = `${diffMinutes} minutes ago`;
-    } else if (diffMinutes < 1440) {
-      const diffHours = Math.round(diffMinutes / 60);
-      timeAgo = `${diffHours} hours ago`;
-    } else {
-      const diffDays = Math.round(diffMinutes / 1440);
-      timeAgo = `${diffDays} days ago`;
-    }
+    const nextGame = () => {
+      setGameId((prev) =>
+        prev + 1 > gameHistories.length ? gameHistories.length : prev + 1
+      );
+    };
 
-    return { formattedDate, timeAgo };
-  };
+    const formatDate = (input: string | Date) => {
+      // Parse the input date string
+      let date;
+      if (!input) {
+        date = new Date();
+      } else if (typeof input === 'string') {
+        date = new Date(input);
+      } else {
+        date = input;
+      }
 
-  useEffect(() => {
-    if (isGame) {
-      console.log('game id', game.players[Object.keys(game.players)[0]]);
-      const input = '2024-07-16T12:35:51.771Z';
-      const { formattedDate, timeAgo } = formatDate(input);
-      console.log('🚀 ~ useEffect ~ timeAgo:', timeAgo);
-      console.log('🚀 ~ useEffect ~ formattedDate:', formattedDate);
-    }
-  }, [isOpen]);
+      console.log('🚀 ~ formatDate ~ date:', date);
 
-  if (isGame) {
+      // Define options for formatting the date
+      const options = {
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'GMT',
+        timeZoneName: 'short'
+      };
+
+      // Format the date using the specified options
+      //@ts-ignore
+      let formattedDate = new Intl.DateTimeFormat('en-US', options).format(
+        date
+      );
+      formattedDate = formattedDate.replace(/,/g, '');
+
+      // Calculate the time difference in minutes
+      const now = new Date();
+      //@ts-ignore
+      const diffMs = now - date;
+      const diffMinutes = Math.round(diffMs / 60000);
+      let timeAgo;
+      if (diffMinutes < 60) {
+        timeAgo = `${diffMinutes} minutes ago`;
+      } else if (diffMinutes < 1440) {
+        const diffHours = Math.round(diffMinutes / 60);
+        timeAgo = `${diffHours} hours ago`;
+      } else {
+        const diffDays = Math.round(diffMinutes / 1440);
+        timeAgo = `${diffDays} days ago`;
+      }
+
+      return { formattedDate, timeAgo };
+    };
+
     return (
-      <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm lg:w-[800px] lg:!max-w-[800px]">
           <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
             <DialogTitle className="text-center text-[24px] font-semibold uppercase">
               Game information
             </DialogTitle>
-            <DialogClose className="hover:ropacity-100 !my-0 rounded-sm opacity-70 outline-none ring-offset-background transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:text-muted-foreground">
+            <DialogClose className="!my-0 rounded-sm opacity-70 outline-none ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:text-muted-foreground">
               <Cross2Icon className="h-7 w-7 text-white" />
               <span className="sr-only">Close</span>
             </DialogClose>
@@ -150,14 +107,14 @@ export default function HistoryModal() {
               <div className="flex w-full justify-between">
                 <button
                   className="flex items-center gap-2 rounded-sm border p-2 hover:bg-[#463E7A]"
-                  onClick={() => nextGame(false)}
+                  onClick={() => prevGame()}
                 >
                   <FaArrowLeft />
                   Prev Game
                 </button>
                 <button
                   className="flex items-center gap-2 rounded-sm border p-2 hover:bg-[#463E7A]"
-                  onClick={() => nextGame(true)}
+                  onClick={() => nextGame()}
                 >
                   Next Game
                   <FaArrowRight />
@@ -166,21 +123,23 @@ export default function HistoryModal() {
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-1 text-[20px]">
                   <SiNintendogamecube />
-                  Game # <span className="font-thin">{game._id}</span>
+                  Game # <span className="font-thin">{currentGame._id}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="uppercase">Crashed At:</span>
-                  <span className="font-thin">{game.bust}x</span>
+                  <span className="font-thin">
+                    {(currentGame.crashPoint / 100).toFixed(2)}x
+                  </span>
                 </div>
               </div>
               <div className="flex w-full items-center gap-1">
                 <span className="font-bold uppercase">Date: </span>
                 <span className="font-light">
-                  {formatDate(game.created).formattedDate}
+                  {formatDate(currentGame.created).formattedDate}
                 </span>
                 <span className="text-sm font-thin">
                   {' '}
-                  {formatDate(game.created).timeAgo}
+                  {formatDate(currentGame.created).timeAgo}
                 </span>
               </div>
               {/* <div className='flex w-full gap-1 items-center'>
@@ -189,7 +148,7 @@ export default function HistoryModal() {
                   <span className='text-sm font-thin'> 8 minutes ago</span>
                 </div> */}
               <div className="w-full rounded-sm border px-3 py-2 text-sm font-thin text-white">
-                {game.hash}
+                {currentGame.privateHash}
               </div>
             </div>
           </div>

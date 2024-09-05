@@ -32,6 +32,10 @@ export default function LeaderboardModal() {
   useEffect(() => {
     if (leaderboardState.leaderboardHistory) {
       setLoading(false);
+      console.log(
+        'leaderboardState.leaderboardHistory',
+        leaderboardState.leaderboardHistory
+      );
     }
     dispatch(leaderboardActions.subscribeLeaderboardServer());
   }, []);
@@ -83,14 +87,14 @@ export default function LeaderboardModal() {
                           <TableCell className="w-1/6 text-center">
                             <div className="flex items-center gap-2">
                               <span>
-                                {player.leaderboard?.crash?.betAmount}
+                                {player.leaderboard?.crash?.betAmount || 0}
                               </span>
                             </div>
                           </TableCell>
                           <TableCell className="w-1/6 text-center">
                             <div className="flex items-center gap-2">
                               <span>
-                                {player.leaderboard?.crash?.winAmount}
+                                {(player.stats?.profit?.total || 0).toFixed(2)}
                               </span>
                             </div>
                           </TableCell>

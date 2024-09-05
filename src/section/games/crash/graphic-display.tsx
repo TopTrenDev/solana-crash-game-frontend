@@ -24,7 +24,9 @@ import {
   numberFormat
 } from '@/utils/utils';
 import GrowingNumber from '../../../components/shared/growing-number';
-import { ICrashHistoryRecord, ITick } from '@/types';
+import { ITick } from '@/types';
+import { useAppSelector } from '@/store/redux';
+import { useGame } from '@/contexts';
 
 ChartJS.register(
   CategoryScale,
@@ -59,7 +61,6 @@ interface GraphicDisplayProps {
   crBust: number;
   crElapsed: number;
   prepareTime: number;
-  crashHistoryRecords: ICrashHistoryRecord[];
 }
 
 export default function GraphicDisplay({
@@ -67,9 +68,9 @@ export default function GraphicDisplay({
   crTick,
   crBust,
   crElapsed,
-  prepareTime,
-  crashHistoryRecords
+  prepareTime
 }: GraphicDisplayProps) {
+  const { gameHistories } = useGame();
   const [labels, setLabels] = useState<Array<number>>(initialLabel);
   const [yValue, setYValue] = useState<Array<number>>([]);
   const [earned, setEarned] = useState<number>(-1);
@@ -411,7 +412,7 @@ export default function GraphicDisplay({
                 }}
               >
                 {crashStatus === ECrashStatus.END ? (
-                  <>@{crBust}x</>
+                  <>@{(crBust / 100).toFixed(2)}x</>
                 ) : (
                   <>
                     <GrowingNumber start={crTick.prev} end={crTick.cur} />x
@@ -444,18 +445,18 @@ export default function GraphicDisplay({
               </label>
             </div>
           </div>
-          {crashHistoryRecords.length > 0 && (
+          {gameHistories.length > 0 && (
             <div
               className={`absolute bottom-0 flex w-full items-center justify-start overflow-hidden px-[12px] py-[8px] opacity-100 transition-all duration-300 ease-in-out lg:px-[24px] lg:py-[16px]`}
             >
-              {crashHistoryRecords.map((item, _index) => {
+              {gameHistories.map((item, _index) => {
                 return (
                   <span
                     key={_index}
-                    className={`mr-4 rounded-lg bg-[#00000033] px-[6px] py-[4px] font-bold ${item.bust > 1.7 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
+                    className={`mr-4 rounded-lg bg-[#00000033] px-[6px] py-[4px] font-bold ${item.crashPoint > 170 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
                     style={{ opacity: 100 - _index * 7 + '%' }}
                   >
-                    {item.bust.toFixed(2)}x
+                    {(item.crashPoint / 100).toFixed(2)}x
                   </span>
                 );
               })}

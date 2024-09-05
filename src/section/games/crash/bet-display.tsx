@@ -2,7 +2,7 @@ import History from '@/components/shared/history';
 import LiveChat from '@/components/shared/live-chat';
 import { Button } from '@/components/ui/button';
 import { ECrashStatus } from '@/constants/status';
-import { BetType, ICrashHistoryRecord } from '@/types';
+import { BetType } from '@/types';
 import { cn } from '@/utils/utils';
 import BetBoard from './bet-board';
 
@@ -11,7 +11,6 @@ interface BetHistoryProps {
   setSelectDisplay: React.Dispatch<React.SetStateAction<number>>;
   liveChatOpen: boolean;
   setLiveChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  crashHistoryRecords: ICrashHistoryRecord[];
   betData: BetType[];
   betCashout: BetType[];
   totalAmount: any;
@@ -23,7 +22,6 @@ export default function BetDisplay({
   setSelectDisplay,
   liveChatOpen,
   setLiveChatOpen,
-  crashHistoryRecords,
   betData,
   betCashout,
   totalAmount,
@@ -74,7 +72,7 @@ export default function BetDisplay({
           {selectDisplay === 1 ? (
             <LiveChat className="m-0" />
           ) : selectDisplay === 2 ? (
-            <History crashHistoryRecords={crashHistoryRecords} />
+            <History />
           ) : (
             <BetBoard
               betData={betData}

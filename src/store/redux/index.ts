@@ -13,13 +13,12 @@ import coinflipReducer from './reducers/coinflip.reducer';
 import minesReducer from './reducers/mines.reducer';
 import modalReducer from './reducers/modal.reducer';
 import tempUserReducer from './reducers/tempuser.reducer';
-import tempGameReducer from './reducers/tempgame.reducer';
 
 const sagaMiddleware = createSagaMiddleware();
 
 const userPersistConfig = {
   key: 'user',
-  storage: storage,
+  storage: storage
 };
 
 const rootReducer = combineReducers({
@@ -29,8 +28,7 @@ const rootReducer = combineReducers({
   coinflip: coinflipReducer,
   mines: minesReducer,
   modal: modalReducer,
-  tempuser: tempUserReducer,
-  tempgame: tempGameReducer
+  tempuser: tempUserReducer
 });
 
 const store = configureStore({
@@ -38,9 +36,16 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/PAUSE', 'persist/PURGE', 'persist/FLUSH', 'persist/REGISTER']
+        ignoredActions: [
+          'persist/PERSIST',
+          'persist/REHYDRATE',
+          'persist/PAUSE',
+          'persist/PURGE',
+          'persist/FLUSH',
+          'persist/REGISTER'
+        ]
       }
-    }).concat(sagaMiddleware),
+    }).concat(sagaMiddleware)
 });
 
 sagaMiddleware.run(rootSaga);
