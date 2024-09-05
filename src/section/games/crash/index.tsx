@@ -19,11 +19,13 @@ import BetDisplay from './bet-display';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/store/redux';
 import { userActions } from '@/store/redux/actions';
+import { useGame } from '@/contexts';
 
 export default function CrashGameSection() {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
   const crashBgVideoPlayer = useRef<HTMLVideoElement>(null);
   const dispatch = useDispatch();
+  const { setGameHistories } = useGame();
   const userData = useAppSelector((store: any) => store.user.userData);
 
   const toast = useToast();
@@ -48,16 +50,12 @@ export default function CrashGameSection() {
     cur: 1.01
   });
   const [crElapsed, setCrElapsed] = useState<number>(0);
-  const [crBust, setCrBust] = useState<number>(1);
+  const [crBust, setCrBust] = useState<number>(100);
   const [prepareTime, setPrepareTime] = useState<number>(0);
   const [crashStatus, setCrashStatus] = useState<ECrashStatus>(
     ECrashStatus.NONE
   );
   const [downIntervalId, setDownIntervalId] = useState(0);
-  const [crashHistoryRecords, setCrashHistoryRecords] = useState<
-    ICrashHistoryRecord[]
-  >([]);
-
   const [liveChatOpen, setLiveChatOpen] = useState<boolean>(false);
 
   const updatePrepareCountDown = () => {
@@ -90,21 +88,22 @@ export default function CrashGameSection() {
       ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY_RESPONSE,
       (historyData: any) => {
         console.log('history', historyData);
-        historyData.map((h) => {
-          setCrashHistoryRecords((prev) => [
-            ...prev,
-            {
-              bust: h.crashPoint / 100,
-              payout: 0,
-              bet: 0,
-              profit: 0,
-              hash: h.privateHash!,
-              players: h.players,
-              _id: h._id,
-              created: h.created
-            }
-          ]);
-        });
+        setGameHistories(historyData);
+        // historyData.map((h) => {
+        //   setCrashHistoryRecords((prev) => [
+        //     ...prev,
+        //     {
+        //       bust: h.crashPoint / 100,
+        //       payout: 0,
+        //       bet: 0,
+        //       profit: 0,
+        //       hash: h.privateHash!,
+        //       players: h.players,
+        //       _id: h._id,
+        //       created: h.created
+        //     }
+        //   ]);
+        // });
       }
     );
 
@@ -145,19 +144,7 @@ export default function CrashGameSection() {
 
     crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
       console.log('game end data => ', data);
-      setCrashHistoryRecords((prev) => [
-        {
-          bust: data.game.crashPoint!,
-          payout: 0,
-          bet: 0,
-          profit: 0,
-          hash: data.game.privateHash!,
-          players: {},
-          _id: data.game._id,
-          created: data.game.createdAt!
-        },
-        ...prev
-      ]);
+      setGameHistories((prev) => [data.game, ...prev]);
       setCrBust(data.game.crashPoint!);
       setCrElapsed(0);
       setCrashStatus(ECrashStatus.END);
@@ -282,7 +269,6 @@ export default function CrashGameSection() {
                   crBust={crBust}
                   crElapsed={crElapsed}
                   prepareTime={prepareTime}
-                  crashHistoryRecords={crashHistoryRecords}
                 />
               </div>
             </div>
@@ -292,7 +278,6 @@ export default function CrashGameSection() {
                 setSelectDisplay={setSelectDisplay}
                 liveChatOpen={liveChatOpen}
                 setLiveChatOpen={setLiveChatOpen}
-                crashHistoryRecords={crashHistoryRecords}
                 betData={betData}
                 betCashout={betCashout}
                 totalAmount={totalAmount}

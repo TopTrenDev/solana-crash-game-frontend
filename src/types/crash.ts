@@ -14,7 +14,7 @@ export interface ITick {
 export interface GameStateType {
   _id: string;
   status: number;
-  crashPoint: number | null;
+  crashPoint: number;
   startedAt: Date | null;
   duration: number | null;
   players: { [key: string]: BetType };
@@ -22,9 +22,9 @@ export interface GameStateType {
   pendingCount: number;
   pendingBets: PendingBetType[];
   privateSeed: string | null;
-  privateHash: string | null;
+  privateHash: string;
   publicSeed: string | null;
-  createdAt?: Date;
+  created: Date;
 }
 
 export interface BetType {
@@ -70,7 +70,8 @@ export interface FormattedGameHistoryType
     | 'privateSeed'
     | 'publicSeed'
     | 'crashPoint'
-    | 'createdAt'
+    | 'players'
+    | 'created'
   > {}
 
 interface LevelInfo {
@@ -102,14 +103,11 @@ export interface CrashHistoryData {
 }
 
 export interface ICrashHistoryRecord {
-  bust: number;
-  payout: number;
-  bet: number;
-  profit: number;
-  hash: string;
+  privateHash: string;
+  crashPoint: number;
   players: object;
   _id: string;
-  created: string;
+  created: Date;
 }
 
 export interface AutoCrashGameData {

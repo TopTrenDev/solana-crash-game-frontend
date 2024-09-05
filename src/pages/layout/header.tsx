@@ -16,6 +16,8 @@ import {
   IUserClientToServerEvents,
   IUserServerToClientEvents
 } from '@/types';
+import { toast } from 'react-toastify';
+import { getAccessToken } from '@/utils/axios';
 
 interface HeaderProps {
   isApp: boolean;
@@ -26,6 +28,8 @@ export default function Header({ isApp }: HeaderProps) {
   const modal = useModal();
   const dispatch = useDispatch();
   const userData = useAppSelector((store: any) => store.user.userData);
+  const accessToken = getAccessToken();
+  const token = `${accessToken}`;
 
   const handleLogin = async () => {
     modal.open(ModalType.LOGIN);
@@ -40,8 +44,8 @@ export default function Header({ isApp }: HeaderProps) {
   };
 
   useEffect(() => {
-    if (socket && userData?.username) {
-      socket.emit(EUserSocketEvent.CREDIT_BALANCE, userData._id);
+    if (socket && token) {
+      socket.emit(EUserSocketEvent.USER_AUTH, token);
     }
   }, [socket, userData]);
 
@@ -53,17 +57,20 @@ export default function Header({ isApp }: HeaderProps) {
 
     userSocket.on(
       EUserSocketEvent.CREDIT_BALANCE,
-      (data: { username: string; credit: number }) => {
-        if (userData?.username === data.username) {
-          dispatch(
-            userActions.userData({
-              ...userData,
-              credit: data.credit
-            })
-          );
-        }
+      (data: { credit: number }) => {
+        console.log('here');
+        dispatch(
+          userActions.userData({
+            ...userData,
+            credit: data.credit
+          })
+        );
       }
     );
+
+    userSocket.on(EUserSocketEvent.USER_JOIN_ERROR, (data: string) => {
+      toast.error(data);
+    });
 
     setSocket(userSocket);
   }, []);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import QRCode from 'react-qr-code';
 import {
@@ -18,7 +18,7 @@ import { useAppSelector } from '@/store/redux';
 import LoadingIcon from '../loading-icon';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { FaWallet, FaCopy, FaKey, FaUser, FaCoins } from 'react-icons/fa';
-import { axiosPost } from '@/utils/axios';
+import { axiosPost, getAccessToken } from '@/utils/axios';
 import { BACKEND_API_ENDPOINT } from '@/utils/constant';
 import { io, Socket } from 'socket.io-client';
 import {
@@ -34,8 +34,9 @@ const CashierModal = () => {
   const modalState = useAppSelector((state: any) => state.modal);
   const isOpen = modalState.open && modalState.type === ModalType.CASHIER;
   const toast = useToast();
-  const socket: Socket<IUserServerToClientEvents, IUserClientToServerEvents> =
-    io(`${import.meta.env.VITE_SERVER_URL}/user`);
+  const accessToken = getAccessToken();
+
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>('');
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [selectedFinance, setSelectedFinance] = useState<string>('Deposit');
@@ -49,7 +50,7 @@ const CashierModal = () => {
     toast.success('Copied');
   };
 
-  const hanndleOpenChange = async () => {
+  const handleOpenChange = async () => {
     if (isOpen) {
       modal.close(ModalType.CASHIER);
     }
@@ -78,6 +79,7 @@ const CashierModal = () => {
   };
 
   const handleWithdraw = async () => {
+    if (!socket) return;
     setLoading(true);
     try {
       const resWithdraw = await axiosPost([
@@ -97,26 +99,48 @@ const CashierModal = () => {
   };
 
   const handleTips = async () => {
+    if (!socket) return;
     setLoading(true);
-    try {
-      const resWithdraw = await axiosPost([
-        BACKEND_API_ENDPOINT.cashier.tips,
-        { data: { username, tipsAmount, password } }
-      ]);
-      if (resWithdraw.responseObject) {
-        console.log('withdraw link', resWithdraw.responseObject.txLink);
-        toast.success('Successfully tipped');
-        socket.emit(EUserSocketEvent.CREDIT_BALANCE, userData._id);
-      }
-    } catch (e) {
-      toast.error('Tips failed');
-    } finally {
-      setLoading(false);
-    }
+    socket.emit(EUserSocketEvent.CREDIT_TIP, {
+      username,
+      tipsAmount,
+      password
+    });
+    // const resWithdraw = await axiosPost([
+    //   BACKEND_API_ENDPOINT.cashier.tips,
+    //   { data: { username, tipsAmount, password } }
+    // ]);
+    // if (resWithdraw.responseObject) {
+    //   console.log('withdraw link', resWithdraw.responseObject);
+    //   socket.emit(EUserSocketEvent.CREDIT_BALANCE, userData._id);
+    // }
+
+    setLoading(false);
   };
 
+  useEffect(() => {
+    const userSocket: Socket<
+      IUserServerToClientEvents,
+      IUserClientToServerEvents
+    > = io(`${import.meta.env.VITE_SERVER_URL}/user`, {
+      auth: {
+        token: accessToken
+      }
+    });
+
+    userSocket.on(EUserSocketEvent.CREDIT_TIP_SUCCESS, () => {
+      toast.success('Successfully tipped');
+    });
+
+    userSocket.on(EUserSocketEvent.CREDIT_TIP_ERROR, (data: string) => {
+      toast.error(data);
+    });
+
+    setSocket(userSocket);
+  }, []);
+
   return (
-    <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="gap-0 rounded-lg border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm md:!max-w-[500px] lg:w-[800px] lg:!max-w-[800px]">
         <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
           <DialogTitle className="text-center text-[24px] font-semibold uppercase">

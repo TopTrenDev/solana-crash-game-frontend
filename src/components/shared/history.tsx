@@ -1,27 +1,17 @@
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { Table, TableBody, TableCell, TableRow } from '../ui/table';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
-import { ICrashHistoryRecord } from '@/types';
 import useModal from '@/hooks/use-modal';
-import useTempGame from '@/hooks/use-tempgame';
 import { ModalType } from '@/types/modal';
-import { useEffect } from 'react';
+import { useGame } from '@/contexts';
 
-interface HistoryProps {
-  crashHistoryRecords: ICrashHistoryRecord[];
-}
-
-export default function History({ crashHistoryRecords }: HistoryProps) {
+export default function History() {
   const modal = useModal();
-  const game = useTempGame();
+  const { gameHistories, setGameId } = useGame();
 
-  useEffect(() => {
-    console.log('creash history records => ', crashHistoryRecords);
-  }, []);
-
-  const openHistoryModal = (gameh: ICrashHistoryRecord) => {
+  const openHistoryModal = (gameId: number) => {
     modal.open(ModalType.HISTORY);
-    game.save(gameh);
+    setGameId(gameId);
   };
 
   return (
@@ -41,24 +31,24 @@ export default function History({ crashHistoryRecords }: HistoryProps) {
       </CardHeader>
       <CardContent className="rounded-b-lg bg-[#2C2852] px-2 py-0">
         <ScrollArea className="max-h-60 min-h-10 p-0">
-          <Table className="relative max-h-[250px] table-fixed border-separate border-spacing-y-3 overflow-y-auto">
-            <TableBody>
-              {crashHistoryRecords.map((history, index) => (
+          <Table className="relative max-h-[250px] table-fixed border-separate border-spacing-y-3 overflow-y-scroll">
+            <TableBody className="h-full overflow-y-scroll">
+              {gameHistories.map((history, index) => (
                 <TableRow
                   key={index}
                   className="cursor-pointer text-[#fff]"
-                  onClick={() => openHistoryModal(history)}
+                  onClick={() => openHistoryModal(index)}
                 >
                   <TableCell
-                    className={`w-1/5 text-center ${history.bust > 1.7 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
+                    className={`w-1/5 text-center ${history.crashPoint > 170 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
                   >
-                    {history.bust}x
+                    {(history.crashPoint / 100).toFixed(2)}x
                   </TableCell>
                   <TableCell className="w-1/5 text-center">-</TableCell>
                   <TableCell className="w-1/5 text-center">-</TableCell>
                   <TableCell className="w-1/5 text-center">-</TableCell>
                   <TableCell className="w-1/5 text-center">
-                    {history.hash}
+                    {history.privateHash}
                   </TableCell>
                 </TableRow>
               ))}

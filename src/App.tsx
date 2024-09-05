@@ -5,29 +5,32 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
 import store from '@/store/redux';
+import { GameProvider } from './contexts';
 
 export default function App() {
   return (
     <AppProvider>
-      <Provider store={store}>
-        <SolanaWalletProvider>
-          <ToastContainer
-            position="top-right"
-            autoClose={2000}
-            hideProgressBar
-            newestOnTop={false}
-            limit={1}
-            rtl={false}
-            closeOnClick
-            pauseOnFocusLoss={false}
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-          <Modal />
-          <AppRouter />
-        </SolanaWalletProvider>
-      </Provider>
+      <GameProvider>
+        <Provider store={store}>
+          <SolanaWalletProvider>
+            <ToastContainer
+              position="top-right"
+              autoClose={2000}
+              hideProgressBar
+              newestOnTop={false}
+              limit={1}
+              rtl={false}
+              closeOnClick
+              pauseOnFocusLoss={false}
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <Modal />
+            <AppRouter />
+          </SolanaWalletProvider>
+        </Provider>
+      </GameProvider>
     </AppProvider>
   );
 }
