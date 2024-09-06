@@ -39,16 +39,7 @@ export default function BetBoard({
     <div
       className={`flex h-full w-full flex-col overflow-auto rounded-lg bg-[#463E7A] ${className}`}
     >
-      <div className="hidden w-full flex-row items-center justify-center lg:flex">
-        <Button
-          className={cn(
-            'min-h-full w-1/2 rounded-lg rounded-tr-lg bg-[#463E7A] p-6 font-semibold text-white shadow-none hover:bg-transparent'
-          )}
-        >
-          Bet board
-        </Button>
-      </div>
-      <Card className="m-2 overflow-hidden rounded-lg border-none bg-[#463E7A] text-white shadow-none">
+      <Card className="m-2 h-full overflow-hidden rounded-lg border-none bg-[#463E7A] text-white shadow-none">
         <CardHeader className="flex flex-row items-center justify-between rounded-t-lg border-b border-b-[#000] bg-[#191939] p-0 text-base font-semibold">
           <Table className="w-full table-fixed">
             <TableBody>
@@ -62,7 +53,7 @@ export default function BetBoard({
           </Table>
         </CardHeader>
         <CardContent className="h-full overflow-hidden bg-[#2C2852] p-0">
-          <ScrollArea className="h-full max-h-52 min-h-10 p-0">
+          <ScrollArea className="h-full min-h-10 p-0">
             <Table className="relative table-fixed border-separate border-spacing-y-3 overflow-y-hidden">
               <TableBody>
                 {betData
@@ -77,7 +68,18 @@ export default function BetBoard({
                           className="flex cursor-pointer items-center gap-2"
                           onClick={() => openModal(player.playerID)}
                         >
-                          <span className="text-[#14F195]">
+                          <span
+                            className={`${
+                              betCashout?.find(
+                                (item) => item.playerID === player.playerID
+                              )?.stoppedAt
+                                ? 'text-[#14F195]'
+                                : crashStatus === ECrashStatus.END
+                                  ? 'text-purple'
+                                  : 'text-gray300'
+                            }
+                        `}
+                          >
                             {player.username}
                           </span>
                         </div>
@@ -94,7 +96,7 @@ export default function BetBoard({
                           (crashStatus === ECrashStatus.END ? (
                             <span className="text-purple">failed</span>
                           ) : (
-                            <span className="text-gray300">betting</span>
+                            <span className="text-gray300">-</span>
                           ))}
                       </TableCell>
                       <TableCell className="w-1/5 text-center">
@@ -111,14 +113,15 @@ export default function BetBoard({
                               ((betCashout?.find(
                                 (item) => item.playerID === player.playerID
                               )?.stoppedAt ?? 0) /
-                                100) *
+                                100 -
+                                1) *
                               player.betAmount
                             ).toFixed(2)}
                           </div>
                         ) : crashStatus === ECrashStatus.END ? (
                           <span className="text-purple">failed</span>
                         ) : (
-                          <span>betting</span>
+                          <span>-</span>
                         )}
                       </TableCell>
                     </TableRow>

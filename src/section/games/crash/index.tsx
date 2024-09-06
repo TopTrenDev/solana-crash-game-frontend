@@ -1,7 +1,7 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useRef, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
-import { BetType, FormattedPlayerBetType, ICrashHistoryRecord } from '@/types';
+import { BetType, FormattedPlayerBetType } from '@/types';
 import {
   ECrashSocketEvent,
   ICrashClientToServerEvents,

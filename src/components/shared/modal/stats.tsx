@@ -81,13 +81,13 @@ export default function StatsModal() {
                 </h3>
               </div>
             </div>
-            <div className="text-[16px] font-normal">
+            {/* <div className="text-[16px] font-normal">
               Interested in participating in the bankroll? Click{' '}
               <a href="" className="text-[#9945FF]">
                 here
               </a>{' '}
               to invest!
-            </div>
+            </div> */}
           </div>
         </div>
       </DialogContent>
