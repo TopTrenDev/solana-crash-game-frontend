@@ -91,7 +91,6 @@ export default function BetAction({
 
   const handleAutoCashoutPointChange = (event) => {
     const inputValue = event.target.value;
-    console.log('>>>>>', inputValue[0]);
     if (inputValue === '') {
       setAutoCashoutPoint(0);
       setMultiplierError('No payout');
@@ -239,9 +238,7 @@ export default function BetAction({
             <div className="flex w-full flex-row items-center justify-center">
               <Button
                 className={`h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c] ${availableBet ? 'border-b-[#5c3921] border-t-[#e79a77] bg-[#ee4d0e] hover:bg-[#ca7f5c]' : ''}`}
-                disabled={
-                  multiplierError !== '' || crashStatus === ECrashStatus.PREPARE
-                }
+                disabled={multiplierError !== ''}
                 onClick={handleStartBet}
               >
                 {isBetted

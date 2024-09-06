@@ -25,7 +25,6 @@ import {
 } from '@/utils/utils';
 import GrowingNumber from '../../../components/shared/growing-number';
 import { ITick } from '@/types';
-import { useAppSelector } from '@/store/redux';
 import { useGame } from '@/contexts';
 
 ChartJS.register(
