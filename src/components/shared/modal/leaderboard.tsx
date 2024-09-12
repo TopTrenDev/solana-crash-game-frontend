@@ -32,10 +32,10 @@ export default function LeaderboardModal() {
   useEffect(() => {
     if (leaderboardState.leaderboardHistory) {
       setLoading(false);
-      console.log(
-        'leaderboardState.leaderboardHistory',
-        leaderboardState.leaderboardHistory
-      );
+      // console.log(
+      //   'leaderboardState.leaderboardHistory',
+      //   leaderboardState.leaderboardHistory
+      // );
     }
     dispatch(leaderboardActions.subscribeLeaderboardServer());
   }, []);

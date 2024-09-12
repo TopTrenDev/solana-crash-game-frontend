@@ -128,7 +128,6 @@ export enum ECrashSocketEvent {
   CRASHGAME_JOIN_SUCCESS = 'crashgame-join-success',
   AUTO_CRASHGAME_BET = 'auto-crashgame-bet',
   PREVIOUS_CRASHGAME_HISTORY = 'previous-crashgame-history',
-  PREVIOUS_CRASHGAME_HISTORY_RESPONSE = 'previous-crashgame-history-response',
   GAME_JOIN_ERROR = 'game-join-error',
   BET_CASHOUT_ERROR = 'bet-cashout-error',
   BET_CASHOUT_SUCCESS = 'bet-cashout-success',
@@ -162,9 +161,7 @@ export interface ICrashServerToClientEvents {
   ) => void;
   [ECrashSocketEvent.BET_CASHOUT_ERROR]: (data: string) => void;
   [ECrashSocketEvent.BET_CASHOUT_SUCCESS]: (result: any) => void;
-  [ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY_RESPONSE]: (
-    histories: any[]
-  ) => void;
+  [ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY]: (histories: any[]) => void;
   [ECrashSocketEvent.GAME_JOIN_ERROR]: (data: string) => void;
   [ECrashSocketEvent.JOIN_CRASH_GAME]: (
     target: number,

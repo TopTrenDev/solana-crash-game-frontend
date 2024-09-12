@@ -27,12 +27,10 @@ import { useDispatch } from 'react-redux';
 import { userActions } from '@/store/redux/actions';
 import { useAppSelector } from '@/store/redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { useState } from 'react';
 
 const LoginSchema = z.object({
-  email: z
-    .string()
-    .nonempty('Email is required')
-    .email('Email must be a valid email address'),
+  username: z.string().nonempty('Username is required'),
   password: z
     .string()
     .nonempty('Password is required')
@@ -50,10 +48,11 @@ export default function LoginModal() {
   const modalState = useAppSelector((state: any) => state.modal);
   const dispatch = useDispatch();
   const isOpen = modalState.open && modalState.type === ModalType.LOGIN;
-  const loginForm = useForm<z.infer<typeof LoginSchema>>({
+  const signInForm = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: LoginDefaultValue
   });
+  const [rememberMe, setRememberMe] = useState(true);
 
   const hanndleOpenChange = async () => {
     if (isOpen) {
@@ -68,19 +67,31 @@ export default function LoginModal() {
   const handleSubmit = async (data: z.infer<typeof LoginSchema>) => {
     try {
       const signInPayload = {
-        email: data.email,
+        username: data.username,
         password: data.password
       };
       const resSignIn = await axiosPost([
         BACKEND_API_ENDPOINT.auth.login,
         { data: signInPayload }
       ]);
-      if (resSignIn.responseObject.auth.accessToken) {
-        setAccessToken(resSignIn.responseObject.auth.accessToken);
+
+      if (rememberMe) {
+        dispatch(
+          userActions.setCredential({
+            username: signInForm.getValues('username'),
+            password: signInForm.getValues('password')
+          })
+        );
+      } else {
+        dispatch(userActions.removeCredential());
+      }
+
+      if (resSignIn.auth.accessToken) {
+        setAccessToken(resSignIn.auth.accessToken);
         dispatch(
           userActions.userData({
-            ...resSignIn.responseObject.user,
-            wallet: resSignIn.responseObject.user.wallet.publicKey
+            ...resSignIn.user,
+            password: data.password
           })
         );
         toast.success('SignIn Success');
@@ -88,11 +99,7 @@ export default function LoginModal() {
         return;
       }
     } catch (error: any) {
-      if (error.statusCode === 400) {
-        toast.error(error.message);
-      } else {
-        toast.error('Login Failed');
-      }
+      toast.error(error?.error);
     }
   };
 
@@ -108,21 +115,21 @@ export default function LoginModal() {
             <span className="sr-only">Close</span>
           </DialogClose>
         </DialogHeader>
-        <Form {...loginForm}>
-          <form onSubmit={loginForm.handleSubmit(handleSubmit)}>
+        <Form {...signInForm}>
+          <form onSubmit={signInForm.handleSubmit(handleSubmit)}>
             <div className="flex flex-col items-center gap-7 rounded-b-lg bg-[#2C2852] px-[15px] py-[36px] lg:px-[128px]">
               <div className="flex w-full flex-col gap-5">
                 <div className="grid w-full flex-1 gap-3">
-                  <p className="text-[#9688CC]">Email</p>
+                  <p className="text-[#9688CC]">Username</p>
                   <FormField
-                    control={loginForm.control}
-                    name="email"
+                    control={signInForm.control}
+                    name="username"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="email"
+                            placeholder="username"
                             className="border border-none bg-[#463E7A] text-white placeholder:text-[#9083e6]"
                             {...field}
                           />
@@ -135,7 +142,7 @@ export default function LoginModal() {
                 <div className="grid w-full flex-1 gap-3">
                   <p className="text-gray-300">Password</p>
                   <FormField
-                    control={loginForm.control}
+                    control={signInForm.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
@@ -155,7 +162,12 @@ export default function LoginModal() {
               </div>
               <div className="flex w-full flex-row justify-between">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="terms" className="text-[#9945FF]" />
+                  <Checkbox
+                    checked={rememberMe}
+                    id="terms"
+                    className="text-[#9945FF]"
+                    onClick={() => setRememberMe((prev) => !prev)}
+                  />
                   <label
                     htmlFor="terms"
                     className="text-sm leading-none text-gray-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -174,13 +186,14 @@ export default function LoginModal() {
                 login
               </Button>
               <p className="flex text-sm text-gray-300">
+                Don’t have an account ?&nbsp;
                 <span
-                  className="cursor-pointer font-semibold text-[#9945FF]"
+                  className="cursor-pointer font-semibold text-[#049DD9]"
                   onClick={handleSignUp}
                 >
                   Register
                 </span>
-                &nbsp;a new account
+                &nbsp;now
               </p>
             </div>
           </form>

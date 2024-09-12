@@ -111,17 +111,16 @@ export default function BetAction({
 
   const handleStartBet = async () => {
     if (betAmount > 0 && !availableBet) {
-      dispatch(userActions.siteBalanceStatus(true));
-      const balanceTimeout = setTimeout(() => {
-        dispatch(userActions.siteBalanceStatus(false));
-      }, 2000);
+      // dispatch(userActions.siteBalanceStatus(true));
+      // const balanceTimeout = setTimeout(() => {
+      //   dispatch(userActions.siteBalanceStatus(false));
+      // }, 2000);
 
       const joinParams = {
         target: autoCashoutPoint ? Number(autoCashoutPoint) * 100 : 1000000,
         betAmount: Number(betAmount).valueOf()
       };
       socket?.emit('join-crash-game', joinParams);
-      return () => clearTimeout(balanceTimeout);
     }
 
     if (!(betAmount > 0)) {
@@ -137,18 +136,15 @@ export default function BetAction({
   const handleAutoBet = async () => {
     if (autoBet) {
       if (betAmount > 0) {
-        dispatch(userActions.siteBalanceStatus(true));
-        const balanceTimeout = setTimeout(() => {
-          dispatch(userActions.siteBalanceStatus(false));
-        }, 2000);
         const joinParams = {
           cashoutPoint: Number(autoCashoutPoint).valueOf() * 100,
           betAmount: Number(betAmount).valueOf()
         };
         socket?.emit('auto-crashgame-bet', joinParams);
-        return () => clearTimeout(balanceTimeout);
-      } else {
         setAutoBet(false);
+      } else {
+        toast.error('Bet amount must be greater than 0');
+        setAutoBet(true);
       }
     } else {
       setAutoBet(true);

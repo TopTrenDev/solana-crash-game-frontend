@@ -1,8 +1,4 @@
-import {
-  INIT_USER_DATA,
-  SITE_BALANCE_STATUS,
-  USER_DATA
-} from '../reducers/user.reducer';
+import { EUserSocketAction } from '../reducers/user.type';
 
 export type TUserData = {
   userData: {
@@ -14,20 +10,59 @@ export type TUserData = {
 
 export function userData(data: any) {
   return {
-    type: USER_DATA,
+    type: EUserSocketAction.USER_DATA,
     payload: data
   };
 }
 
 export function initUserData() {
   return {
-    type: INIT_USER_DATA,
+    type: EUserSocketAction.INIT_USER_DATA,
     payload: null
   };
 }
-export function siteBalanceStatus(data: boolean) {
+
+export function rememberMe(remember: boolean) {
   return {
-    type: SITE_BALANCE_STATUS,
-    payload: data
+    type: EUserSocketAction.REMEMBERME,
+    payload: remember
+  };
+}
+
+export function setCredential(credentials: {
+  username: string;
+  password: string;
+}) {
+  return {
+    type: EUserSocketAction.SET_CREDENTIALS,
+    payload: credentials
+  };
+}
+
+export function removeCredential() {
+  return {
+    type: EUserSocketAction.REMOVE_CREDENTIALS,
+    payload: null
+  };
+}
+
+export function siteBalanceUpdate(value: number) {
+  return {
+    type: EUserSocketAction.SITE_BALANCE_UPDATE,
+    payload: value
+  };
+}
+
+export function setAesKey(value: string) {
+  return {
+    type: EUserSocketAction.AES_KEY,
+    payload: value
+  };
+}
+
+export function disconnectUserServer() {
+  return {
+    type: EUserSocketAction.DISCONNECT_USER,
+    payload: null
   };
 }

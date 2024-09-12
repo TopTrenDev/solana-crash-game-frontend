@@ -3,42 +3,28 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { getAccessToken, removeAllTokens } from '@/utils/axios';
 import useToast from '@/hooks/use-toast';
-import useModal from '@/hooks/use-modal';
-import { ModalType } from '@/types/modal';
 import { useDispatch } from 'react-redux';
 import { userActions } from '@/store/redux/actions';
 import { useAppSelector } from '@/store/redux';
 
 export default function UserNav() {
-  const modal = useModal();
   const dispatch = useDispatch();
   const toast = useToast();
   const userData = useAppSelector((store: any) => store.user.userData);
   const token = getAccessToken();
 
   const handleLogout = async () => {
+    dispatch(userActions.initUserData());
     if (token) {
-      await dispatch(userActions.initUserData());
-      // disconnect();
       removeAllTokens();
-      toast.success('Logout Successfully');
     }
-  };
-
-  const toggleWalletConnection = async () => {
-    // if (account) {
-    //   disconnect();
-    //   toast.success('Wallet Disconnected');
-    // } else {
-    //   modal.open(ModalType.WALLETCONNECT);
-    // }
+    toast.success('Logout Successfully');
   };
 
   return (

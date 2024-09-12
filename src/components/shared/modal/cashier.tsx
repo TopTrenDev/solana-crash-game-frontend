@@ -14,29 +14,33 @@ import useModal from '@/hooks/use-modal';
 import { Input } from '@/components/ui/input';
 import useToast from '@/hooks/use-toast';
 import { finance } from '@/constants/data';
-import { useAppSelector } from '@/store/redux';
+import { useAppDispatch, useAppSelector } from '@/store/redux';
 import LoadingIcon from '../loading-icon';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { FaWallet, FaCopy, FaKey, FaUser, FaCoins } from 'react-icons/fa';
 import { axiosPost, getAccessToken } from '@/utils/axios';
 import { BACKEND_API_ENDPOINT } from '@/utils/constant';
 import { io, Socket } from 'socket.io-client';
+import AESWrapper from '@/lib/encryption/aes-wrapper';
 import {
   EUserSocketEvent,
   IUserClientToServerEvents,
   IUserServerToClientEvents
 } from '@/types';
+import { paymentActions } from '@/store/redux/actions';
 
 const CashierModal = () => {
   const modal = useModal();
   const userData = useAppSelector((state: any) => state.user.userData);
   const solBalance = (userData.credit / 1100).toFixed(3);
   const modalState = useAppSelector((state: any) => state.modal);
+  const aesKey = useAppSelector((state: any) => state.user.aesKey);
   const isOpen = modalState.open && modalState.type === ModalType.CASHIER;
   const toast = useToast();
   const accessToken = getAccessToken();
+  const dispatch = useAppDispatch();
+  const aesWrapper = AESWrapper.getInstance();
 
-  const [socket, setSocket] = useState<Socket | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>('');
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [selectedFinance, setSelectedFinance] = useState<string>('Deposit');
@@ -79,33 +83,36 @@ const CashierModal = () => {
   };
 
   const handleWithdraw = async () => {
-    if (!socket) return;
     setLoading(true);
+    dispatch(paymentActions.setTxProgress(true));
+    dispatch(paymentActions.paymentFailed(''));
     try {
-      const resWithdraw = await axiosPost([
-        BACKEND_API_ENDPOINT.cashier.withdraw,
-        { data: { walletAddress, amount: Number(depositAmount), password } }
-      ]);
-      if (resWithdraw.responseObject) {
-        console.log('withdraw link', resWithdraw.responseObject.txLink);
-        toast.success('Successfully withdrawn');
-        socket.emit(EUserSocketEvent.CREDIT_BALANCE, userData._id);
-      }
+      const withdrawParam = {
+        amount: Number(depositAmount),
+        address: walletAddress,
+        password
+      };
+      console.log('aesKey', aesKey);
+      const encryptedParam = await aesWrapper.encryptMessage(
+        aesKey,
+        JSON.stringify(withdrawParam)
+      );
+      dispatch(paymentActions.withDraw(encryptedParam));
     } catch (e) {
-      toast.error('Withdraw failed');
+      console.error(e);
+      dispatch(paymentActions.paymentFailed('Withdraw rejected'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleTips = async () => {
-    if (!socket) return;
     setLoading(true);
-    socket.emit(EUserSocketEvent.CREDIT_TIP, {
-      username,
-      tipsAmount,
-      password
-    });
+    // socket.emit(EUserSocketEvent.CREDIT_TIP, {
+    //   username,
+    //   tipsAmount,
+    //   password
+    // });
     // const resWithdraw = await axiosPost([
     //   BACKEND_API_ENDPOINT.cashier.tips,
     //   { data: { username, tipsAmount, password } }
@@ -118,26 +125,26 @@ const CashierModal = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    const userSocket: Socket<
-      IUserServerToClientEvents,
-      IUserClientToServerEvents
-    > = io(`${import.meta.env.VITE_SERVER_URL}/user`, {
-      auth: {
-        token: accessToken
-      }
-    });
+  // useEffect(() => {
+  //   const userSocket: Socket<
+  //     IUserServerToClientEvents,
+  //     IUserClientToServerEvents
+  //   > = io(`${import.meta.env.VITE_SERVER_URL}/user`, {
+  //     auth: {
+  //       token: accessToken
+  //     }
+  //   });
 
-    userSocket.on(EUserSocketEvent.CREDIT_TIP_SUCCESS, () => {
-      toast.success('Successfully tipped');
-    });
+  //   userSocket.on(EUserSocketEvent.CREDIT_TIP_SUCCESS, () => {
+  //     toast.success('Successfully tipped');
+  //   });
 
-    userSocket.on(EUserSocketEvent.CREDIT_TIP_ERROR, (data: string) => {
-      toast.error(data);
-    });
+  //   userSocket.on(EUserSocketEvent.CREDIT_TIP_ERROR, (data: string) => {
+  //     toast.error(data);
+  //   });
 
-    setSocket(userSocket);
-  }, []);
+  //   setSocket(userSocket);
+  // }, []);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -184,7 +191,7 @@ const CashierModal = () => {
                 <span className="text-xs text-white">Wallet address</span>
                 <div className="relative">
                   <Input
-                    placeholder={userData.wallet}
+                    placeholder={userData?.wallet?.publicKey}
                     disabled
                     className="border border-none bg-[#463E7A] pl-[3rem] text-white placeholder:text-[#9083e6]"
                   />

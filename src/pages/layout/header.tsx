@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import useModal from '@/hooks/use-modal';
 import { ModalType } from '@/types/modal';
 import { useAppSelector } from '@/store/redux';
-import { userActions } from '@/store/redux/actions';
+import { paymentActions, userActions } from '@/store/redux/actions';
 import { tabItems } from '@/constants/data';
 import logo from '/assets/logo.svg';
 import { TITLE } from '@/config';
@@ -16,20 +16,19 @@ import {
   IUserClientToServerEvents,
   IUserServerToClientEvents
 } from '@/types';
-import { toast } from 'react-toastify';
 import { getAccessToken } from '@/utils/axios';
+import useToast from '@/hooks/use-toast';
 
 interface HeaderProps {
   isApp: boolean;
 }
 
 export default function Header({ isApp }: HeaderProps) {
-  const [socket, setSocket] = useState<Socket | null>(null);
   const modal = useModal();
+  const toast = useToast();
   const dispatch = useDispatch();
   const userData = useAppSelector((store: any) => store.user.userData);
   const accessToken = getAccessToken();
-  const token = `${accessToken}`;
 
   const handleLogin = async () => {
     modal.open(ModalType.LOGIN);
@@ -44,35 +43,12 @@ export default function Header({ isApp }: HeaderProps) {
   };
 
   useEffect(() => {
-    if (socket && token) {
-      socket.emit(EUserSocketEvent.USER_AUTH, token);
-    }
-  }, [socket, userData]);
+    console.log("login payment server")
+    dispatch(paymentActions.loginPaymentServer());
+  }, [accessToken]);
 
   useEffect(() => {
-    const userSocket: Socket<
-      IUserServerToClientEvents,
-      IUserClientToServerEvents
-    > = io(`${import.meta.env.VITE_SERVER_URL}/user`);
-
-    userSocket.on(
-      EUserSocketEvent.CREDIT_BALANCE,
-      (data: { credit: number }) => {
-        console.log('here');
-        dispatch(
-          userActions.userData({
-            ...userData,
-            credit: data.credit
-          })
-        );
-      }
-    );
-
-    userSocket.on(EUserSocketEvent.USER_JOIN_ERROR, (data: string) => {
-      toast.error(data);
-    });
-
-    setSocket(userSocket);
+    dispatch(paymentActions.subscribePaymentServer());
   }, []);
 
   return (

@@ -1,4 +1,3 @@
-import { ICoinPlayer } from './coinflip';
 import {
   FormattedGameHistoryType,
   FormattedPlayerBetType,
@@ -36,48 +35,16 @@ export interface ServerToClientEvents {
   'previous-crashgame-history': (count: number) => void;
   connection_kicked: () => void;
 
-  //conflipgame Events
-  'game-creation-error': (message: string) => void;
-  'new-coinflip-game': (gameData: any) => void;
-  'private-game-created': (inviteLink: string) => void;
-  'coinflipgame-join-success': () => void;
-  'coinflipgame-joined': (data: {
-    _id: string;
-    newPlayer: ICoinPlayer;
-  }) => void;
-  'coinflipgame-rolling': (game_id: string) => void;
-  'coinflipgame-rolled': ({
-    _id,
-    randomModule,
-    coinflipResult,
-    isEarn
-  }: {
-    _id: string;
-    randomModule: number;
-    coinflipResult: boolean[];
-    isEarn: boolean;
-  }) => void;
-  'game-called-bot': (data: { _id: string; playerId: string }) => void;
-
   //chat
   message: (data: { _id: string; message: string }) => void;
 }
 
 export interface ClientToServerEvents {
   hello: () => void;
-  //crashgameevents
+  //crashgame events
   auth: (token: string) => void;
   'join-crash-game': (target: number, betAmount: number, denom: string) => void;
   'bet-cashout': () => void;
-
-  //coinflipgameevents
-  'create-new-game': (data: {
-    betAmount: number;
-    betCoinsCount: number;
-    betSide: boolean;
-    betSideCount: number;
-  }) => void;
-  'join-coinflip-game': (data: { gameId: string; color: string }) => void;
 
   //chat
   'join-chat': (_id: string) => void;
