@@ -11,9 +11,9 @@ export interface IGameContext {
 
 export const GameContext = createContext<IGameContext>({
   gameHistories: [],
-  setGameHistories: () => {},
+  setGameHistories: () => { },
   gameId: -1,
-  setGameId: () => {},
+  setGameId: () => { },
   currentGame: null
 });
 
@@ -24,8 +24,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     if (gameId < 0) return null;
     return gameHistories[gameId];
   }, [gameHistories, gameId]);
-
-  console.log('currentGame', currentGame);
 
   return (
     <GameContext.Provider

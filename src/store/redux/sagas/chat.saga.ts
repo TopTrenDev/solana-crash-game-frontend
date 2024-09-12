@@ -36,7 +36,7 @@ function subscribe(socket) {
       emit(chatActions.receiveError(error));
     });
 
-    return () => {};
+    return () => { };
   });
 }
 

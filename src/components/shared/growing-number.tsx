@@ -4,6 +4,7 @@ const GrowingNumber = ({ start, end }) => {
   const { number: numberValue } = useSpring({
     from: { number: start },
     to: { number: end }
+    // config: { duration: 0.1, tension: 170, friction: 26 }
   });
 
   return (

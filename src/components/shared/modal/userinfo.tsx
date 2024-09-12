@@ -91,10 +91,10 @@ export default function UserInfoModal() {
     [];
 
   useEffect(() => {
-    console.log('is user => ', isUser);
-    if (isUser) {
-      console.log('userId', user);
-    }
+    // console.log('is user => ', isUser);
+    // if (isUser) {
+    //   console.log('userId', user);
+    // }
   }, [isOpen]);
 
   if (isUser) {

@@ -118,7 +118,6 @@ const LiveChat = ({ className }: LiveChatProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('chatState?.chatHistory => ', chatState?.chatHistory);
     if (getMoreChat) {
       setGetMoreChat(false);
     } else {

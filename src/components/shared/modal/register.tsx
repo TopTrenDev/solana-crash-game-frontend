@@ -73,7 +73,7 @@ export default function RegisterModal() {
     setAgree((prev) => !prev);
   };
 
-  const hanndleOpenChange = async () => {
+  const handleOpenChange = async () => {
     if (isOpen) {
       modal.close(ModalType.REGISTER);
     }
@@ -88,8 +88,7 @@ export default function RegisterModal() {
       const signUpPayload = {
         username: data.username,
         email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword
+        password: data.password
       };
       await axiosPost([
         BACKEND_API_ENDPOINT.auth.register,
@@ -109,7 +108,7 @@ export default function RegisterModal() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="!max-w-[300px] gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm lg:w-[800px] lg:!max-w-[800px]">
         <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
           <DialogTitle className="text-center text-[24px] font-semibold uppercase">

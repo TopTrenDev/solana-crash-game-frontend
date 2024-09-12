@@ -9,10 +9,9 @@ import { persistReducer, persistStore } from 'redux-persist';
 import userReducer from './reducers/user.reducer';
 import chatReducer from './reducers/chat.reducer';
 import leaderboardReducer from './reducers/leaderboard.reducer';
-import coinflipReducer from './reducers/coinflip.reducer';
-import minesReducer from './reducers/mines.reducer';
 import modalReducer from './reducers/modal.reducer';
 import tempUserReducer from './reducers/tempuser.reducer';
+import paymentReducer from './reducers/payment.reducer';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -25,10 +24,9 @@ const rootReducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
   chat: chatReducer,
   leaderboard: leaderboardReducer,
-  coinflip: coinflipReducer,
-  mines: minesReducer,
   modal: modalReducer,
-  tempuser: tempUserReducer
+  tempuser: tempUserReducer,
+  payment: paymentReducer
 });
 
 const store = configureStore({

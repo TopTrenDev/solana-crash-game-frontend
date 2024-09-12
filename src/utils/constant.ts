@@ -1,8 +1,8 @@
 export const BACKEND_API_ENDPOINT = {
   auth: {
     base: '/auth',
-    register: '/auth/register',
-    login: '/auth/login'
+    register: '/auth/sign-up',
+    login: '/auth/sign-in'
   },
   cashier: {
     base: '/cashier',

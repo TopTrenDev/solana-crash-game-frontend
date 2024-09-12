@@ -10,8 +10,8 @@ export interface IChat {
 export enum EChatSocketEvent {
   LOGIN = 'auth',
   JOIN_CHAT = 'join_chat',
-  SEND_MSG = 'message',
-  RECEIVE_MSG = 'message',
+  SEND_MSG = 'frontend-backend-message',
+  RECEIVE_MSG = 'backend-frontend-message',
   DISCONNECT_CHAT = 'disconnect',
   RECEIVE_CHAT_HISTORY = 'send-chat-history',
   GET_CHAT_HISTORY = 'get-chat-history',

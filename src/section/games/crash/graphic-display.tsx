@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   BarElement,
   CategoryScale,
@@ -13,7 +13,7 @@ import {
 import { Line } from 'react-chartjs-2';
 
 import EarnedPNG from '@/assets/img/earned.png';
-import RocketPNG from '@/assets/img/rocket.png';
+import RocketPNG from '@/assets/rocket1.png';
 import FlameSpriteSheetPNG from '@/assets/img/flame.png';
 import ChartImage from '@/assets/img/chart_bg.png';
 import { ECrashStatus } from '@/constants/status';
@@ -26,6 +26,7 @@ import {
 import GrowingNumber from '../../../components/shared/growing-number';
 import { ITick } from '@/types';
 import { useGame } from '@/contexts';
+import { CrashEngine, CrashEngineState } from '@/utils/crashEngine';
 
 ChartJS.register(
   CategoryScale,
@@ -73,6 +74,444 @@ export default function GraphicDisplay({
   const [labels, setLabels] = useState<Array<number>>(initialLabel);
   const [yValue, setYValue] = useState<Array<number>>([]);
   const [earned, setEarned] = useState<number>(-1);
+
+  // ==> start new ui
+
+  const canvasReference = useRef<HTMLCanvasElement>(null);
+  const rocketRef = useRef<HTMLImageElement>(null);
+  const flameRef = useRef<HTMLDivElement>(null);
+  const t = useRef(0);
+  const speed = useRef(5);
+  const loadingPos = { x: 300, y: 450 };
+
+  let engine: CrashEngine | null = null;
+  const [timer, setTimer] = useState<number>(0);
+  const yTickWidth = 2;
+  const xTickWidth = 2;
+
+  // Raindrop properties
+  const raindropCount = 45;
+  const raindrops: any[] = [];
+
+  // ==> end new ui
+
+  // Create raindrop objects
+  function createRaindrops() {
+    raindrops.length = 0;
+    for (let i = 0; i < raindropCount; i++) {
+      raindrops.push({
+        x: Math.random() * 1366, // Random x-coordinate
+        y: Math.random() * 768, // Random y-coordinate
+        length: Math.random() * 20 + 200, // Random length of the raindrop
+        speed: speed.current, // Random speed for falling
+        width: Math.random() * 2 + 1, // Random width of the raindrop
+        opacity: 0.3 + Math.random() * 0.4,
+        fadeSpeed: 0.005 + Math.random() * 0.01
+      });
+    }
+  }
+
+  // Update raindrop positions
+  function updateRaindrops(tangent = 0) {
+    const dirX = Math.cos(tangent);
+    const dirY = Math.sin(tangent);
+    for (let i = 0; i < raindrops.length; i++) {
+      const raindrop = raindrops[i];
+      raindrop.speed = speed.current;
+      raindrop.opacity -= raindrop.fadeSpeed;
+
+      if (tangent == 0) {
+        raindrop.y += raindrop.speed;
+      } else {
+        raindrop.x -= dirX * raindrop.speed;
+        raindrop.y -= dirY * raindrop.speed;
+      }
+      // if (raindrop.y > 768) {
+      //   raindrop.y = -raindrop.length; // Reset raindrop position when it goes off-screen
+      //   raindrop.x = Math.random() * 1366; // Randomize x-coordinate on reset
+      // }
+      if (raindrop.opacity <= 0) {
+        // Reset the line when it's fully faded
+        raindrop.x = Math.random() * 1366;
+        raindrop.y = Math.random() * 768;
+        raindrop.opacity = 0.3 + Math.random() * 0.4; // Reset opacity
+      }
+      if (
+        raindrop.x > 1366 ||
+        raindrop.y > 768 ||
+        raindrop.x < 0 ||
+        raindrop.y < 0
+      ) {
+        raindrop.x = Math.random() * 1366;
+        raindrop.y = Math.random() * 768;
+        raindrop.opacity = 0.3 + Math.random() * 0.4;
+      }
+    }
+  }
+  function drawGradientLine(line, tangent) {
+    const ctx = canvasReference.current!.getContext('2d');
+    if (!ctx) return;
+
+    let angle = Math.PI / 2;
+    if (engine?.state === CrashEngineState.Active) {
+      const elapsedTime = engine.getElapsedTime();
+      if (elapsedTime < 800) {
+        // console.log(elapsedTime)
+        angle =
+          (-Math.PI / 2) * (1 - engine.getElapsedTime() / 800) +
+          tangent * (engine.getElapsedTime() / 800);
+      } else angle = tangent;
+    }
+    const dirX = Math.cos(angle);
+    const dirY = Math.sin(angle);
+
+    var gradient: any = null;
+    if (tangent == 0) {
+      gradient = ctx.createLinearGradient(
+        line.x,
+        line.y,
+        line.x,
+        line.y + line.length
+      );
+    } else {
+      gradient = ctx.createLinearGradient(
+        line.x,
+        line.y,
+        line.x - dirX * line.length,
+        line.y - dirY * line.length
+      );
+    }
+    // Set the gradient from full opacity to transparent
+    gradient.addColorStop(0, `rgba(35, 37, 59, 0)`); // Transparent at the end
+    gradient.addColorStop(1, `rgba(35, 37, 59, ${line.opacity})`); // Blue with opacity
+
+    ctx.beginPath();
+    ctx.moveTo(line.x, line.y);
+    if (tangent == 0) {
+      ctx.lineTo(line.x, line.y + line.length);
+    } else {
+      ctx.lineTo(line.x - dirX * line.length, line.y - dirY * line.length);
+    }
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 4;
+    ctx.stroke();
+  }
+
+  // Draw raindrops
+  function drawRaindrops(tangent = 0) {
+    var ctx = canvasReference.current!.getContext('2d');
+
+    // ctx.clearRect(0, 0, 1366, 768); // Clear the canvas
+    ctx!.strokeStyle = 'rgba(174,194,224,0.2)'; // Light blue color
+    ctx!.lineWidth = 1;
+    ctx!.lineCap = 'round';
+
+    for (let i = 0; i < raindrops.length; i++) {
+      const raindrop = raindrops[i];
+      drawGradientLine(raindrop, tangent);
+    }
+  }
+
+  // Animation loop
+  function animateRain(tangent) {
+    updateRaindrops(tangent);
+    drawRaindrops(tangent);
+    // requestAnimationFrame(animateRain);
+  }
+
+  const stepValues = (multiplier, e = 5, n = 2) => {
+    for (let i = 0.4, r = 0.1; ; ) {
+      if (multiplier < i) {
+        return r;
+      }
+      r *= n;
+      i *= e;
+      if (multiplier < i) {
+        return r;
+      }
+      r *= e;
+      i *= n;
+    }
+  };
+
+  const getTangent = (controlPoint, endPoint) => {
+    const dx = endPoint.x - controlPoint.x; // Derivative x at t = 1
+    const dy = endPoint.y - controlPoint.y - t.current; // Derivative y at t = 1
+    return Math.atan2(dy, dx); // Angle of the tangent in radians
+  };
+
+  const tick = useCallback(() => {
+    if (!canvasReference.current) {
+      return;
+    }
+
+    if (!engine) return;
+
+    if (crElapsed > 50000) {
+      engine.state = CrashEngineState.Over;
+    }
+
+    var ctx = canvasReference.current.getContext('2d');
+    const rocket = rocketRef?.current;
+    const flame = flameRef?.current;
+    var flameFrame: any = null;
+
+    if (engine.state === CrashEngineState.Active) {
+      // console.log(engine.elapsedTime)
+      flameFrame =
+        flame!.children[Math.floor(engine.getElapsedTime() / 16) % 11];
+    } else if (engine.state === CrashEngineState.Loading) {
+      flameFrame =
+        flame!.children[Math.floor(engine.getElapsedLoading() / 16) % 11];
+    }
+    // console.log(engine.startTime, engine.getElapsedTime(), engine.getElapsedLoading());
+    if (ctx && engine && rocket && flameFrame) {
+      if (engine.state === CrashEngineState.Active) {
+        if (crElapsed > 5000 && speed.current < 12) speed.current += 0.001;
+        if (t.current < 100) t.current += 0.04;
+        else t.current -= 0.01;
+        engine.tick(crElapsed, crTick.cur);
+      }
+      ctx.clearRect(0, 0, engine.graphWidth, engine.graphHeight);
+      const a = engine.getElapsedPosition(crElapsed);
+      const b = engine.getElapsedPosition(crElapsed * 0.5);
+
+      const tangent = getTangent(b, a);
+
+      animateRain(tangent);
+
+      if (engine.state === CrashEngineState.Active) {
+        // Draw line
+        ctx.beginPath();
+        ctx.strokeStyle = '#853278';
+        ctx.lineWidth = 5;
+        ctx.moveTo(0, engine.plotHeight);
+        const controlY = b.y + t.current;
+        ctx.quadraticCurveTo(b.x, controlY, a.x, a.y);
+        ctx.stroke();
+        ctx.save();
+        //Draw Rocket
+        var offsetY = -500;
+        if (engine.getElapsedTime() < 800) {
+          // console.log(engine.getElapsedTime())
+          offsetY = 100 * (1 - engine.getElapsedTime() / 800);
+        } else offsetY = 0;
+        ctx.translate(a.x, a.y + offsetY);
+
+        if (engine.getElapsedTime() < 800) {
+          // console.log(engine.getElapsedTime())
+          ctx.rotate((-Math.PI / 2) * (1 - engine.getElapsedTime() / 800));
+        } else ctx.rotate(tangent);
+        const imgWidth = 160;
+        const imgHeight = 64;
+        ctx.drawImage(
+          rocket,
+          -imgWidth + 10,
+          -imgHeight / 2,
+          imgWidth,
+          imgHeight
+        );
+        const imgWidthF = 160;
+        const imgHeightF = 64;
+        ctx.drawImage(
+          flameFrame,
+          -imgWidth * 2 + 10,
+          -imgHeight / 2,
+          imgWidthF,
+          imgHeightF
+        );
+        ctx.restore();
+      } else if (engine.state === CrashEngineState.Loading) {
+        ctx.save();
+        ctx.translate(loadingPos.x, loadingPos.y);
+        ctx.rotate(-Math.PI / 2);
+        var posX = 0;
+        var offsetX = Math.sin(engine.getElapsedLoading() / 16) * 1;
+        const imgWidth = 160;
+        const imgHeight = 64;
+
+        if (Number(engine.getRemainingLoading()) < 2) {
+          offsetX = 0;
+          posX -=
+            Math.cos(
+              ((1 - Number(engine.getRemainingLoading())) * Math.PI) / 2
+            ) * 50;
+          // console.log(Math.cos((1 - engine.getRemainingLoading()) * Math.PI / 2))
+        }
+        if (Number(engine.getRemainingLoading()) < 1) {
+          posX +=
+            Math.sin(1 - Number(engine.getRemainingLoading())) * Math.PI * 300;
+        }
+
+        // Check if images are loaded before drawing
+        if (rocket.complete && rocket.naturalHeight !== 0) {
+          ctx.drawImage(rocket, posX + offsetX, 0, imgWidth, imgHeight);
+        }
+
+        const imgWidthF = 160;
+        const imgHeightF = 64;
+
+        if (flameFrame.complete && flameFrame.naturalHeight !== 0) {
+          ctx.drawImage(
+            flameFrame,
+            posX - 160 + offsetX,
+            0,
+            imgWidthF,
+            imgHeightF
+          );
+        }
+
+        ctx.restore();
+      }
+
+      // Draw caption
+      ctx.font = 'bold 150px sans-serif';
+      ctx.fillStyle = '#fff';
+      let labelText = '';
+      // if (engine.state === CrashEngineState.Active) {
+      if (crashStatus === ECrashStatus.PROGRESS) {
+        labelText = crTick.cur + 'x';
+        // } else if (engine.state === CrashEngineState.Loading) {
+      } else if (crashStatus === ECrashStatus.PREPARE) {
+        labelText = engine.getRemainingLoading() + 's';
+      } else if (crashStatus === ECrashStatus.END) {
+        labelText = crBust.toFixed(2) + 'x';
+      }
+      // console.log(engine.multiplier, engine.getElapsedTime())
+      if (Number(engine.getRemainingLoading()) < 0) {
+        t.current = 0;
+        engine.state = CrashEngineState.Active;
+      }
+
+      const textSize = ctx.measureText(labelText);
+      ctx.fillText(
+        labelText,
+        engine.plotWidth / 2 - textSize.width / 2,
+        engine.plotHeight / 2 +
+          (textSize.actualBoundingBoxAscent +
+            textSize.actualBoundingBoxDescent) /
+            2
+      );
+
+      ctx.font = '10px sans-serif';
+      ctx.fillStyle = '#222';
+      ctx.strokeStyle = '#777';
+
+      // Draw y axis
+      const stepOffset = stepValues(crTick.cur || 1);
+      const stepScale = engine.plotHeight / engine.yAxis;
+      const subStepOffset = stepOffset * stepScale;
+      let subSteps = Math.max(
+        2,
+        Math.min(16, ~~(subStepOffset / Math.max(3, engine.yAxis / stepOffset)))
+      );
+      subSteps += subSteps % 2;
+
+      for (
+        let offset = stepOffset, step = 0;
+        offset < engine.yAxis + stepOffset && step <= 100;
+        offset += stepOffset, step++
+      ) {
+        const positionX = 0.5 + ~~engine.plotWidth + 15;
+        const positionY = engine.plotHeight - offset * stepScale;
+
+        // Draw ticker
+        ctx.strokeStyle = '#444';
+        ctx.lineWidth = yTickWidth;
+        ctx.beginPath();
+        ctx.moveTo(positionX - yTickWidth, positionY);
+        ctx.lineTo(positionX, positionY);
+        ctx.stroke();
+        ctx.strokeStyle = '#777';
+
+        // Draw caption
+        const labelText =
+          engine.getYMultiplier(positionY).toFixed(crTick.cur > 2 ? 0 : 1) +
+          'x';
+        const textSize = ctx.measureText(labelText);
+        ctx.fillStyle = '#666';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(
+          labelText,
+          positionX + 10,
+          positionY +
+            (textSize.actualBoundingBoxAscent +
+              textSize.actualBoundingBoxDescent) /
+              2
+        );
+
+        // Draw substeps
+        for (let o = 1; o < subSteps; o++) {
+          const isMiddleSubStep = o === subSteps / 2;
+          const subStepWidth = isMiddleSubStep ? 12 : 7;
+          const subStepPositionY =
+            0.5 + ~~(positionY + (subStepOffset / subSteps) * o);
+
+          // Draw ticker
+          ctx.beginPath();
+          ctx.moveTo(positionX - subStepWidth, subStepPositionY);
+          ctx.lineTo(positionX, subStepPositionY);
+          ctx.stroke();
+        }
+      }
+
+      // Draw x axis
+      const xStepOffset = stepValues(engine.xAxis, 5, 2);
+      const xStepScale = engine.plotWidth / (engine.xAxis / xStepOffset);
+
+      for (
+        let step = 1, offset = 0;
+        offset < engine.xAxis + xStepOffset && step <= 100;
+        offset += xStepOffset, step++
+      ) {
+        const seconds = offset / 1000;
+        const positionX = step === 0 ? 4 : (step - 1) * xStepScale;
+        const positionY = engine.plotHeight + 60;
+
+        // Draw ticker
+        ctx.strokeStyle = '#444';
+        ctx.lineWidth = xTickWidth;
+        ctx.beginPath();
+        ctx.moveTo(positionX, positionY - xTickWidth / 2);
+        ctx.lineTo(positionX, positionY + xTickWidth);
+        ctx.stroke();
+        ctx.strokeStyle = '#777';
+
+        // Draw caption
+        const labelText = seconds.toFixed(0) + 's';
+        const textSize = ctx.measureText(labelText);
+        ctx.fillText(labelText, positionX - textSize.width / 2, positionY + 15);
+      }
+    }
+    setTimer(requestAnimationFrame(tick));
+  }, [crashStatus, crTick, crBust, crElapsed]);
+
+  useEffect(() => {
+    createRaindrops();
+    t.current = 0;
+    speed.current = 5;
+
+    const newEngine = new CrashEngine();
+    newEngine.onResize(1366, 768);
+    newEngine.state = CrashEngineState.Loading;
+    // if (prestartTime == 0) {
+    newEngine.startTime = new Date().getTime() + 6000; // 6s starting time
+    // } else {
+    //   newEngine.startTime = new Date().getTime() - prestartTime;
+    //   newEngine.state = CrashEngineState.Active;
+    // }
+    engine = newEngine;
+
+    setTimer(requestAnimationFrame(tick));
+
+    return () => {
+      if (timer) {
+        cancelAnimationFrame(timer);
+      }
+      engine!.destroy();
+    };
+    // Initialize raindrops and start the animation
+  }, []);
 
   const graphColor = '#FFFFFF';
 
@@ -382,7 +821,27 @@ export default function GraphicDisplay({
   return (
     <div className="h-full w-full rounded-lg">
       <div className="relative h-full w-full">
-        <div className={`relative h-full w-full`}>
+        <img ref={rocketRef} src={RocketPNG} style={{ display: 'none' }} />
+        <div ref={flameRef}>
+          <img src="/flame/1.png" style={{ display: 'none' }} />
+          <img src="/flame/2.png" style={{ display: 'none' }} />
+          <img src="/flame/3.png" style={{ display: 'none' }} />
+          <img src="/flame/4.png" style={{ display: 'none' }} />
+          <img src="/flame/5.png" style={{ display: 'none' }} />
+          <img src="/flame/6.png" style={{ display: 'none' }} />
+          <img src="/flame/7.png" style={{ display: 'none' }} />
+          <img src="/flame/8.png" style={{ display: 'none' }} />
+          <img src="/flame/9.png" style={{ display: 'none' }} />
+          <img src="/flame/10.png" style={{ display: 'none' }} />
+          <img src="/flame/11.png" style={{ display: 'none' }} />
+        </div>
+        <canvas
+          style={{ background: '#131528' }}
+          ref={canvasReference}
+          width="1366"
+          height="768"
+        />
+        {/* <div className={`relative h-full w-full`}>
           {crashStatus === ECrashStatus.NONE && (
             <div className="crash-status-shadow absolute top-10 flex w-full flex-col items-center justify-center gap-5">
               <div className="text-[12px] font-extrabold uppercase text-[#fff] delay-100 xl:text-6xl">
@@ -467,7 +926,7 @@ export default function GraphicDisplay({
             data={data}
             {...(config as object)}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

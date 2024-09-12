@@ -1,6 +1,7 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useEffect, useRef, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
+import customParser from 'socket.io-msgpack-parser';
 import { BetType, FormattedPlayerBetType } from '@/types';
 import {
   ECrashSocketEvent,
@@ -80,37 +81,24 @@ export default function CrashGameSection() {
     const crashSocket: Socket<
       ICrashServerToClientEvents,
       ICrashClientToServerEvents
-    > = io(`${SERVER_URL}/crash`);
+    > = io(
+      `${SERVER_URL}/crash`
+      // { parser: customParser }
+    );
 
     crashSocket.emit(ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY, 15 as any);
 
     crashSocket.on(
-      ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY_RESPONSE,
+      ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY,
       (historyData: any) => {
         console.log('history', historyData);
         setGameHistories(historyData);
-        // historyData.map((h) => {
-        //   setCrashHistoryRecords((prev) => [
-        //     ...prev,
-        //     {
-        //       bust: h.crashPoint / 100,
-        //       payout: 0,
-        //       bet: 0,
-        //       profit: 0,
-        //       hash: h.privateHash!,
-        //       players: h.players,
-        //       _id: h._id,
-        //       created: h.created
-        //     }
-        //   ]);
-        // });
       }
     );
 
     crashSocket.on(
       ECrashSocketEvent.GAME_TICK,
       (tick: { e: number; p: number }) => {
-        // console.log('e', tick.e, 'p', tick.p);
         setCrashStatus(ECrashStatus.PROGRESS);
         setCrTick((prev) => ({
           prev: prev.cur,
@@ -132,7 +120,7 @@ export default function CrashGameSection() {
 
     crashSocket.on(ECrashSocketEvent.GAME_START, (data) => {
       setCrashStatus(ECrashStatus.PROGRESS);
-      setCrTick({ prev: 1, cur: 1 });
+      setCrTick({ prev: 1.0, cur: 1.0 });
       playCrashBgVideo();
       setAvailableFirstBet(false);
     });
@@ -236,7 +224,7 @@ export default function CrashGameSection() {
         <div className="flex h-full w-full gap-2 px-[20px] py-[44px] lg:p-[40px]">
           <div className="flex h-full w-full flex-col justify-between gap-6 lg:w-3/4">
             <div className="flex h-full w-full gap-6 max-lg:flex-col-reverse lg:h-1/2">
-              <div className="m-0 flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:w-1/3">
+              {/* <div className="m-0 flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:w-1/3">
                 <BetAction
                   selectMode={selectMode}
                   setSelectMode={setSelectMode}
@@ -261,7 +249,7 @@ export default function CrashGameSection() {
                   crTick={crTick}
                   socket={socket!}
                 />
-              </div>
+              </div> */}
               <div className="w-3/3 relative m-0 h-full rounded-md lg:m-[5px] lg:w-2/3">
                 <GraphicDisplay
                   crashStatus={crashStatus}
@@ -272,7 +260,7 @@ export default function CrashGameSection() {
                 />
               </div>
             </div>
-            <div className="flex h-1/2 w-full">
+            {/* <div className="flex h-1/2 w-full">
               <BetDisplay
                 selectDisplay={selectDisplay}
                 setSelectDisplay={setSelectDisplay}
@@ -283,16 +271,16 @@ export default function CrashGameSection() {
                 totalAmount={totalAmount}
                 crashStatus={crashStatus}
               />
-            </div>
+            </div> */}
           </div>
-          <div className="hidden h-full w-1/4 flex-col lg:flex">
+          {/* <div className="hidden h-full w-1/4 flex-col lg:flex">
             <BetBoard
               betData={betData}
               betCashout={betCashout}
               totalAmount={totalAmount}
               crashStatus={crashStatus}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </ScrollArea>

@@ -1,17 +1,18 @@
-import { IChatClientToServerEvents, IChatServerToClientEvents } from '@/types';
 import {
-  ICoinflipClientToServerEvents,
-  ICoinflipServerToClientEvents
-} from '@/types/coinflip';
+  IChatClientToServerEvents,
+  IChatServerToClientEvents,
+  IUserClientToServerEvents,
+  IUserServerToClientEvents
+} from '@/types';
 import {
   ILeaderboardClientToServerEvents,
   ILeaderboardServerToClientEvents
 } from '@/types/leader';
+import { IPaymentClientToServerEvents, IPaymentServerToClientEvents } from '@/types/payment';
 import { Socket, io } from 'socket.io-client';
 // import customParser from 'socket.io-msgpack-parser'
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-
 const createSocket = <ServerEvents, ClientEvents>(
   namespace: string
 ): Socket<any, any> => {
@@ -26,26 +27,28 @@ const chatSocket = createSocket<
   IChatClientToServerEvents
 >('chat');
 
-const coinflipSocket = createSocket<
-  ICoinflipServerToClientEvents,
-  ICoinflipClientToServerEvents
->('coinflip');
+const paymentSocket = createSocket<
+  IPaymentServerToClientEvents,
+  IPaymentClientToServerEvents
+>('payment');
 
-const leaderboardSocket = createSocket<
-  ILeaderboardServerToClientEvents,
-  ILeaderboardClientToServerEvents
->('leaderboard');
+// const leaderboardSocket = createSocket<
+//   ILeaderboardServerToClientEvents,
+//   ILeaderboardClientToServerEvents
+// >('leaderboard');
 
-const minesSocket = createSocket<
-  ILeaderboardServerToClientEvents,
-  ILeaderboardClientToServerEvents
->('mines');
+const userSocket = createSocket<
+  IUserServerToClientEvents,
+  IUserClientToServerEvents
+>('user');
 
-const KartelSocket = {
+const SolacrashSocket = {
   chat: chatSocket,
-  coinflip: coinflipSocket,
-  leaderboard: leaderboardSocket,
-  mines: minesSocket
+  user: userSocket,
+  payment: paymentSocket
+  // coinflip: coinflipSocket,
+  // leaderboard: leaderboardSocket,
+  // mines: minesSocket
 };
 
-export default KartelSocket;
+export default SolacrashSocket;
