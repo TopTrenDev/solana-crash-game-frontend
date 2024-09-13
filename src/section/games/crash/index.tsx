@@ -251,7 +251,7 @@ export default function CrashGameSection() {
                   socket={socket!}
                 />
               </div> */}
-              <div className="w-3/3 relative m-0 h-full rounded-md lg:m-[5px] lg:w-2/3">
+              <div className="w-3/3 relative m-0 h-full rounded-md lg:m-[5px] lg:w-2/3 ">
                 <GraphicDisplay
                   crashStatus={crashStatus}
                   crTick={crTick}
