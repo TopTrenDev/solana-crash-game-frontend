@@ -21,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/store/redux';
 import { userActions } from '@/store/redux/actions';
 import { useGame } from '@/contexts';
+import Graphic from './graphic';
 
 export default function CrashGameSection() {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -252,6 +253,13 @@ export default function CrashGameSection() {
               </div> */}
               <div className="w-3/3 relative m-0 h-full rounded-md lg:m-[5px] lg:w-2/3">
                 <GraphicDisplay
+                  crashStatus={crashStatus}
+                  crTick={crTick}
+                  crBust={crBust}
+                  crElapsed={crElapsed}
+                  prepareTime={prepareTime}
+                />
+                <Graphic
                   crashStatus={crashStatus}
                   crTick={crTick}
                   crBust={crBust}
