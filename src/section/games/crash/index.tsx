@@ -25,7 +25,6 @@ import Graphic from './graphic';
 
 export default function CrashGameSection() {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-  const crashBgVideoPlayer = useRef<HTMLVideoElement>(null);
   const dispatch = useDispatch();
   const { setGameHistories } = useGame();
   const userData = useAppSelector((store: any) => store.user.userData);
@@ -62,14 +61,6 @@ export default function CrashGameSection() {
 
   const updatePrepareCountDown = () => {
     setPrepareTime((prev) => prev - 100);
-  };
-
-  const playCrashBgVideo = () => {
-    crashBgVideoPlayer?.current?.play();
-  };
-
-  const stopCrashBgVideo = () => {
-    crashBgVideoPlayer?.current?.pause();
   };
 
   useEffect(() => {
@@ -112,7 +103,6 @@ export default function CrashGameSection() {
     crashSocket.on(ECrashSocketEvent.GAME_STARTING, (data) => {
       setCrashStatus(ECrashStatus.PREPARE);
       setPrepareTime(data.timeUntilStart ?? 0);
-      stopCrashBgVideo();
       setBetData([]);
       setBetCashout([]);
       setTotalAmount(0);
@@ -122,7 +112,6 @@ export default function CrashGameSection() {
     crashSocket.on(ECrashSocketEvent.GAME_START, (data) => {
       setCrashStatus(ECrashStatus.PROGRESS);
       setCrTick({ prev: 1.0, cur: 1.0 });
-      playCrashBgVideo();
       setAvailableFirstBet(false);
     });
 
@@ -137,7 +126,6 @@ export default function CrashGameSection() {
       setCrBust(data.game.crashPoint!);
       setCrElapsed(0);
       setCrashStatus(ECrashStatus.END);
-      stopCrashBgVideo();
       setAvailableBet(false);
       setAvailableFirstBet(false);
     });

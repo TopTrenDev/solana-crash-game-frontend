@@ -2,138 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import RocketPNG from '@/assets/rocket1.png';
 import { ECrashStatus } from '@/constants/status';
 import { ITick } from '@/types';
-
-export enum CrashEngineState {
-  PREPARE = 'PREPARE',
-  PROGRESS = 'PROGRESS',
-  END = 'END'
-}
-
-export class CrashEngine {
-  public static CrashSpeed = 0.00006;
-  public static PredictingLapse = 300;
-
-  public startTime = 0;
-  public loadingTime = 6000;
-  public loadStartTime = Date.now();
-  public elapsedTime = 0;
-  public finalElapsed = 0;
-  public finalMultiplier = 0;
-  public crashPoint: number | null = null;
-  public betAmount = 0;
-  public graphWidth = 0;
-  public graphHeight = 0;
-  public plotWidth = 0;
-  public plotHeight = 0;
-  public plotOffsetX = 0;
-  public plotOffsetY = 0;
-  public xAxis = 0;
-  public yAxis = 0;
-  public xIncrement = 0;
-  public yIncrement = 0;
-  public xAxisMinimum = 1000;
-  public yAxisMinimum = -1;
-  public elapsedOffset = 0;
-  public yAxisMultiplier = 1.5;
-  public multiplier = 1;
-  public tickTimeout: number | null = null;
-  public lag = false;
-  public lastGameTick: number | null = null;
-  public lagTimeout: number | null = null;
-  public state = CrashEngineState.PREPARE;
-  public checkForLag = (() => {
-    this.lag = true;
-  }).bind(this);
-
-  public onResize(width: number, height: number) {
-    this.graphWidth = width;
-    this.graphHeight = height;
-    this.plotOffsetX = 50;
-    this.plotOffsetY = 40;
-    this.plotWidth = width - this.plotOffsetX;
-    this.plotHeight = height - this.plotOffsetY - 50;
-  }
-
-  public getElapsedPayout(elapsedTime: number) {
-    const payout =
-      ~~(100 * Math.pow(Math.E, CrashEngine.CrashSpeed * elapsedTime)) / 100;
-    if (!isFinite(payout)) {
-      throw new Error('Infinite payout');
-    }
-    return Math.max(payout, 1);
-  }
-
-  public gameTick() {
-    this.elapsedTime = this.getElapsedTime();
-    this.multiplier =
-      this.state !== CrashEngineState.END
-        ? this.getElapsedPayout(this.elapsedTime)
-        : this.finalMultiplier;
-    this.yAxisMinimum = this.yAxisMultiplier;
-    this.xAxis = Math.max(
-      this.elapsedTime + this.elapsedOffset,
-      this.xAxisMinimum
-    );
-    this.yAxis = Math.max(this.multiplier, this.yAxisMinimum);
-    this.xIncrement = this.plotWidth / this.xAxis;
-    this.yIncrement = this.plotHeight / this.yAxis;
-  }
-
-  public destroy() {
-    if (this.tickTimeout) {
-      clearTimeout(this.tickTimeout);
-    }
-
-    if (this.lagTimeout) {
-      clearTimeout(this.lagTimeout);
-    }
-  }
-
-  public getElapsedTime() {
-    if (this.state === CrashEngineState.PREPARE) {
-      return 0;
-    }
-
-    if (this.state === CrashEngineState.END) {
-      return this.finalElapsed;
-    }
-
-    if (this.state !== CrashEngineState.PROGRESS) {
-      return 0;
-    }
-    return Date.now() - this.startTime;
-  }
-
-  public getElapsedLoading() {
-    if (this.state === CrashEngineState.PREPARE) {
-      return Date.now() - this.loadStartTime;
-    }
-    return 0;
-  }
-
-  public getRemainingLoading() {
-    return ((this.loadingTime - this.getElapsedLoading()) / 1000).toFixed(2);
-  }
-
-  public getElapsedPosition(elapsedTime: number) {
-    const elapsedPayout = this.getElapsedPayout(elapsedTime) - 1;
-    return {
-      x: elapsedTime * this.xIncrement,
-      y: this.plotHeight - elapsedPayout * this.yIncrement
-    };
-  }
-
-  public getYMultiplier(yPosition: number) {
-    return (
-      Math.ceil(
-        1000 * (this.yAxis - (yPosition / this.plotHeight) * this.yAxis + 1)
-      ) / 1000
-    );
-  }
-  public getMultiplierY(multiplier: number) {
-    return this.plotHeight - (multiplier - 1) * this.yIncrement;
-  }
-}
+import { CrashEngine } from './useCrashEngine';
 
 interface GraphicDisplayProps {
   crashStatus: ECrashStatus;
@@ -157,7 +26,7 @@ export default function Graphic({
   const speed = useRef(5);
   const loadingPos = { x: 300, y: 450 };
 
-  let engine: CrashEngine | null = null;
+  const engine: CrashEngine = new CrashEngine();
   const [timer, setTimer] = useState<number>(0);
   const yTickWidth = 2;
   const xTickWidth = 2;
@@ -299,9 +168,9 @@ export default function Graphic({
     return Math.atan2(dy, dx); // Angle of the tangent in radians
   };
 
-  const tick = () => {
+  const tick = useCallback(() => {
     const ctx = canvasReference.current?.getContext('2d');
-    if (!ctx || !engine || !rocketRef.current || !flameRef.current) return;
+    if (!ctx || !rocketRef.current || !flameRef.current) return;
 
     // Clear the canvas for new drawing
     ctx.clearRect(0, 0, engine.graphWidth, engine.graphHeight);
@@ -312,19 +181,19 @@ export default function Graphic({
     const elapsedTime = engine.getElapsedTime();
     const elapsedLoading = engine.getElapsedLoading();
     const remainingLoading = Number(engine.getRemainingLoading());
-    const a = engine.getElapsedPosition(engine.elapsedTime);
-    const b = engine.getElapsedPosition(engine.elapsedTime * 0.5);
+    const a = engine.getElapsedPosition(elapsedTime);
+    const b = engine.getElapsedPosition(elapsedTime * 0.5);
     const tangent = getTangent(b, a);
     const frameIndex =
       Math.floor(
-        engine.state === CrashEngineState.PROGRESS
+        engine.state === ECrashStatus.PROGRESS
           ? elapsedTime
           : elapsedLoading / 16
       ) % 11;
     const flameFrame = flame.children[frameIndex];
 
     if (flameFrame) {
-      if (engine.state === CrashEngineState.PROGRESS) {
+      if (engine.state === ECrashStatus.PROGRESS) {
         if (engine.elapsedTime > 5000 && speed.current < 12)
           speed.current += 0.001;
         if (t.current < 100) t.current += 0.04;
@@ -339,7 +208,7 @@ export default function Graphic({
       const halfImgHeight = imgHeight / 2;
       const doubleImgWidth = imgWidth * 2;
 
-      if (engine.state === CrashEngineState.PROGRESS) {
+      if (engine.state === ECrashStatus.PROGRESS) {
         drawActiveState(
           ctx,
           rocketObject,
@@ -351,9 +220,10 @@ export default function Graphic({
           imgWidth,
           imgHeight,
           halfImgHeight,
-          doubleImgWidth
+          doubleImgWidth,
+          engine.plotHeight
         );
-      } else if (engine.state === CrashEngineState.PREPARE) {
+      } else if (engine.state === ECrashStatus.PREPARE) {
         drawLoadingState(
           ctx,
           rocketObject,
@@ -368,10 +238,10 @@ export default function Graphic({
 
       drawCaption(ctx, engine, remainingLoading);
 
-      drawAxes(ctx, engine);
+      // drawAxes(ctx, engine);
     }
     setTimer(requestAnimationFrame(tick));
-  };
+  }, [crashStatus, crElapsed, prepareTime]);
 
   function drawAxes(ctx, engine) {
     ctx.font = '10px sans-serif';
@@ -496,7 +366,7 @@ export default function Graphic({
   // Extracted drawing logic for active state
   function drawActiveState(
     ctx,
-    img,
+    rocketObject,
     flameFrame,
     a,
     b,
@@ -505,13 +375,14 @@ export default function Graphic({
     imgWidth,
     imgHeight,
     halfImgHeight,
-    doubleImgWidth
+    doubleImgWidth,
+    plotHeight
   ) {
     // Draw line
     ctx.beginPath();
     ctx.strokeStyle = '#853278';
     ctx.lineWidth = 5;
-    ctx.moveTo(0, engine!.plotHeight);
+    ctx.moveTo(0, plotHeight);
     const controlY = b.y + t.current;
     ctx.quadraticCurveTo(b.x, controlY, a.x, a.y);
     ctx.stroke();
@@ -523,7 +394,13 @@ export default function Graphic({
     ctx.rotate(
       elapsedTime < 800 ? (-Math.PI / 2) * (1 - elapsedTime / 800) : tangent
     );
-    ctx.drawImage(img, -imgWidth + 10, -halfImgHeight, imgWidth, imgHeight);
+    ctx.drawImage(
+      rocketObject,
+      -imgWidth + 10,
+      -halfImgHeight,
+      imgWidth,
+      imgHeight
+    );
     ctx.drawImage(
       flameFrame,
       -doubleImgWidth + 10,
@@ -537,7 +414,7 @@ export default function Graphic({
   // Extracted drawing logic for loading state
   function drawLoadingState(
     ctx,
-    img,
+    rocketObject,
     flameFrame,
     loadingPos,
     elapsedLoading,
@@ -555,7 +432,7 @@ export default function Graphic({
       remainingLoading < 2
         ? Math.cos(((1 - remainingLoading) * Math.PI) / 2) * 50
         : 0;
-    ctx.drawImage(img, posX + offsetX, 0, imgWidth, imgHeight);
+    ctx.drawImage(rocketObject, posX + offsetX, 0, imgWidth, imgHeight);
     ctx.drawImage(
       flameFrame,
       posX - imgWidth + offsetX,
@@ -570,20 +447,20 @@ export default function Graphic({
   function drawCaption(ctx, engine, remainingLoading) {
     ctx.font = 'bold 150px sans-serif';
     ctx.fillStyle = '#fff';
-    var labelText = '';
+    let labelText = '';
     switch (engine.state) {
-      case CrashEngineState.PROGRESS:
-      case CrashEngineState.END:
+      case ECrashStatus.PROGRESS:
+      case ECrashStatus.END:
         labelText = engine.multiplier.toFixed(2) + 'x';
         break;
-      case CrashEngineState.PREPARE:
+      case ECrashStatus.PREPARE:
         labelText = remainingLoading + 's';
         break;
     }
 
     if (remainingLoading < 0) {
       t.current = 0;
-      engine.state = CrashEngineState.PROGRESS;
+      engine.state = ECrashStatus.PROGRESS;
     }
 
     const textSize = ctx.measureText(labelText);
@@ -597,23 +474,65 @@ export default function Graphic({
   }
 
   useEffect(() => {
-    console.log('crashStatus is changed', crashStatus);
     if (crashStatus === ECrashStatus.PREPARE) {
       // createRaindrops();
       t.current = 0;
       speed.current = 5;
 
-      const newEngine = new CrashEngine();
-      newEngine.onResize(672, 416);
-      newEngine.state = CrashEngineState.PREPARE;
-      newEngine.startTime = new Date().getTime() + 8000; // 6s starting time
+      engine.onResize(672, 416);
 
-      engine = newEngine;
+      engine.startTime = new Date().getTime() + 8000; // 6s starting time
+      engine.state = ECrashStatus.PREPARE;
       setTimer(requestAnimationFrame(tick));
     } else if (crashStatus === ECrashStatus.END) {
       if (timer) cancelAnimationFrame(timer);
-      if (engine) engine!.destroy();
+      if (engine) {
+        engine.state = crashStatus;
+      }
     }
+
+    // else if (crashStatus === ECrashStatus.PROGRESS) {
+    //   // tick();
+    //   const ctx = canvasReference.current?.getContext('2d');
+    //   console.log('ctx', ctx);
+    //   console.log('engine', engine);
+    //   console.log('rocketRef.current', rocketRef.current);
+    //   console.log('flameRef.current', flameRef.current);
+    //   if (!ctx || !engine || !rocketRef.current || !flameRef.current) {
+    //     console.log('returned');
+    //     return;
+    //   }
+
+    //   // Clear the canvas for new drawing
+    //   // ctx.clearRect(0, 0, engine.graphWidth, engine.graphHeight);
+
+    //   const rocketObject = rocketRef.current;
+    //   const flame = flameRef.current;
+
+    //   const elapsedTime = crElapsed;
+    //   const a = engine.getElapsedPosition(elapsedTime);
+    //   const b = engine.getElapsedPosition(elapsedTime * 0.5);
+    //   const tangent = getTangent(b, a);
+    //   const frameIndex = Math.floor(elapsedTime / 16) % 11;
+    //   const flameFrame = flame.children[frameIndex];
+    //   const imgWidth = 160;
+    //   const imgHeight = 64;
+    //   const halfImgHeight = imgHeight / 2;
+    //   const doubleImgWidth = imgWidth * 2;
+    //   drawActiveState(
+    //     ctx,
+    //     rocketObject,
+    //     flameFrame,
+    //     a,
+    //     b,
+    //     tangent,
+    //     elapsedTime,
+    //     imgWidth,
+    //     imgHeight,
+    //     halfImgHeight,
+    //     doubleImgWidth
+    //   );
+    // }
   }, [crashStatus, crElapsed]);
 
   return (
