@@ -121,7 +121,7 @@ export default function CrashGameSection() {
     });
 
     crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
-      console.log('game end data => ', data);
+      // console.log('game end data => ', data);
       setGameHistories((prev) => [data.game, ...prev]);
       setCrBust(data.game.crashPoint!);
       setCrElapsed(0);
@@ -213,7 +213,7 @@ export default function CrashGameSection() {
         <div className="flex h-full w-full gap-2 px-[20px] py-[44px] lg:p-[40px]">
           <div className="flex h-full w-full flex-col justify-between gap-6 lg:w-3/4">
             <div className="flex h-full w-full gap-6 max-lg:flex-col-reverse lg:h-1/2">
-              {/* <div className="m-0 flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:w-1/3">
+              <div className="m-0 flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:w-1/3">
                 <BetAction
                   selectMode={selectMode}
                   setSelectMode={setSelectMode}
@@ -238,15 +238,15 @@ export default function CrashGameSection() {
                   crTick={crTick}
                   socket={socket!}
                 />
-              </div> */}
+              </div>
               <div className="w-3/3 relative m-0 h-full rounded-md lg:m-[5px] lg:w-2/3 ">
-                <GraphicDisplay
+                {/* <GraphicDisplay
                   crashStatus={crashStatus}
                   crTick={crTick}
                   crBust={crBust}
                   crElapsed={crElapsed}
                   prepareTime={prepareTime}
-                />
+                /> */}
                 <Graphic
                   crashStatus={crashStatus}
                   crTick={crTick}
@@ -256,7 +256,7 @@ export default function CrashGameSection() {
                 />
               </div>
             </div>
-            {/* <div className="flex h-1/2 w-full">
+            <div className="flex h-1/2 w-full">
               <BetDisplay
                 selectDisplay={selectDisplay}
                 setSelectDisplay={setSelectDisplay}
@@ -267,16 +267,16 @@ export default function CrashGameSection() {
                 totalAmount={totalAmount}
                 crashStatus={crashStatus}
               />
-            </div> */}
+            </div>
           </div>
-          {/* <div className="hidden h-full w-1/4 flex-col lg:flex">
+          <div className="hidden h-full w-1/4 flex-col lg:flex">
             <BetBoard
               betData={betData}
               betCashout={betCashout}
               totalAmount={totalAmount}
               crashStatus={crashStatus}
             />
-          </div> */}
+          </div>
         </div>
       </div>
     </ScrollArea>

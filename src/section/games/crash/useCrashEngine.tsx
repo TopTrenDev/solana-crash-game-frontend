@@ -7,7 +7,7 @@ const AdditionalHeightOffset = 50;
 
 export class CrashEngine {
   public startTime = 0;
-  private loadingTime = 6000;
+  private loadingTime = 8000;
   private loadStartTime = Date.now();
   public elapsedTime = 0;
   public graphWidth = 0;
