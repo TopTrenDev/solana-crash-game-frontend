@@ -69,123 +69,123 @@ export default function CrashGameSection() {
     }
   }, [getAccessToken()]);
 
-  // useEffect(() => {
-  //   const crashSocket: Socket<
-  //     ICrashServerToClientEvents,
-  //     ICrashClientToServerEvents
-  //   > = io(
-  //     `${SERVER_URL}/crash`
-  //     // { parser: customParser }
-  //   );
+  useEffect(() => {
+    const crashSocket: Socket<
+      ICrashServerToClientEvents,
+      ICrashClientToServerEvents
+    > = io(
+      `${SERVER_URL}/crash`
+      // { parser: customParser }
+    );
 
-  //   crashSocket.emit(ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY, 15 as any);
+    crashSocket.emit(ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY, 15 as any);
 
-  //   crashSocket.on(
-  //     ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY,
-  //     (historyData: any) => {
-  //       console.log('history', historyData);
-  //       setGameHistories(historyData);
-  //     }
-  //   );
+    crashSocket.on(
+      ECrashSocketEvent.PREVIOUS_CRASHGAME_HISTORY,
+      (historyData: any) => {
+        console.log('history', historyData);
+        setGameHistories(historyData);
+      }
+    );
 
-  //   crashSocket.on(
-  //     ECrashSocketEvent.GAME_TICK,
-  //     (tick: { e: number; p: number }) => {
-  //       setCrashStatus(ECrashStatus.PROGRESS);
-  //       setCrTick((prev) => ({
-  //         prev: prev.cur,
-  //         cur: tick.p
-  //       }));
-  //       setCrElapsed(tick.e);
-  //     }
-  //   );
+    crashSocket.on(
+      ECrashSocketEvent.GAME_TICK,
+      (tick: { e: number; p: number }) => {
+        setCrashStatus(ECrashStatus.PROGRESS);
+        setCrTick((prev) => ({
+          prev: prev.cur,
+          cur: tick.p
+        }));
+        setCrElapsed(tick.e);
+      }
+    );
 
-  //   crashSocket.on(ECrashSocketEvent.GAME_STARTING, (data) => {
-  //     setCrashStatus(ECrashStatus.PREPARE);
-  //     setPrepareTime(data.timeUntilStart ?? 0);
-  //     setBetData([]);
-  //     setBetCashout([]);
-  //     setTotalAmount(0);
-  //     setIsBetted(false);
-  //   });
+    crashSocket.on(ECrashSocketEvent.GAME_STARTING, (data) => {
+      setCrashStatus(ECrashStatus.PREPARE);
+      setPrepareTime(data.timeUntilStart ?? 0);
+      setBetData([]);
+      setBetCashout([]);
+      setTotalAmount(0);
+      setIsBetted(false);
+    });
 
-  //   crashSocket.on(ECrashSocketEvent.GAME_START, (data) => {
-  //     setCrashStatus(ECrashStatus.PROGRESS);
-  //     setCrTick({ prev: 1.0, cur: 1.0 });
-  //     setAvailableFirstBet(false);
-  //   });
+    crashSocket.on(ECrashSocketEvent.GAME_START, (data) => {
+      setCrashStatus(ECrashStatus.PROGRESS);
+      setCrTick({ prev: 1.0, cur: 1.0 });
+      setAvailableFirstBet(false);
+    });
 
-  //   crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
-  //     setAvailableFirstBet(false);
-  //     if (!isBetted) setAvailableBet(false);
-  //   });
+    crashSocket.on(ECrashSocketEvent.BET_CASHOUT_SUCCESS, (data) => {
+      setAvailableFirstBet(false);
+      if (!isBetted) setAvailableBet(false);
+    });
 
-  //   crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
-  //     // console.log('game end data => ', data);
-  //     setGameHistories((prev) => [data.game, ...prev]);
-  //     setCrBust(data.game.crashPoint!);
-  //     setCrElapsed(0);
-  //     setCrashStatus(ECrashStatus.END);
-  //     setAvailableBet(false);
-  //     setAvailableFirstBet(false);
-  //   });
+    crashSocket.on(ECrashSocketEvent.GAME_END, (data) => {
+      // console.log('game end data => ', data);
+      setGameHistories((prev) => [data.game, ...prev]);
+      setCrBust(data.game.crashPoint!);
+      setCrElapsed(0);
+      setCrashStatus(ECrashStatus.END);
+      setAvailableBet(false);
+      setAvailableFirstBet(false);
+    });
 
-  //   const calculateTotals = (bets) => {
-  //     let totals = 0;
-  //     bets.forEach((bet) => {
-  //       totals += bet.betAmount;
-  //     });
-  //     return totals;
-  //   };
+    const calculateTotals = (bets) => {
+      let totals = 0;
+      bets.forEach((bet) => {
+        totals += bet.betAmount;
+      });
+      return totals;
+    };
 
-  //   crashSocket.on(ECrashSocketEvent.GAME_STATUS, (data) => {
-  //     setBetData(data.players);
-  //     const totals = calculateTotals(data.players);
-  //     setTotalAmount((prev) => prev + totals);
-  //   });
+    crashSocket.on(ECrashSocketEvent.GAME_STATUS, (data) => {
+      setBetData(data.players);
+      const totals = calculateTotals(data.players);
+      setTotalAmount((prev) => prev + totals);
+    });
 
-  //   crashSocket.on(
-  //     ECrashSocketEvent.GAME_BETS,
-  //     (bets: FormattedPlayerBetType[]) => {
-  //       setBetData((prev: BetType[]) => [...bets, ...prev]);
-  //       const totals = calculateTotals(bets);
-  //       setTotalAmount((prev) => prev + totals);
-  //     }
-  //   );
+    crashSocket.on(
+      ECrashSocketEvent.GAME_BETS,
+      (bets: FormattedPlayerBetType[]) => {
+        setBetData((prev: BetType[]) => [...bets, ...prev]);
+        const totals = calculateTotals(bets);
+        setTotalAmount((prev) => prev + totals);
+      }
+    );
 
-  //   crashSocket.on(ECrashSocketEvent.GAME_JOIN_ERROR, (data) => {
-  //     toast.error(data);
-  //   });
+    crashSocket.on(ECrashSocketEvent.GAME_JOIN_ERROR, (data) => {
+      toast.error(data);
+    });
 
-  //   crashSocket.on(ECrashSocketEvent.CRASHGAME_JOIN_SUCCESS, () => {
-  //     if (!isBetted) setAvailableBet(true);
-  //   });
+    crashSocket.on(ECrashSocketEvent.CRASHGAME_JOIN_SUCCESS, () => {
+      if (!isBetted) setAvailableBet(true);
+    });
 
-  //   crashSocket.on(ECrashSocketEvent.BET_CASHOUT, (data) => {
-  //     setBetCashout((prev) => [...prev, data?.userdata]);
-  //   });
+    crashSocket.on(ECrashSocketEvent.BET_CASHOUT, (data) => {
+      setBetCashout((prev) => [...prev, data?.userdata]);
+    });
 
-  //   crashSocket.on(ECrashSocketEvent.NEXT_ROUND_JOIN_SUCCESS, () => {
-  //     toast.success('Joined the next round');
-  //     setIsBetted(true);
-  //   });
+    crashSocket.on(ECrashSocketEvent.NEXT_ROUND_JOIN_SUCCESS, () => {
+      toast.success('Joined the next round');
+      setIsBetted(true);
+    });
 
-  //   crashSocket.on(ECrashSocketEvent.NEXT_ROUND_JOIN_CANCEL, () => {
-  //     toast.error('Cancelled from next round');
-  //     setIsBetted(false);
-  //   });
+    crashSocket.on(ECrashSocketEvent.NEXT_ROUND_JOIN_CANCEL, () => {
+      toast.error('Cancelled from next round');
+      setIsBetted(false);
+    });
 
-  //   crashSocket.on(ECrashSocketEvent.UPDATE_BALANCE, (data: number) => {
-  //     dispatch(userActions.siteBalanceUpdate(data));
-  //   });
+    crashSocket.on(ECrashSocketEvent.UPDATE_BALANCE, (data: number) => {
+      dispatch(userActions.siteBalanceUpdate(data));
+    });
 
-  //   crashSocket.emit('auth', getAccessToken());
+    crashSocket.emit('auth', getAccessToken());
 
-  //   setSocket(crashSocket);
-  //   return () => {
-  //     crashSocket.disconnect();
-  //   };
-  // }, []);
+    setSocket(crashSocket);
+    return () => {
+      crashSocket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (crashStatus === ECrashStatus.PREPARE) {
