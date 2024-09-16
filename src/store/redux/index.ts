@@ -10,7 +10,6 @@ import userReducer from './reducers/user.reducer';
 import chatReducer from './reducers/chat.reducer';
 import leaderboardReducer from './reducers/leaderboard.reducer';
 import modalReducer from './reducers/modal.reducer';
-import tempUserReducer from './reducers/tempuser.reducer';
 import paymentReducer from './reducers/payment.reducer';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -25,7 +24,6 @@ const rootReducer = combineReducers({
   chat: chatReducer,
   leaderboard: leaderboardReducer,
   modal: modalReducer,
-  tempuser: tempUserReducer,
   payment: paymentReducer
 });
 

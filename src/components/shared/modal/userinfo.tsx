@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/dialog';
 import { ModalType } from '@/types/modal';
 import useModal from '@/hooks/use-modal';
-import useTempuser from '@/hooks/use-tempuser';
 import { useAppSelector } from '@/store/redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { FaUser } from 'react-icons/fa';
@@ -15,10 +14,13 @@ import { useEffect, useState } from 'react';
 
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
+import { useDispatch } from 'react-redux';
+import { userActions } from '@/store/redux/actions';
 
 export default function UserInfoModal() {
   const { open, type } = useAppSelector((state: any) => state.modal);
-  const { isUser, user } = useAppSelector((state: any) => state.tempuser);
+  const userData = useAppSelector((state: any) => state.user);
+  const user = userData.selectedUser;
   const [chartOption, setChartOption] = useState<ApexOptions>({
     chart: {
       type: 'area',
@@ -74,14 +76,13 @@ export default function UserInfoModal() {
     }
   });
   const isOpen = open && type === ModalType.USERINFO;
-
+  const dispatch = useDispatch();
   const modal = useModal();
-  const tempUser = useTempuser();
 
-  const hanndleOpenChange = async () => {
+  const handleOpenChange = async () => {
     if (isOpen) {
       modal.close(ModalType.USERINFO);
-      tempUser.remove();
+      dispatch(userActions.removeSelectedUser());
     }
   };
 
@@ -97,9 +98,9 @@ export default function UserInfoModal() {
     // }
   }, [isOpen]);
 
-  if (isUser) {
+  if (user) {
     return (
-      <Dialog open={isOpen} onOpenChange={hanndleOpenChange}>
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="w-full gap-0 rounded-[8px] border-2 border-none bg-[#0D0B32] p-0 text-white sm:max-w-sm lg:w-[800px] lg:!max-w-[800px]">
           <DialogHeader className="flex flex-row items-center justify-between rounded-t-[8px] bg-[#463E7A] px-[24px] py-[20px]">
             <DialogTitle className="text-center text-[24px] font-semibold uppercase">
@@ -132,17 +133,13 @@ export default function UserInfoModal() {
                     <h3 className="w-full text-[16px] font-normal text-gray-500 lg:w-1/3">
                       Games Played:
                     </h3>
-                    <h3 className="text-[16px] font-semibold">
-                      {user.stats.played}
-                    </h3>
+                    <h3 className="text-[16px] font-semibold">{user.played}</h3>
                   </div>
                   <div className="flex w-full flex-col justify-between lg:flex-row">
                     <h3 className="w-full text-[16px] font-normal text-gray-500 lg:w-1/3">
                       Total Wagered:
                     </h3>
-                    <h3 className="text-[16px] font-semibold">
-                      ${user.stats.wager}
-                    </h3>
+                    <h3 className="text-[16px] font-semibold">${user.wager}</h3>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -151,7 +148,7 @@ export default function UserInfoModal() {
                       Net Profit:
                     </h3>
                     <h3 className="text-[16px] font-semibold">
-                      ${user.stats.profit.total.toFixed(2)}
+                      ${(user?.profit?.total || 0).toFixed(2)}
                     </h3>
                   </div>
                   <div className="flex w-full flex-col justify-between lg:flex-row">
@@ -159,7 +156,7 @@ export default function UserInfoModal() {
                       Profit All Time High:
                     </h3>
                     <h3 className="text-[16px] font-semibold">
-                      ${user.stats.profit.high}
+                      ${user?.profit?.high || 0}
                     </h3>
                   </div>
                   <div className="flex w-full flex-col justify-between lg:flex-row">
@@ -167,7 +164,7 @@ export default function UserInfoModal() {
                       Profit All Time Low:
                     </h3>
                     <h3 className="text-[16px] font-semibold">
-                      ${user.stats.profit.low}
+                      ${user?.profit?.low || 0}
                     </h3>
                   </div>
                 </div>

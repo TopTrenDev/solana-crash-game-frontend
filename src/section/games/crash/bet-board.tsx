@@ -4,7 +4,6 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { ECrashStatus } from '@/constants/status';
 import useModal from '@/hooks/use-modal';
-import useTempuser from '@/hooks/use-tempuser';
 import { useAppSelector } from '@/store/redux';
 import { BetType } from '@/types';
 import { ModalType } from '@/types/modal';
@@ -28,7 +27,6 @@ export default function BetBoard({
   const userData = useAppSelector((store: any) => store.user.userData);
 
   const modal = useModal();
-  const tempuser = useTempuser();
 
   const openModal = (userId: string) => {
     // modal.open(ModalType.USERINFO)
