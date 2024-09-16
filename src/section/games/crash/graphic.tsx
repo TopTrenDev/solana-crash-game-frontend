@@ -513,7 +513,7 @@ export default function Graphic({
       // if (engine) {
       //   engine.state = crashStatus;
       // }
-    } else {
+    } else if (crashStatus === ECrashStatus.PROGRESS) {
       engine.elapsedTime = crElapsed;
       flag.current = false;
 
