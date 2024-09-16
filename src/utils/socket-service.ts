@@ -8,7 +8,10 @@ import {
   ILeaderboardClientToServerEvents,
   ILeaderboardServerToClientEvents
 } from '@/types/leader';
-import { IPaymentClientToServerEvents, IPaymentServerToClientEvents } from '@/types/payment';
+import {
+  IPaymentClientToServerEvents,
+  IPaymentServerToClientEvents
+} from '@/types/payment';
 import { Socket, io } from 'socket.io-client';
 // import customParser from 'socket.io-msgpack-parser'
 
@@ -32,10 +35,10 @@ const paymentSocket = createSocket<
   IPaymentClientToServerEvents
 >('payment');
 
-// const leaderboardSocket = createSocket<
-//   ILeaderboardServerToClientEvents,
-//   ILeaderboardClientToServerEvents
-// >('leaderboard');
+const leaderboardSocket = createSocket<
+  ILeaderboardServerToClientEvents,
+  ILeaderboardClientToServerEvents
+>('leaderboard');
 
 const userSocket = createSocket<
   IUserServerToClientEvents,
@@ -45,10 +48,8 @@ const userSocket = createSocket<
 const SolacrashSocket = {
   chat: chatSocket,
   user: userSocket,
-  payment: paymentSocket
-  // coinflip: coinflipSocket,
-  // leaderboard: leaderboardSocket,
-  // mines: minesSocket
+  payment: paymentSocket,
+  leaderboard: leaderboardSocket
 };
 
 export default SolacrashSocket;

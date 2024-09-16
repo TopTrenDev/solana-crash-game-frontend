@@ -32,10 +32,6 @@ export default function LeaderboardModal() {
   useEffect(() => {
     if (leaderboardState.leaderboardHistory) {
       setLoading(false);
-      // console.log(
-      //   'leaderboardState.leaderboardHistory',
-      //   leaderboardState.leaderboardHistory
-      // );
     }
     dispatch(leaderboardActions.subscribeLeaderboardServer());
   }, []);
@@ -61,10 +57,10 @@ export default function LeaderboardModal() {
               <Table className="w-full table-fixed">
                 <TableBody>
                   <TableRow className="!bg-transparent">
+                    <TableCell className="w-1/6 text-start">Rank</TableCell>
                     <TableCell className="w-6/12 text-start">User</TableCell>
                     <TableCell className="w-1/6">Wagered</TableCell>
                     <TableCell className="w-1/6 text-center">Profit</TableCell>
-                    <TableCell className="w-1/6 text-center">Bet</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -79,6 +75,18 @@ export default function LeaderboardModal() {
                           key={index}
                           className="text-gray300 [&_td:first-child]:rounded-l-md [&_td:first-child]:border-l [&_td:first-child]:border-l-purple-0.5 [&_td:last-child]:rounded-r-md [&_td:last-child]:border-r [&_td:last-child]:border-r-purple-0.5 [&_td]:border-b [&_td]:border-t [&_td]:border-b-purple-0.5 [&_td]:border-t-purple-0.5 [&_td]:bg-dark-blue"
                         >
+                          <TableCell className="w-1/6 py-3 text-center">
+                            <>
+                              {index + 1 <= 3 ? (
+                                <img
+                                  src={`/assets/medal/top${index + 1}.svg`}
+                                  className="h-5 w-5"
+                                />
+                              ) : (
+                                <span>{index + 1 + 'th'}</span>
+                              )}
+                            </>
+                          </TableCell>
                           <TableCell className="w-1/2">
                             <div className="flex items-center gap-2">
                               <span>{player.username}</span>
@@ -87,14 +95,7 @@ export default function LeaderboardModal() {
                           <TableCell className="w-1/6 text-center">
                             <div className="flex items-center gap-2">
                               <span>
-                                {player.leaderboard?.crash?.betAmount || 0}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="w-1/6 text-center">
-                            <div className="flex items-center gap-2">
-                              <span>
-                                {(player.stats?.profit?.total || 0).toFixed(2)}
+                                {(player.totalBetAmount || 0).toFixed(2)}
                               </span>
                             </div>
                           </TableCell>
@@ -103,14 +104,10 @@ export default function LeaderboardModal() {
                               <span>
                                 {(() => {
                                   const winAmount =
-                                    (player.leaderboard?.crash?.winAmount ??
-                                      0) +
-                                    (player.leaderboard?.crash?.winAmount ?? 0);
+                                    player.leaderboard?.crash?.winAmount ?? 0;
 
                                   const betAmount =
-                                    (player.leaderboard?.crash?.betAmount ??
-                                      0) +
-                                    (player.leaderboard?.crash?.betAmount ?? 0);
+                                    player.leaderboard?.crash?.betAmount ?? 0;
 
                                   const profit = (
                                     winAmount - betAmount

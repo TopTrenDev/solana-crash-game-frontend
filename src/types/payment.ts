@@ -1,10 +1,10 @@
 export enum EPaymentEvents {
-  login = "login",
-  aesKey = "aes-key",
-  withdraw = "withdraw",
-  tip = "tip",
-  updateBalance = "update-balance",
-  paymentFailed = "payment-failed",
+  login = 'login',
+  loginResponse = 'login-response',
+  withdraw = 'withdraw',
+  tip = 'tip',
+  updateBalance = 'update-balance',
+  paymentFailed = 'payment-failed'
 }
 
 export type TSocketTipParam = {

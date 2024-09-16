@@ -43,7 +43,6 @@ export default function Header({ isApp }: HeaderProps) {
   };
 
   useEffect(() => {
-    console.log("login payment server")
     dispatch(paymentActions.loginPaymentServer());
   }, [accessToken]);
 

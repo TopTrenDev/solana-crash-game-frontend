@@ -1,10 +1,17 @@
-import { ILeaderType } from '../reducers/leaderboard.reducer';
+import { ILeaderType, IStats } from '../reducers/leaderboard.reducer';
 import { ELeaderboardSocketAction } from '../reducers/leaderboard.type';
 
 export function getLeaderboardHistory(leaderboardHistory: ILeaderType[]) {
   return {
     type: ELeaderboardSocketAction.GET_LEADERBOARD_HISTORY,
     payload: leaderboardHistory
+  };
+}
+
+export function getStats(stats: IStats) {
+  return {
+    type: ELeaderboardSocketAction.GET_STATS,
+    payload: stats
   };
 }
 
