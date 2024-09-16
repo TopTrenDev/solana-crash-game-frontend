@@ -56,13 +56,16 @@ export default function StatsModal() {
                 <div className="flex w-full justify-between">
                   <h3 className="w-1/3 text-[16px] font-normal">Users</h3>
                   <h3 className="text-[16px] font-semibold">
-                    {leaderboardState?.stats.totalUsers.toLocaleString()}
+                    {(
+                      leaderboardState?.stats?.totalUsers || 0
+                    ).toLocaleString()}
                   </h3>
                 </div>
                 <div className="flex w-full justify-between">
                   <h3 className="w-1/3 text-[16px] font-normal">Bankroll</h3>
                   <h3 className="text-[16px] font-semibold">
-                    {leaderboardState?.stats.bankroll.toLocaleString()} SOL
+                    {(leaderboardState?.stats?.bankroll || 0).toLocaleString()}{' '}
+                    SOL
                   </h3>
                 </div>
                 <div className="flex w-full justify-between">
@@ -71,7 +74,9 @@ export default function StatsModal() {
                     100%
                   </h3>
                   <h3 className="text-[16px] font-semibold">
-                    {leaderboardState?.stats.totalWageredAmount.toLocaleString()}{' '}
+                    {(
+                      leaderboardState?.stats?.totalWageredAmount || 0
+                    ).toLocaleString()}{' '}
                     SOLA
                   </h3>
                 </div>

@@ -1,7 +1,16 @@
+import { IChatUser } from '@/types';
 import { EUserSocketAction } from './user.type';
 
 export interface UserState {
-  userData: { username: string; email: string; _id: string; aesKey: string };
+  userData: {
+    _id: string;
+    username: string;
+    email: string;
+    wallet: string;
+    credit: number;
+  };
+  aesKey: string;
+  selectedUser: IChatUser | null;
 }
 
 interface UserAction {
@@ -9,9 +18,10 @@ interface UserAction {
   payload: any;
 }
 
-const initialState: any = {
+const initialState: UserState = {
   userData: { username: '', email: '', wallet: '', credit: 0, _id: '' },
-  aesKey: ''
+  aesKey: '',
+  selectedUser: null
 };
 
 const userReducer = (state: any = initialState, action: UserAction): any => {
@@ -59,6 +69,18 @@ const userReducer = (state: any = initialState, action: UserAction): any => {
       return {
         ...state,
         credentials: { username: '', password: '' }
+      };
+
+    case EUserSocketAction.SAVE_USER:
+      return {
+        ...state,
+        selectedUser: action.payload
+      };
+
+    case EUserSocketAction.REMOVE_USER:
+      return {
+        ...state,
+        selectedUser: null
       };
 
     default:

@@ -3,21 +3,20 @@ import EmojiPicker, {
   EmojiClickData,
   EmojiStyle
 } from 'emoji-picker-react';
-import { Separator } from '../ui/separator';
 import { Smile, SendHorizonal } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import React, { useEffect, useRef, useState } from 'react';
 import useToast from '@/hooks/use-toast';
 import { Input } from '../ui/input';
-import { chatActions } from '@/store/redux/actions';
+import { chatActions, userActions } from '@/store/redux/actions';
 import { useAppDispatch, useAppSelector } from '@/store/redux';
 import { getAccessToken } from '@/utils/axios';
 import { useInView } from 'react-intersection-observer';
 import useModal from '@/hooks/use-modal';
-import useTempuser from '@/hooks/use-tempuser';
 
 import { ModalType } from '@/types/modal';
 import { IChatUser } from '@/types';
+import { useDispatch } from 'react-redux';
 
 export type HistoryItemProps = {
   name: string;
@@ -34,11 +33,11 @@ const HistoryItem = ({
   time,
   user
 }: HistoryItemProps) => {
+  const dispatch = useDispatch();
   const modal = useModal();
-  const tempUser = useTempuser();
   const openModal = () => {
     modal.open(ModalType.USERINFO);
-    tempUser.save(user);
+    dispatch(userActions.saveSelectedUser(user));
   };
 
   return (

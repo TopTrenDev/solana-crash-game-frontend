@@ -1,3 +1,4 @@
+import { IChatUser } from '@/types';
 import { EUserSocketAction } from '../reducers/user.type';
 
 export type TUserData = {
@@ -63,6 +64,20 @@ export function setAesKey(value: string) {
 export function disconnectUserServer() {
   return {
     type: EUserSocketAction.DISCONNECT_USER,
+    payload: null
+  };
+}
+
+export function saveSelectedUser(user: IChatUser) {
+  return {
+    type: EUserSocketAction.SAVE_USER,
+    payload: user
+  };
+}
+
+export function removeSelectedUser() {
+  return {
+    type: EUserSocketAction.REMOVE_USER,
     payload: null
   };
 }
