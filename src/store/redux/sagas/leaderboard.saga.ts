@@ -1,20 +1,25 @@
 import { put, call, fork, take, takeLatest, delay } from 'redux-saga/effects';
-import KartelSocket from '@/utils/socket-service';
+import SiteSocket from '@/utils/socket-service';
 import { ELeaderboardSocketEvent } from '@/types/leader';
 import { ELeaderboardSocketAction } from '../reducers/leaderboard.type';
 import { eventChannel } from 'redux-saga';
-import { ILeaderType } from '../reducers/leaderboard.reducer';
+import { ILeaderType, IStats } from '../reducers/leaderboard.reducer';
 import { leaderboardActions } from '../actions';
 
 function subscribe(socket) {
   return eventChannel((emit) => {
     socket.on(
       ELeaderboardSocketEvent.GET_LEADERBOARD_HISTORY,
-      (data: { message: string; leaderboard: ILeaderType[] }) => {
+      (data: {
+        message: string;
+        leaderboard: ILeaderType[];
+        stats: IStats;
+      }) => {
         emit(leaderboardActions.getLeaderboardHistory(data.leaderboard));
+        emit(leaderboardActions.getStats(data.stats));
       }
     );
-    return () => { };
+    return () => {};
   });
 }
 
@@ -29,7 +34,7 @@ function* read(socket) {
 function* subscribeSaga() {
   try {
     yield delay(300);
-    yield fork(read, KartelSocket.leaderboard);
+    yield fork(read, SiteSocket.leaderboard);
     yield delay(300);
   } catch (error) {
     console.error(error);
@@ -37,9 +42,9 @@ function* subscribeSaga() {
 }
 
 function* stopChannelSaga() {
-  if (KartelSocket.leaderboard) {
-    KartelSocket.leaderboard.off();
-    KartelSocket.leaderboard.disconnect();
+  if (SiteSocket.leaderboard) {
+    SiteSocket.leaderboard.off();
+    SiteSocket.leaderboard.disconnect();
   }
 }
 

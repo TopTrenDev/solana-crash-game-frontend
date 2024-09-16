@@ -513,7 +513,7 @@ export default function Graphic({
       // if (engine) {
       //   engine.state = crashStatus;
       // }
-    } else if (crashStatus === ECrashStatus.PROGRESS) {
+    } else {
       engine.elapsedTime = crElapsed;
       flag.current = false;
 
@@ -536,67 +536,6 @@ export default function Graphic({
   useEffect(() => {
     crElapsedTime.current = crElapsed;
   }, [crElapsed]);
-
-  // useEffect(() => {
-  //   const ctx = canvasReference.current?.getContext('2d');
-  //   if (!ctx || !rocketRef.current || !flameRef.current) return;
-
-  //   const rocketObject = rocketRef.current;
-  //   const flame = flameRef.current;
-  //   const flameFrame = flame.children[0];
-
-  //   const elapsedTime = engine.getElapsedTime();
-
-  //   // animateRain(tangent);
-
-  //   const imgWidth = 160;
-  //   const imgHeight = 64;
-  //   const halfImgHeight = imgHeight / 2;
-  //   const doubleImgWidth = imgWidth * 2;
-
-  //   const test1 = {
-  //     a: { x: 620, y: 190 },
-  //     b: { x: 300, y: 260 }
-  //   };
-  //   const test2 = {
-  //     a: { x: 600, y: 170 },
-  //     b: { x: 320, y: 280 }
-  //   };
-  //   const test3 = {
-  //     a: { x: 580, y: 150 },
-  //     b: { x: 340, y: 300 }
-  //   };
-  //   const test4 = {
-  //     a: { x: 560, y: 130 },
-  //     b: { x: 360, y: 320 }
-  //   };
-  //   const test5 = {
-  //     a: { x: 540, y: 110 },
-  //     b: { x: 380, y: 340 }
-  //   };
-  //   const tests = [test1, test2, test3, test4, test5];
-  //   tests.forEach((test, index) => {
-  //     setTimeout(() => {
-  //       // Clear the canvas for new drawing
-  //       ctx.clearRect(0, 0, engine.graphWidth, engine.graphHeight);
-
-  //       drawActiveState(
-  //         ctx,
-  //         rocketObject,
-  //         flameFrame,
-  //         test.a,
-  //         test.b,
-  //         getTangent(test.b, test.a),
-  //         elapsedTime,
-  //         imgWidth,
-  //         imgHeight,
-  //         halfImgHeight,
-  //         doubleImgWidth,
-  //         engine.plotHeight
-  //       );
-  //     }, 1000 * index); // Delay increases by 1 second for each iteration
-  //   });
-  // }, []);
 
   return (
     <div className="relative h-full w-full">

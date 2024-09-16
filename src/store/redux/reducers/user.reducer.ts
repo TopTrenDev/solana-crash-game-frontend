@@ -11,7 +11,6 @@ interface UserAction {
 
 const initialState: any = {
   userData: { username: '', email: '', wallet: '', credit: 0, _id: '' },
-  siteBalanceStatus: true,
   aesKey: ''
 };
 
@@ -39,7 +38,10 @@ const userReducer = (state: any = initialState, action: UserAction): any => {
       return { userData: { username: '', email: '', _id: '', aesKey: '' } };
 
     case EUserSocketAction.SITE_BALANCE_UPDATE:
-      return { ...state, siteBalanceStatus: action.payload };
+      return {
+        ...state,
+        userData: { ...state.userData, credit: action.payload }
+      };
 
     case EUserSocketAction.REMEMBERME:
       return {

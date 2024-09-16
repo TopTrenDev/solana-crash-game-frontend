@@ -10,6 +10,12 @@ export interface ILeaderType {
   leaderboard: LeaderboardType;
 }
 
+export interface IStats {
+  totalWageredAmount: number;
+  totalUsers: number;
+  bankroll: number;
+}
+
 type TLeaderboardHistory = {
   crash: ILeaderType[];
   coinflip: ILeaderType[];
@@ -17,6 +23,7 @@ type TLeaderboardHistory = {
 
 interface ILeaderboardState {
   leaderboardHistory: TLeaderboardHistory;
+  stats?: IStats;
 }
 
 const initialState: ILeaderboardState = {
@@ -35,6 +42,12 @@ export default function leaderboardReducer(
       return {
         ...state,
         leaderboardHistory: action.payload as TLeaderboardHistory
+      };
+
+    case ELeaderboardSocketAction.GET_STATS:
+      return {
+        ...state,
+        stats: action.payload
       };
 
     case ELeaderboardSocketAction.DISCONNECT_LEADERBOARD:

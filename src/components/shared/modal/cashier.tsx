@@ -34,10 +34,10 @@ const CashierModal = () => {
   const userData = useAppSelector((state: any) => state.user.userData);
   const solBalance = (userData.credit / 1100).toFixed(3);
   const modalState = useAppSelector((state: any) => state.modal);
+  const paymentState = useAppSelector((state) => state.payment);
   const aesKey = useAppSelector((state: any) => state.user.aesKey);
   const isOpen = modalState.open && modalState.type === ModalType.CASHIER;
   const toast = useToast();
-  const accessToken = getAccessToken();
   const dispatch = useAppDispatch();
   const aesWrapper = AESWrapper.getInstance();
 
@@ -92,7 +92,6 @@ const CashierModal = () => {
         address: walletAddress,
         password
       };
-      console.log('aesKey', aesKey);
       const encryptedParam = await aesWrapper.encryptMessage(
         aesKey,
         JSON.stringify(withdrawParam)
@@ -108,43 +107,40 @@ const CashierModal = () => {
 
   const handleTips = async () => {
     setLoading(true);
-    // socket.emit(EUserSocketEvent.CREDIT_TIP, {
-    //   username,
-    //   tipsAmount,
-    //   password
-    // });
-    // const resWithdraw = await axiosPost([
-    //   BACKEND_API_ENDPOINT.cashier.tips,
-    //   { data: { username, tipsAmount, password } }
-    // ]);
-    // if (resWithdraw.responseObject) {
-    //   console.log('withdraw link', resWithdraw.responseObject);
-    //   socket.emit(EUserSocketEvent.CREDIT_BALANCE, userData._id);
-    // }
-
-    setLoading(false);
+    try {
+      const tipsParam = {
+        username,
+        amount: tipsAmount,
+        password
+      };
+      const encryptedParam = await aesWrapper.encryptMessage(
+        aesKey,
+        JSON.stringify(tipsParam)
+      );
+      dispatch(paymentActions.tip(encryptedParam));
+    } catch (e) {
+      console.log(e);
+      dispatch(paymentActions.paymentFailed('Tips rejected'));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // useEffect(() => {
-  //   const userSocket: Socket<
-  //     IUserServerToClientEvents,
-  //     IUserClientToServerEvents
-  //   > = io(`${import.meta.env.VITE_SERVER_URL}/user`, {
-  //     auth: {
-  //       token: accessToken
-  //     }
-  //   });
-
-  //   userSocket.on(EUserSocketEvent.CREDIT_TIP_SUCCESS, () => {
-  //     toast.success('Successfully tipped');
-  //   });
-
-  //   userSocket.on(EUserSocketEvent.CREDIT_TIP_ERROR, (data: string) => {
-  //     toast.error(data);
-  //   });
-
-  //   setSocket(userSocket);
-  // }, []);
+  useEffect(() => {
+    if (paymentState.error === 'Withdraw Success') {
+      toast.success('Withdraw Success');
+      dispatch(paymentActions.paymentFailed(''));
+    } else if (paymentState.error === 'Deposit Success') {
+      toast.success('Deposit Success');
+      dispatch(paymentActions.paymentFailed(''));
+    } else if (paymentState.error === 'Tipping Success') {
+      toast.success('Tipping Success');
+      dispatch(paymentActions.paymentFailed(''));
+    } else if (paymentState.error !== '') {
+      toast.error(paymentState.error);
+      dispatch(paymentActions.paymentFailed(''));
+    }
+  }, [paymentState.error]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>

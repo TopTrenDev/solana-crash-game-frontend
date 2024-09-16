@@ -12,7 +12,7 @@ import {
 
 import { paymentActions, userActions } from '../actions';
 import { getAccessToken } from '@/utils/axios';
-import SolacrashSocket from '@/utils/socket-service';
+import GameSocket from '@/utils/socket-service';
 import { EPaymentEvents } from '@/types/payment';
 import { EPaymentSocketAction } from '../reducers/payment.type';
 
@@ -24,8 +24,9 @@ function subscribe(socket) {
       emit(paymentActions.updateBalancePayment(data));
       emit(userActions.siteBalanceUpdate(data));
     });
-    socket.on(EPaymentEvents.aesKey, (data: string) => {
-      emit(userActions.setAesKey(data));
+    socket.on(EPaymentEvents.loginResponse, (data: any) => {
+      emit(userActions.setAesKey(data.aesKey));
+      emit(userActions.siteBalanceUpdate(data.balance));
     });
     socket.on(EPaymentEvents.paymentFailed, (data: string) => {
       emit(paymentActions.paymentFailed(data));
@@ -41,6 +42,10 @@ function* withdraw(socket, action) {
 
 function* tip(socket, action) {
   yield call([socket, socket.emit], EPaymentEvents.tip, action.payload);
+}
+
+function* updateBalance(socket) {
+  yield call([socket, socket.emit], EPaymentEvents.updateBalance);
 }
 
 function* login(socket) {
@@ -59,7 +64,7 @@ function* read(socket) {
 function* withdrawSaga(action) {
   try {
     yield delay(200);
-    yield fork(withdraw, SolacrashSocket.payment, action);
+    yield fork(withdraw, GameSocket.payment, action);
   } catch (error) {
     console.error(error);
   }
@@ -68,7 +73,16 @@ function* withdrawSaga(action) {
 function* tipSaga(action) {
   try {
     yield delay(200);
-    yield fork(tip, SolacrashSocket.payment, action);
+    yield fork(tip, GameSocket.payment, action);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function* updateBalanceSaga() {
+  try {
+    yield delay(200);
+    yield fork(updateBalance, GameSocket.payment);
   } catch (error) {
     console.error(error);
   }
@@ -76,7 +90,7 @@ function* tipSaga(action) {
 
 function* subscribeSaga() {
   try {
-    yield fork(read, SolacrashSocket.payment);
+    yield fork(read, GameSocket.payment);
     yield delay(200);
   } catch (error) {
     console.error(error);
@@ -86,16 +100,16 @@ function* subscribeSaga() {
 function* loginChanelSaga() {
   try {
     yield delay(500);
-    socketTask = yield fork(login, SolacrashSocket.payment);
+    socketTask = yield fork(login, GameSocket.payment);
   } catch (e) {
     console.error(e);
   }
 }
 
 function* stopChanelSaga() {
-  if (SolacrashSocket.payment) {
-    SolacrashSocket.payment.off();
-    SolacrashSocket.payment.disconnect();
+  if (GameSocket.payment) {
+    GameSocket.payment.off();
+    GameSocket.payment.disconnect();
   }
 
   yield cancel(socketTask);
@@ -105,6 +119,7 @@ const sagas = [
   takeLatest(EPaymentSocketAction.SUBSCRIBE_PAYMENT, subscribeSaga),
   takeLatest(EPaymentSocketAction.WITHDRAW, withdrawSaga),
   takeLatest(EPaymentSocketAction.TIP, tipSaga),
+  takeLatest(EPaymentSocketAction.UPDATE_BALANCE, updateBalanceSaga),
   takeLatest(EPaymentSocketAction.LOGIN_PAYMENT, loginChanelSaga),
   takeLatest(EPaymentSocketAction.DISCONNECT_PAYMENT, stopChanelSaga)
 ];

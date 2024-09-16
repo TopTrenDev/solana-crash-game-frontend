@@ -49,6 +49,13 @@ export function disconnectPaymentServer() {
   };
 }
 
+export function updateBalancePaymentServer() {
+  return {
+    type: EPaymentSocketAction.UPDATE_BALANCE,
+    payload: null
+  };
+}
+
 export function updateBalancePayment(data: number) {
   return {
     type: EPaymentSocketAction.UPDATE_BALANCE,
