@@ -68,9 +68,7 @@ export default function BetBoard({
                         >
                           <span
                             className={`${
-                              betCashout?.find(
-                                (item) => item.playerID === player.playerID
-                              )?.stoppedAt
+                              player.status === 2
                                 ? 'text-[#14F195]'
                                 : crashStatus === ECrashStatus.END
                                   ? 'text-purple'
@@ -83,19 +81,13 @@ export default function BetBoard({
                         </div>
                       </TableCell>
                       <TableCell className="w-1/5 text-center text-[#fff]">
-                        {(betCashout?.find(
-                          (item) => item.playerID === player.playerID
-                        )?.stoppedAt &&
-                          (
-                            (betCashout?.find(
-                              (item) => item.playerID === player.playerID
-                            )?.stoppedAt ?? 0) / 100
-                          ).toFixed(2) + 'x') ||
-                          (crashStatus === ECrashStatus.END ? (
-                            <span className="text-purple">failed</span>
-                          ) : (
-                            <span className="text-gray300">-</span>
-                          ))}
+                        {player.status === 2 ? (
+                          ((player?.stoppedAt ?? 0) / 100).toFixed(2) + 'x'
+                        ) : crashStatus === ECrashStatus.END ? (
+                          <span className="text-purple">failed</span>
+                        ) : (
+                          <span className="text-gray300">-</span>
+                        )}
                       </TableCell>
                       <TableCell className="w-1/5 text-center">
                         <div className="flex w-full flex-row items-center justify-center gap-1 text-center">
@@ -103,9 +95,7 @@ export default function BetBoard({
                         </div>
                       </TableCell>
                       <TableCell className="w-1/5 text-center">
-                        {betCashout?.find(
-                          (item) => item.playerID === player.playerID
-                        )?.stoppedAt ? (
+                        {player.status === 2 ? (
                           <div className="flex flex-row items-center justify-center gap-1 text-[#14F195]">
                             {(
                               ((betCashout?.find(

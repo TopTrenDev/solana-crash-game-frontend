@@ -1,5 +1,5 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Socket, io } from 'socket.io-client';
 import customParser from 'socket.io-msgpack-parser';
 import { BetType, FormattedPlayerBetType } from '@/types';
@@ -30,13 +30,28 @@ export default function CrashGameSection() {
   const userData = useAppSelector((store: any) => store.user.userData);
 
   const toast = useToast();
+  const [width, setWidth] = useState(window.innerWidth);
   const [selectMode, setSelectMode] = useState<string>(betMode[0]);
   const [autoBet, setAutoBet] = useState<boolean>(true);
-  const [isBetted, setIsBetted] = useState<boolean>(false);
+  // const [isBetted, setIsBetted] = useState<boolean>(false);
   const [availableFirstBet, setAvailableFirstBet] = useState<boolean>(false);
   const [selectDisplay, setSelectDisplay] = useState<number>(1);
   const [selectedToken, setSelectedToken] = useState<IToken>(tokens[0]);
   const [betData, setBetData] = useState<BetType[]>([]);
+  const { isBetted, isCashouted } = useMemo(() => {
+    let betted = false;
+    let cashouted = false;
+    for (const player of betData) {
+      if (userData?.username === player.username) {
+        betted = true;
+        if (player.status === 2) {
+          cashouted = true;
+          break; // No need to continue if both conditions are met
+        }
+      }
+    }
+    return { isBetted: betted, isCashouted: cashouted };
+  }, [betData, userData]);
   const [betAmount, setBetAmount] = useState<number>(10);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [betCashout, setBetCashout] = useState<BetType[]>([]);
@@ -68,6 +83,15 @@ export default function CrashGameSection() {
       socket.emit('auth', getAccessToken());
     }
   }, [getAccessToken()]);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener when the component unmounts
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const crashSocket: Socket<
@@ -106,7 +130,7 @@ export default function CrashGameSection() {
       setBetData([]);
       setBetCashout([]);
       setTotalAmount(0);
-      setIsBetted(false);
+      // setIsBetted(false);
     });
 
     crashSocket.on(ECrashSocketEvent.GAME_START, (data) => {
@@ -167,12 +191,12 @@ export default function CrashGameSection() {
 
     crashSocket.on(ECrashSocketEvent.NEXT_ROUND_JOIN_SUCCESS, () => {
       toast.success('Joined the next round');
-      setIsBetted(true);
+      // setIsBetted(true);
     });
 
     crashSocket.on(ECrashSocketEvent.NEXT_ROUND_JOIN_CANCEL, () => {
       toast.error('Cancelled from next round');
-      setIsBetted(false);
+      // setIsBetted(false);
     });
 
     crashSocket.on(ECrashSocketEvent.UPDATE_BALANCE, (data: number) => {
@@ -224,7 +248,7 @@ export default function CrashGameSection() {
                   avaliableAutoCashout={avaliableAutoCashout}
                   setAvaliableAutoCashout={setAvaliableAutoCashout}
                   isBetted={isBetted}
-                  setIsBetted={setIsBetted}
+                  isCashouted={isCashouted}
                   availableFirstBet={availableFirstBet}
                   setAvailableFirstBet={setAvailableFirstBet}
                   crTick={crTick}

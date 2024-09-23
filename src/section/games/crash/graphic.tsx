@@ -1,9 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import RocketPNG from '@/assets/rocket1.png';
+import { LegacyRef, useEffect, useRef, useState } from 'react';
+import * as PIXI from 'pixi.js';
 import { ECrashStatus } from '@/constants/status';
+import {
+  cn,
+  formatMillisecondsShort,
+  initialLabel,
+  numberFormat
+} from '@/utils/utils';
 import { ITick } from '@/types';
-import { CrashEngine } from './useCrashEngine';
-import { useGame } from '@/contexts';
+import 'pixi-spine';
+import { Spine } from 'pixi-spine';
+import { ContainerChild } from 'pixi.js';
+import { CrashEngine, CrashEngineState } from './CrashEngine.ts';
+import { useGame } from '@/contexts/GameContext.tsx';
 
 interface GraphicDisplayProps {
   crashStatus: ECrashStatus;
@@ -13,7 +22,17 @@ interface GraphicDisplayProps {
   prepareTime: number;
 }
 
-export default function Graphic({
+interface RaindropType {
+  x: number;
+  y: number;
+  length: number;
+  speed: number;
+  width: number;
+  opacity: number;
+  fadeSpeed: number;
+}
+
+export default function GraphicDisplay({
   crashStatus,
   crTick,
   crBust,
@@ -21,35 +40,41 @@ export default function Graphic({
   prepareTime
 }: GraphicDisplayProps) {
   const { gameHistories } = useGame();
-  const canvasReference = useRef<HTMLCanvasElement>(null);
-  const rocketRef = useRef<HTMLImageElement>(null);
-  const flameRef = useRef<HTMLDivElement>(null);
-  const t = useRef(0);
-  const speed = useRef(5);
-  const loadingPos = { x: 300, y: 450 };
+
   const flag = useRef<boolean>(false);
-  const justStarted = useRef<boolean>(false);
-  const crElapsedTime = useRef<number>(crElapsed);
   const crBustValue = useRef<number>(crBust);
+  const canvasReference = useRef<HTMLCanvasElement | undefined | null>(null);
+  const explosionRef = useRef<HTMLCanvasElement | undefined | null>(null);
+  const rocketRef = useRef(null);
+  const flameRef = useRef<HTMLDivElement | undefined | null>(null);
+  const canvasContainerRef = useRef<HTMLDivElement | undefined | null>(null);
+  const canvasSize = useRef({ x: 0, y: 0 });
+  const t = useRef(0);
+  const timer = useRef<number | null>(null);
+  const speed = useRef(5);
+  // const [inputPreStart, setInputPrestart] = useState(0);
+  const [explosionRect, setRect] = useState({ left: 0, top: 0 });
+  const loadingPos = useRef({ x: 300, y: 450 });
+  // const [engine, setEngine] = useState(null);
 
-  const engine: CrashEngine = new CrashEngine();
-  const [timer, setTimer] = useState<number>(0);
-  const timerRef = useRef<number | null>(null); // Ref to store the requestAnimationFrame ID
-
+  var engine: CrashEngine | null = null;
+  // const isComponentMounted = useRef(true);
   const yTickWidth = 2;
   const xTickWidth = 2;
 
   // Raindrop properties
-  let raindrops: any[] = [];
+  const raindropCount = 20;
+  const raindrops: RaindropType[] = [];
+  // const isResized = useRef(false);
 
   // Create raindrop objects
   function createRaindrops() {
     raindrops.length = 0;
-    for (let i = 0; i < 45; i++) {
+    for (let i = 0; i < raindropCount; i++) {
       raindrops.push({
-        x: Math.random() * 1366, // Random x-coordinate
-        y: Math.random() * 768, // Random y-coordinate
-        length: Math.random() * 20 + 200, // Random length of the raindrop
+        x: Math.random() * (canvasContainerRef.current?.clientWidth ?? 1366), // Random x-coordinate
+        y: Math.random() * (canvasContainerRef.current?.clientHeight ?? 768), // Random y-coordinate
+        length: Math.random() * 20 + 160, // Random length of the raindrop
         speed: speed.current, // Random speed for falling
         width: Math.random() * 2 + 1, // Random width of the raindrop
         opacity: 0.3 + Math.random() * 0.4,
@@ -79,80 +104,100 @@ export default function Graphic({
       // }
       if (raindrop.opacity <= 0) {
         // Reset the line when it's fully faded
-        raindrop.x = Math.random() * 1366;
-        raindrop.y = Math.random() * 768;
+        raindrop.x =
+          Math.random() *
+          ((canvasContainerRef.current?.clientWidth as number) ?? 1366);
+        raindrop.y =
+          Math.random() *
+          ((canvasContainerRef.current?.clientHeight as number) ?? 768);
         raindrop.opacity = 0.3 + Math.random() * 0.4; // Reset opacity
       }
       if (
-        raindrop.x > 1366 ||
-        raindrop.y > 768 ||
+        raindrop.x >
+          ((canvasContainerRef.current?.clientWidth as number) ?? 1366) ||
+        raindrop.y >
+          ((canvasContainerRef.current?.clientHeight as number) ?? 768) ||
         raindrop.x < 0 ||
         raindrop.y < 0
       ) {
-        raindrop.x = Math.random() * 1366;
-        raindrop.y = Math.random() * 768;
+        raindrop.x =
+          Math.random() *
+          ((canvasContainerRef.current?.clientWidth as number) ?? 1366);
+        raindrop.y =
+          Math.random() *
+          ((canvasContainerRef.current?.clientHeight as number) ?? 768);
         raindrop.opacity = 0.3 + Math.random() * 0.4;
       }
     }
   }
 
   function drawGradientLine(line, tangent) {
-    const ctx = canvasReference.current?.getContext('2d');
+    var ctx = canvasReference.current?.getContext('2d');
     if (!ctx) return;
-
-    // Calculate the angle based on engine state and elapsed time
-    const crElapsed = engine?.getElapsedTime() ?? 0;
-    const angle =
-      crElapsed < 800
-        ? (-Math.PI / 2) * (1 - crElapsed / 800) + tangent * (crElapsed / 800)
-        : tangent;
-
-    // Calculate direction based on angle
+    var angle = Math.PI / 2;
+    if (engine?.state === CrashEngineState.Active) {
+      if (engine.getElapsedTime() < 800) {
+        // console.log(engine.getElapsedTime())
+        angle =
+          (-Math.PI / 2) * (1 - engine.getElapsedTime() / 800) +
+          tangent * (engine.getElapsedTime() / 800);
+      } else angle = tangent;
+    }
     const dirX = Math.cos(angle);
     const dirY = Math.sin(angle);
 
-    // Create gradient based on the calculated direction
-    const gradient = ctx.createLinearGradient(
-      line.x,
-      line.y,
-      line.x - dirX * line.length,
-      line.y - dirY * line.length
-    );
+    var gradient: CanvasGradient | null = null;
+    if (tangent == 0) {
+      gradient = ctx.createLinearGradient(
+        line.x,
+        line.y,
+        line.x,
+        line.y + line.length
+      );
+    } else {
+      gradient = ctx.createLinearGradient(
+        line.x,
+        line.y,
+        line.x - dirX * line.length,
+        line.y - dirY * line.length
+      );
+    }
+    // Set the gradient from full opacity to transparent
+    gradient.addColorStop(0, `rgba(135, 206, 235, 0)`); // Transparent at the end
+    gradient.addColorStop(1, `rgba(135, 206, 235, ${line.opacity})`); // Blue with opacity
 
-    // Define gradient color stops
-    const colorBase = 'rgba(35, 37, 59,';
-    gradient.addColorStop(0, `${colorBase} 0)`); // Transparent at the end
-    gradient.addColorStop(1, `${colorBase} ${line.opacity})`); // Blue with opacity
-
-    // Draw the line with the gradient
     ctx.beginPath();
     ctx.moveTo(line.x, line.y);
-    ctx.lineTo(line.x - dirX * line.length, line.y - dirY * line.length);
+    if (tangent == 0) {
+      ctx.lineTo(line.x, line.y + line.length);
+    } else {
+      ctx.lineTo(line.x - dirX * line.length, line.y - dirY * line.length);
+    }
     ctx.strokeStyle = gradient;
-    ctx.lineWidth = 4; // Consider making this a constant if it doesn't change
+    ctx.lineWidth = 2;
     ctx.stroke();
   }
 
   // Draw raindrops
   function drawRaindrops(tangent = 0) {
-    const ctx = canvasReference.current?.getContext('2d');
+    var ctx = canvasReference.current?.getContext('2d');
     if (!ctx) return;
-
-    // Set common properties for all raindrops
+    // ctx.clearRect(0, 0, canvasContainerRef.current?.clientWidth as number, canvasContainerRef.current?.clientHeight as number); // Clear the canvas
     ctx.strokeStyle = 'rgba(174,194,224,0.2)'; // Light blue color
     ctx.lineWidth = 1;
     ctx.lineCap = 'round';
 
-    // Draw each raindrop
-    raindrops.forEach((raindrop) => {
+    for (let i = 0; i < raindrops.length; i++) {
+      const raindrop = raindrops[i];
       drawGradientLine(raindrop, tangent);
-    });
+    }
   }
 
   // Animation loop
   function animateRain(tangent) {
     updateRaindrops(tangent);
     drawRaindrops(tangent);
+    // requestAnimationFrame(animateRain);
   }
 
   const stepValues = (multiplier, e = 5, n = 2) => {
@@ -176,391 +221,440 @@ export default function Graphic({
     return Math.atan2(dy, dx); // Angle of the tangent in radians
   };
 
-  const tick = useCallback(() => {
-    if (flag.current === true) {
-      engine.state = ECrashStatus.END;
+  const tick = () => {
+    if (!canvasReference.current || !canvasContainerRef.current) {
+      return;
     }
 
-    const ctx = canvasReference.current?.getContext('2d');
-    if (!ctx || !rocketRef.current || !flameRef.current) return;
+    if (!engine) return;
+    if (flag.current) {
+      engine.state = CrashEngineState.Over;
+    }
 
-    // Clear the canvas for new drawing
-    ctx.clearRect(0, 0, engine.graphWidth, engine.graphHeight);
+    var ctx = canvasReference.current.getContext('2d');
+    const img = rocketRef?.current;
+    const flame = flameRef?.current;
+    let flameFrame: CanvasImageSource | undefined = undefined;
 
-    const rocketObject = rocketRef.current;
-    const flame = flameRef.current;
-
-    // const elapsedTime = crElapsedTime.current;
-    const elapsedTime = engine.getElapsedTime();
-    const elapsedLoading = engine.getElapsedLoading();
-    const remainingLoading = Number(engine.getRemainingLoading());
-    const a = engine.getElapsedPosition(elapsedTime);
-    const b = engine.getElapsedPosition(elapsedTime * 0.5);
-    const tangent = getTangent(b, a);
-    const frameIndex =
-      Math.floor(
-        engine.state === ECrashStatus.PROGRESS
-          ? elapsedTime
-          : elapsedLoading / 16
-      ) % 11;
-    const flameFrame = flame.children[frameIndex];
-
-    if (flameFrame) {
-      if (engine.state === ECrashStatus.PROGRESS) {
+    if (engine.state === CrashEngineState.Active) {
+      // console.log(engine.elapsedTime)
+      flameFrame = flame?.children[
+        Number((engine.getElapsedTime() / 16).toFixed(0)) % 11
+      ] as CanvasImageSource;
+    } else if (engine.state === CrashEngineState.Loading) {
+      flameFrame = flame?.children[
+        Number((engine.getElapsedLoading() / 16).toFixed(0)) % 11
+      ] as CanvasImageSource;
+    }
+    // console.log(engine.startTime, engine.getElapsedTime(), engine.getElapsedLoading());
+    if (ctx && engine && img) {
+      if (engine.state === CrashEngineState.Active) {
         if (engine.elapsedTime > 5000 && speed.current < 12)
           speed.current += 0.001;
         if (t.current < 100) t.current += 0.04;
         else t.current -= 0.01;
-        engine.gameTick();
+        engine.tick();
       }
+      ctx.clearRect(0, 0, engine.graphWidth, engine.graphHeight);
+      const a = engine.getElapsedPosition(engine.elapsedTime);
+      const b = engine.getElapsedPosition(engine.elapsedTime * 0.5);
 
+      const tangent = getTangent(b, a);
       animateRain(tangent);
+      ctx.beginPath();
+      ctx.strokeStyle = '#853278';
+      ctx.lineWidth =
+        (3 *
+          (canvasSize.current.x ?? canvasContainerRef.current?.clientWidth)) /
+        768;
+      ctx.moveTo(0, engine.plotHeight);
+      const controlY = b.y + t.current;
+      ctx.quadraticCurveTo(b.x, controlY, a.x, a.y);
+      ctx.stroke();
 
-      const imgWidth = 160;
-      const imgHeight = 64;
-      const halfImgHeight = imgHeight / 2;
-      const doubleImgWidth = imgWidth * 2;
+      const rocketWidth =
+        (130 *
+          (canvasSize.current.x ?? canvasContainerRef.current?.clientWidth)) /
+        768;
+      const rocketHeight =
+        (80 *
+          (canvasSize.current.y ?? canvasContainerRef.current?.clientHeight)) /
+        576;
 
-      if (engine.state === ECrashStatus.PROGRESS) {
-        drawActiveState(
-          ctx,
-          rocketObject,
-          flameFrame,
-          a,
-          b,
-          tangent,
-          elapsedTime,
-          imgWidth,
-          imgHeight,
-          halfImgHeight,
-          doubleImgWidth,
-          engine.plotHeight
+      if (engine.state === CrashEngineState.Active) {
+        // Draw line
+
+        ctx.save();
+        //Draw Rocket
+        var offsetY = -500;
+        if (engine.getElapsedTime() < 800) {
+          offsetY = 100 * (1 - engine.getElapsedTime() / 800);
+        } else offsetY = 0;
+        ctx.translate(a.x, a.y + offsetY);
+
+        if (engine.getElapsedTime() < 800) {
+          ctx.rotate((-Math.PI / 2) * (1 - engine.getElapsedTime() / 800));
+        } else ctx.rotate(tangent);
+
+        ctx.drawImage(
+          img,
+          -rocketWidth + 10,
+          -rocketHeight / 2,
+          rocketWidth,
+          rocketHeight
         );
-      } else if (engine.state === ECrashStatus.PREPARE) {
-        drawLoadingState(
-          ctx,
-          rocketObject,
-          flameFrame,
-          loadingPos,
-          elapsedLoading,
-          remainingLoading,
-          imgWidth,
-          imgHeight
-        );
+        if (flameFrame) {
+          ctx.drawImage(
+            flameFrame,
+            -rocketWidth * 2 + 10,
+            -rocketHeight / 2,
+            rocketWidth,
+            rocketHeight
+          );
+        }
+        ctx.restore();
+      } else if (engine.state === CrashEngineState.Loading) {
+        ctx.save();
+        ctx.translate(loadingPos.current.x, loadingPos.current.y);
+        ctx.rotate(-Math.PI / 2);
+        var posX = 0;
+        var offsetX = Math.sin(engine.getElapsedLoading() / 16) * 1;
+
+        if (Number(engine.getRemainingLoading()) < 2) {
+          offsetX = 0;
+          posX -=
+            Math.cos(
+              ((1 - Number(engine.getRemainingLoading())) * Math.PI) / 2
+            ) * 50;
+          // console.log(Math.cos((1 - Number(engine.getRemainingLoading())) * Math.PI / 2))
+        }
+        if (Number(engine.getRemainingLoading()) < 1) {
+          posX +=
+            Math.sin(1 - Number(engine.getRemainingLoading())) *
+            Math.PI *
+            canvasContainerRef.current?.clientWidth;
+        }
+        ctx.drawImage(img, posX + offsetX, 0, rocketWidth, rocketHeight);
+        if (flameFrame)
+          ctx.drawImage(
+            flameFrame,
+            posX - rocketWidth + offsetX,
+            0,
+            rocketWidth,
+            rocketHeight
+          );
+        ctx.restore();
+      } else if (engine.state === CrashEngineState.Over) {
+        getBrowserPosFromCanvas(a.x, a.y);
+        engine.explode = 1;
+      }
+      const fontSize =
+        (150 *
+          (canvasSize.current.y ?? canvasContainerRef.current?.clientHeight)) /
+        768;
+      // Draw caption
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      ctx.fillStyle = '#fff';
+      var labelText = '';
+      if (engine.state === CrashEngineState.Active) {
+        labelText = engine.multiplier.toFixed(2) + 'x';
+      } else if (engine.state === CrashEngineState.Loading) {
+        labelText = Number(engine.getRemainingLoading()).toFixed(2) + 's';
+      } else if (engine.state === CrashEngineState.Over) {
+        ctx.fillStyle = '#EB4A4B';
+        labelText = (crBustValue.current / 100).toFixed(2) + 'x';
+      }
+      // console.log(engine.multiplier, engine.getElapsedTime())
+      if (Number(engine.getRemainingLoading()) < 0) {
+        t.current = 0;
+        engine.state = CrashEngineState.Active;
       }
 
-      drawCaption(ctx, engine, remainingLoading);
+      const textSize = ctx.measureText(labelText);
+      ctx.fillText(
+        labelText,
+        engine.plotWidth / 2 - textSize.width / 2,
+        engine.plotHeight / 2 +
+          (textSize.actualBoundingBoxAscent +
+            textSize.actualBoundingBoxDescent) /
+            2
+      );
 
-      drawAxes(ctx, engine);
+      ctx.font = '10px sans-serif';
+      ctx.fillStyle = '#222';
+      ctx.strokeStyle = '#777';
+
+      // Draw y axis
+      const stepOffset = stepValues(engine.multiplier || 1);
+      const stepScale = engine.plotHeight / engine.yAxis;
+      const subStepOffset = stepOffset * stepScale;
+      let subSteps = Math.max(
+        2,
+        Math.min(16, ~~(subStepOffset / Math.max(3, engine.yAxis / stepOffset)))
+      );
+      subSteps += subSteps % 2;
+
+      for (
+        let offset = stepOffset, step = 0;
+        offset < engine.yAxis + stepOffset && step <= 100;
+        offset += stepOffset, step++
+      ) {
+        const positionX = 0.5 + ~~engine.plotWidth + 15;
+        const positionY = engine.plotHeight - offset * stepScale;
+
+        console.log({ positionX, positionY });
+
+        // Draw ticker
+        ctx.strokeStyle = '#444';
+        ctx.lineWidth = yTickWidth;
+        ctx.beginPath();
+        ctx.moveTo(positionX - yTickWidth, positionY);
+        ctx.lineTo(positionX, positionY);
+        ctx.stroke();
+        ctx.strokeStyle = '#777';
+
+        // Draw caption
+        const labelText =
+          engine
+            .getYMultiplier(positionY)
+            .toFixed(engine.multiplier > 2 ? 0 : 1) + 'x';
+        const textSize = ctx.measureText(labelText);
+        ctx.fillStyle = '#666';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(
+          labelText,
+          positionX + 10,
+          positionY +
+            (textSize.actualBoundingBoxAscent +
+              textSize.actualBoundingBoxDescent) /
+              2
+        );
+
+        // Draw substeps
+        for (let o = 1; o < subSteps; o++) {
+          const isMiddleSubStep = o === subSteps / 2;
+          const subStepWidth = isMiddleSubStep ? 12 : 7;
+          const subStepPositionY =
+            0.5 + ~~(positionY + (subStepOffset / subSteps) * o);
+
+          // Draw ticker
+          ctx.beginPath();
+          ctx.moveTo(positionX - subStepWidth, subStepPositionY);
+          ctx.lineTo(positionX, subStepPositionY);
+          ctx.stroke();
+        }
+      }
+
+      // Draw x axis
+      const xStepOffset = stepValues(engine.xAxis, 5, 2);
+      const xStepScale = engine.plotWidth / (engine.xAxis / xStepOffset);
+
+      for (
+        let step = 1, offset = 0;
+        offset < engine.xAxis + xStepOffset && step <= 100;
+        offset += xStepOffset, step++
+      ) {
+        const seconds = offset / 1000;
+        const positionX = step === 0 ? 4 : (step - 1) * xStepScale;
+        const positionY = engine.plotHeight + 60;
+
+        // Draw ticker
+        ctx.strokeStyle = '#444';
+        ctx.lineWidth = xTickWidth;
+        ctx.beginPath();
+        ctx.moveTo(positionX, positionY - xTickWidth / 2);
+        ctx.lineTo(positionX, positionY + xTickWidth);
+        ctx.stroke();
+        ctx.strokeStyle = '#777';
+
+        // Draw caption
+        const labelText = seconds.toFixed(0) + 's';
+        const textSize = ctx.measureText(labelText);
+        ctx.fillText(labelText, positionX - textSize.width / 2, positionY + 15);
+      }
     }
-    setTimer(requestAnimationFrame(tick));
-  }, [crashStatus, crElapsed, prepareTime, crTick]);
+    timer.current = requestAnimationFrame(tick);
+  };
 
-  function drawAxes(ctx, engine) {
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = '#222';
-    ctx.strokeStyle = '#777';
-
-    drawYAxis(ctx, engine);
-    drawXAxis(ctx, engine);
-  }
-
-  // Extracted x-axis drawing logic
-  function drawXAxis(ctx, engine) {
-    const xStepOffset = stepValues(engine.xAxis, 5, 2);
-    const xStepScale = engine.plotWidth / (engine.xAxis / xStepOffset);
-
-    for (
-      let step = 1, offset = 0;
-      offset < engine.xAxis + xStepOffset && step <= 100;
-      offset += xStepOffset, step++
-    ) {
-      const seconds = offset / 1000;
-      const positionX = step === 0 ? 4 : (step - 1) * xStepScale;
-      const positionY = engine.plotHeight + 60;
-
-      drawXAxisTick(ctx, positionX, positionY, xTickWidth, seconds);
-    }
-  }
-
-  function drawXAxisTick(ctx, positionX, positionY, xTickWidth, seconds) {
-    // Draw ticker
-    ctx.strokeStyle = '#444';
-    ctx.lineWidth = xTickWidth;
-    ctx.beginPath();
-    ctx.moveTo(positionX, positionY - xTickWidth / 2);
-    ctx.lineTo(positionX, positionY + xTickWidth);
-    ctx.stroke();
-    ctx.strokeStyle = '#777';
-
-    // Draw caption
-    const labelText = seconds.toFixed(0) + 's';
-    const textSize = ctx.measureText(labelText);
-    ctx.fillText(labelText, positionX - textSize.width / 2, positionY + 15);
-  }
-
-  // Extracted y-axis drawing logic
-  function drawYAxis(ctx, engine) {
-    const stepOffset = stepValues(engine.multiplier || 1);
-    const stepScale = engine.plotHeight / engine.yAxis;
-    const subStepOffset = stepOffset * stepScale;
-    let subSteps = Math.max(
-      2,
-      Math.min(16, ~~(subStepOffset / Math.max(3, engine.yAxis / stepOffset)))
-    );
-    subSteps += subSteps % 2;
-
-    const positionX = 0.5 + ~~engine.plotWidth + 15;
-    for (let step = 0; step <= 100; step++) {
-      const offset = stepOffset * (step + 1);
-      if (offset >= engine.yAxis + stepOffset) break;
-
-      const positionY = engine.plotHeight - offset * stepScale;
-      drawYAxisTick(
-        ctx,
-        positionX,
-        positionY,
-        yTickWidth,
-        engine,
-        subSteps,
-        subStepOffset
+  const handleResize = () => {
+    if (canvasContainerRef.current) {
+      canvasSize.current = {
+        x: canvasContainerRef.current.clientWidth,
+        y: canvasContainerRef.current.clientHeight
+      };
+      loadingPos.current = {
+        x: (300 / 1366) * canvasContainerRef.current.clientWidth,
+        y: (450 / 768) * canvasContainerRef.current.clientHeight
+      };
+      const rect = canvasReference.current?.getBoundingClientRect();
+      if (rect) setRect({ left: rect.left, top: rect.top });
+      engine?.onResize(
+        canvasContainerRef.current.clientWidth,
+        canvasContainerRef.current.clientHeight
       );
     }
-  }
+  };
 
-  function drawYAxisTick(
-    ctx,
-    positionX,
-    positionY,
-    yTickWidth,
-    engine,
-    subSteps,
-    subStepOffset
-  ) {
-    // Draw ticker
-    ctx.strokeStyle = '#444';
-    ctx.lineWidth = yTickWidth;
-    ctx.beginPath();
-    ctx.moveTo(positionX - yTickWidth, positionY);
-    ctx.lineTo(positionX, positionY);
-    ctx.stroke();
-    ctx.strokeStyle = '#777';
+  function getBrowserPosFromCanvas(canvasX, canvasY) {
+    // Get the bounding rectangle of the canvas in the browser window
+    if (engine?.explode == 1) return;
+    const rect = canvasReference.current?.getBoundingClientRect();
+    if (rect) setRect({ left: rect.left, top: rect.top });
+    if (explosionRef.current) {
+      const app = new PIXI.Application({
+        view: explosionRef.current,
+        width: canvasContainerRef.current?.clientWidth as number,
+        height: canvasContainerRef.current?.clientHeight as number,
+        backgroundAlpha: 0
+      });
 
-    // Draw caption
-    const labelText =
-      engine.getYMultiplier(positionY).toFixed(engine.multiplier > 2 ? 0 : 1) +
-      'x';
-    const textSize = ctx.measureText(labelText);
-    ctx.fillStyle = '#666';
-    ctx.font = 'bold 10px sans-serif';
-    ctx.fillText(
-      labelText,
-      positionX + 10,
-      positionY +
-        (textSize.actualBoundingBoxAscent + textSize.actualBoundingBoxDescent) /
-          2
-    );
+      PIXI.Assets.load('/explosion/explosions.json')
+        .then((resource) => {
+          const animation = new Spine(resource.spineData);
+          app.stage.addChild(animation as unknown as ContainerChild);
 
-    // Draw substeps
-    for (let o = 1; o < subSteps; o++) {
-      const isMiddleSubStep = o === subSteps / 2;
-      const subStepWidth = isMiddleSubStep ? 12 : 7;
-      const subStepPositionY =
-        0.5 + ~~(positionY + (subStepOffset / subSteps) * o);
+          // add the animation to the scene and render...
+          // app.stage.addChild(animation);
 
-      // Draw ticker
-      ctx.beginPath();
-      ctx.moveTo(positionX - subStepWidth, subStepPositionY);
-      ctx.lineTo(positionX, subStepPositionY);
-      ctx.stroke();
+          if (animation.state.hasAnimation('Fx03_text')) {
+            // run forever, little boy!
+            animation.state.setAnimation(0, 'Fx03_text', false);
+            // animation.stage.set(.5);
+            // dont run too fast
+            // animation.state.timeScale = 0.5;
+            animation.skeleton.x = canvasX;
+            animation.skeleton.y = canvasY;
+            animation.spineData.width =
+              (35 *
+                (canvasSize.current.x ??
+                  canvasContainerRef.current?.clientWidth)) /
+              1024;
+            animation.spineData.height =
+              (45 *
+                (canvasSize.current.x ??
+                  canvasContainerRef.current?.clientWidth)) /
+              768;
+
+            // update yourself
+            animation.autoUpdate = true;
+          }
+        })
+        .catch((e: any) => {
+          console.log('MSR error', e);
+        });
     }
+    // Calculate the browser relative position
   }
 
-  // Extracted drawing logic for active state
-  function drawActiveState(
-    ctx,
-    rocketObject,
-    flameFrame,
-    a,
-    b,
-    tangent,
-    elapsedTime,
-    imgWidth,
-    imgHeight,
-    halfImgHeight,
-    doubleImgWidth,
-    plotHeight
-  ) {
-    // Draw line
-    ctx.beginPath();
-    ctx.strokeStyle = '#853278';
-    ctx.lineWidth = 5;
-    ctx.moveTo(0, plotHeight);
-    const controlY = b.y + t.current;
-    ctx.quadraticCurveTo(b.x, controlY, a.x, a.y);
-    ctx.stroke();
-    ctx.save();
-
-    // Draw Rocket
-    let offsetY = elapsedTime < 800 ? 100 * (1 - elapsedTime / 800) : 0;
-    ctx.translate(a.x, a.y + offsetY);
-    ctx.rotate(
-      elapsedTime < 800 ? (-Math.PI / 2) * (1 - elapsedTime / 800) : tangent
-    );
-    ctx.drawImage(
-      rocketObject,
-      -imgWidth + 10,
-      -halfImgHeight,
-      imgWidth,
-      imgHeight
-    );
-    ctx.drawImage(
-      flameFrame,
-      -doubleImgWidth + 10,
-      -halfImgHeight,
-      imgWidth,
-      imgHeight
-    );
-    ctx.restore();
-  }
-
-  // Extracted drawing logic for loading state
-  function drawLoadingState(
-    ctx,
-    rocketObject,
-    flameFrame,
-    loadingPos,
-    elapsedLoading,
-    remainingLoading,
-    imgWidth,
-    imgHeight
-  ) {
-    ctx.save();
-    ctx.translate(loadingPos.x, loadingPos.y);
-    ctx.rotate(-Math.PI / 2);
-    let offsetX = remainingLoading < 2 ? 0 : Math.sin(elapsedLoading / 16);
-    let posX =
-      remainingLoading < 1 ? Math.sin(1 - remainingLoading) * Math.PI * 300 : 0;
-    posX -=
-      remainingLoading < 2
-        ? Math.cos(((1 - remainingLoading) * Math.PI) / 2) * 50
-        : 0;
-    ctx.drawImage(rocketObject, posX + offsetX, 0, imgWidth, imgHeight);
-    ctx.drawImage(
-      flameFrame,
-      posX - imgWidth + offsetX,
-      0,
-      imgWidth,
-      imgHeight
-    );
-    ctx.restore();
-  }
-
-  // Extracted caption drawing logic
-  function drawCaption(ctx, engine, remainingLoading) {
-    ctx.font = 'bold 150px sans-serif';
-    ctx.fillStyle = '#fff';
-    let labelText = '';
-    switch (engine.state) {
-      case ECrashStatus.PROGRESS:
-        labelText = engine.multiplier.toFixed(2) + 'x';
-        break;
-      case ECrashStatus.END:
-        labelText = (crBustValue.current / 100).toFixed(2) + 'x';
-        break;
-      case ECrashStatus.PREPARE:
-        labelText = remainingLoading.toFixed(2) + 's';
-        break;
+  const startGame = (preStartTime) => {
+    createRaindrops();
+    if (engine) engine.destroy();
+    if (timer.current != null) {
+      cancelAnimationFrame(timer.current);
     }
+    t.current = 0;
+    speed.current = 5;
 
-    if (remainingLoading < 0) {
-      t.current = 0;
-      engine.state = ECrashStatus.PROGRESS;
-    }
-
-    const textSize = ctx.measureText(labelText);
-    ctx.fillText(
-      labelText,
-      engine.plotWidth / 2 - textSize.width / 2,
-      engine.plotHeight / 2 +
-        (textSize.actualBoundingBoxAscent + textSize.actualBoundingBoxDescent) /
-          2
+    const newEngine = new CrashEngine();
+    newEngine.onResize(
+      canvasContainerRef.current?.clientWidth as number,
+      canvasContainerRef.current?.clientHeight as number
     );
-  }
+    newEngine.state = CrashEngineState.Loading;
+    newEngine.explode = 0;
+
+    if (preStartTime != 0) {
+      newEngine.startTime = new Date().getTime() - preStartTime;
+      newEngine.state = CrashEngineState.Active;
+    } else newEngine.startTime = new Date().getTime() + 9000;
+    engine = newEngine;
+
+    timer.current = requestAnimationFrame(tick);
+  };
+
+  useEffect(() => {
+    if (!canvasReference.current || !canvasContainerRef.current) return;
+    handleResize();
+  }, [canvasReference.current, canvasContainerRef.current]);
+
+  useEffect(() => {
+    if (!canvasReference.current || !canvasContainerRef.current) return;
+
+    // Initialize raindrops and start the animation
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [canvasReference.current, canvasContainerRef.current]);
 
   useEffect(() => {
     if (crashStatus === ECrashStatus.PREPARE) {
       flag.current = false;
-      createRaindrops();
-      t.current = 0;
-      speed.current = 5;
-
-      engine.onResize(672, 416);
-
-      engine.startTime = new Date().getTime() + 8000; // 6s starting time
-      engine.state = ECrashStatus.PREPARE;
-      timerRef.current = requestAnimationFrame(tick);
-      setTimer(timerRef.current);
+      startGame(crElapsed);
     } else if (crashStatus === ECrashStatus.END) {
       flag.current = true;
       crBustValue.current = crBust;
-      // if (timerRef.current !== null) {
-      //   console.log('I am calling');
-      //   cancelAnimationFrame(timerRef.current);
-      //   timerRef.current = null; // Reset the ref after canceling
-      // }
-      // if (timer) cancelAnimationFrame(timer);
-      // if (engine) {
-      //   engine.state = crashStatus;
-      // }
     } else if (crashStatus === ECrashStatus.PROGRESS) {
-      engine.elapsedTime = crElapsed;
-      flag.current = false;
-
-      if (justStarted.current === false) {
-        justStarted.current = true;
-        createRaindrops();
-        t.current = 0;
-        speed.current = 5;
-
-        engine.onResize(672, 416);
-
-        engine.startTime = new Date().getTime() - crElapsed; // 6s starting time
-        engine.state = ECrashStatus.PROGRESS;
-        timerRef.current = requestAnimationFrame(tick);
-        setTimer(timerRef.current);
-      }
+      startGame(crElapsed);
     }
   }, [crashStatus, crElapsed, crBust, crTick]);
 
-  useEffect(() => {
-    crElapsedTime.current = crElapsed;
-  }, [crElapsed]);
-
   return (
-    <div className="relative h-full w-full">
-      <img ref={rocketRef} src={RocketPNG} style={{ display: 'none' }} />
-      <div ref={flameRef} style={{ display: 'none' }}>
+    <div className="h-full w-full rounded-lg">
+      <img ref={rocketRef} src="/rocket1.png" style={{ display: 'none' }} />
+      <div
+        ref={flameRef as LegacyRef<HTMLDivElement> | undefined}
+        style={{ display: 'none' }}
+      >
         {Array.from({ length: 11 }, (_, i) => (
           <img key={i} src={`/flame/${i + 1}.png`} />
         ))}
       </div>
+      <div
+        ref={canvasContainerRef as LegacyRef<HTMLDivElement> | undefined}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <canvas
+          style={{ background: '#131528' }}
+          width={
+            canvasSize.current.x ?? canvasContainerRef.current?.clientWidth
+          }
+          height={
+            canvasSize.current.y ?? canvasContainerRef.current?.clientHeight
+          }
+          ref={canvasReference as LegacyRef<HTMLCanvasElement> | undefined}
+        />
+      </div>
       <canvas
-        style={{ background: '#191939' }}
-        ref={canvasReference}
-        width="672"
-        height="416"
+        style={{
+          background: 'transparent',
+          position: 'absolute',
+          left: 0,
+          top: 0
+        }}
+        ref={explosionRef as LegacyRef<HTMLCanvasElement> | undefined}
+        width={
+          (60 *
+            (canvasSize.current.x ?? canvasContainerRef.current?.clientWidth)) /
+          1024
+        }
+        height={
+          (80 *
+            (canvasSize.current.x ?? canvasContainerRef.current?.clientWidth)) /
+          768
+        }
       />
       {gameHistories.length > 0 && (
         <div
-          className={`absolute bottom-0 flex w-full items-center justify-start overflow-hidden px-[12px] py-[8px] opacity-100 transition-all duration-300 ease-in-out lg:px-[24px] lg:py-[16px]`}
+          className={`absolute bottom-0 z-30 flex w-[95%] items-center justify-start overflow-x-hidden py-[8px] transition-all duration-300 ease-in-out lg:py-[16px]`}
         >
           {gameHistories.map((item, _index) => {
             return (
               <span
                 key={_index}
-                className={`mr-4 rounded-lg bg-[#00000033] px-[6px] py-[4px] font-bold ${item.crashPoint > 170 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
-                style={{ opacity: 100 - _index * 6 + '%' }}
+                className={`z-20 mr-4 rounded-lg bg-[#00000033] px-[6px] py-[4px] font-bold ${item.crashPoint > 170 ? 'text-[#14F195]' : 'text-[#E83035]'}`}
+                style={{ opacity: 100 - _index * 7 + '%' }}
               >
                 {(item.crashPoint / 100).toFixed(2)}x
               </span>

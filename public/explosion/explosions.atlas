@@ -1,0 +1,55 @@
+
+explosions.png
+size: 414,269
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Images/1
+  rotate: false
+  xy: 2, 16
+  size: 152, 150
+  orig: 152, 150
+  offset: 0, 0
+  index: -1
+Images/2
+  rotate: false
+  xy: 351, 2
+  size: 38, 37
+  orig: 38, 38
+  offset: 0, 1
+  index: -1
+Images/3
+  rotate: true
+  xy: 351, 41
+  size: 62, 61
+  orig: 62, 61
+  offset: 0, 0
+  index: -1
+Images/4
+  rotate: false
+  xy: 156, 23
+  size: 146, 143
+  orig: 146, 143
+  offset: 0, 0
+  index: -1
+Images/5
+  rotate: false
+  xy: 341, 105
+  size: 62, 162
+  orig: 62, 162
+  offset: 0, 0
+  index: -1
+Images/Crash
+  rotate: false
+  xy: 2, 168
+  size: 337, 99
+  orig: 339, 99
+  offset: 0, 0
+  index: -1
+Images/Dor
+  rotate: true
+  xy: 304, 9
+  size: 94, 45
+  orig: 94, 47
+  offset: 0, 2
+  index: -1
