@@ -28,7 +28,7 @@ export default function BetDisplay({
   crashStatus
 }: BetHistoryProps) {
   return (
-    <div className="flex h-full w-full flex-col overflow-auto rounded-lg bg-[#463E7A]">
+    <div className="mb-4 flex h-full w-full flex-col overflow-auto rounded-lg bg-[#463E7A] ">
       <div className="flex w-full flex-row items-center">
         <Button
           className={cn(

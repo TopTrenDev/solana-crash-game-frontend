@@ -246,8 +246,10 @@ export default function BetAction({
                   : 'Place Bet'}
               </Button>
             </div>
-            <div className="flex h-full w-full flex-col items-center justify-start gap-2 text-[10px] text-[#9688CC]">
-              <div className="flex w-full justify-end">Hotkeys: OFF</div>
+            <div className="flex h-full w-full flex-row items-center justify-start gap-4 text-[10px] text-[#9688CC] lg:flex-col lg:gap-2">
+              <div className="hidden w-full justify-end lg:flex">
+                Hotkeys: OFF
+              </div>
               <div className="flex w-full items-center justify-between">
                 <span>Target Profit:</span>
                 <span className="text-white">
