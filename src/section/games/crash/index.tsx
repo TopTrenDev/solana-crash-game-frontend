@@ -226,7 +226,7 @@ export default function CrashGameSection() {
   return (
     <ScrollArea className="h-full">
       <div className="flex h-screen w-full flex-col items-stretch">
-        <div className="flex h-full w-full gap-2 px-[20px] py-[44px] lg:p-[40px]">
+        <div className="flex h-full w-full gap-2 px-0 py-[44px] lg:p-[40px] lg:px-[20px]">
           <div className="flex h-full w-full flex-col justify-between gap-6 lg:w-3/4">
             <div className="flex h-full w-full gap-6 max-lg:flex-col-reverse lg:h-1/2">
               <div className="m-0 flex h-full w-full flex-col justify-between rounded-lg bg-[#463E7A] lg:w-1/3">
