@@ -38,7 +38,7 @@ interface BetActionProps {
   avaliableAutoCashout: boolean;
   setAvaliableAutoCashout: React.Dispatch<React.SetStateAction<boolean>>;
   isBetted: boolean;
-  setIsBetted: React.Dispatch<React.SetStateAction<boolean>>;
+  isCashouted: boolean;
   availableFirstBet: boolean;
   setAvailableFirstBet: React.Dispatch<React.SetStateAction<boolean>>;
   crTick: ITick;
@@ -62,7 +62,7 @@ export default function BetAction({
   avaliableAutoCashout,
   setAvaliableAutoCashout,
   isBetted,
-  setIsBetted,
+  isCashouted,
   availableFirstBet,
   setAvailableFirstBet,
   crTick,
@@ -237,13 +237,13 @@ export default function BetAction({
                 disabled={multiplierError !== ''}
                 onClick={handleStartBet}
               >
-                {isBetted
-                  ? 'Betting(Cancel)'
-                  : availableBet
-                    ? (betAmount * crTick.cur).toFixed(3) + 'SOLA'
-                    : availableFirstBet
-                      ? 'Cashouting...'
-                      : 'Place Bet'}
+                {crashStatus !== ECrashStatus.END
+                  ? isBetted
+                    ? isCashouted
+                      ? 'Bet again'
+                      : (betAmount * crTick.cur).toFixed(3) + ' SOLA'
+                    : 'Place Bet'
+                  : 'Place Bet'}
               </Button>
             </div>
             <div className="flex h-full w-full flex-col items-center justify-start gap-2 text-[10px] text-[#9688CC]">
