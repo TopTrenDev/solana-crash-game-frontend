@@ -402,8 +402,6 @@ export default function GraphicDisplay({
         const positionX = 0.5 + ~~engine.plotWidth + 15;
         const positionY = engine.plotHeight - offset * stepScale;
 
-        console.log({ positionX, positionY });
-
         // Draw ticker
         ctx.strokeStyle = '#444';
         ctx.lineWidth = yTickWidth;
@@ -478,6 +476,14 @@ export default function GraphicDisplay({
 
   const handleResize = () => {
     if (canvasContainerRef.current) {
+      console.log(
+        'canvasContainerRef.current.clientWidth',
+        canvasContainerRef.current.clientWidth
+      );
+      console.log(
+        'canvasContainerRef.current.clientHeight',
+        canvasContainerRef.current.clientHeight
+      );
       canvasSize.current = {
         x: canvasContainerRef.current.clientWidth,
         y: canvasContainerRef.current.clientHeight
@@ -616,7 +622,7 @@ export default function GraphicDisplay({
         style={{ width: '100%', height: '100%' }}
       >
         <canvas
-          style={{ background: '#131528' }}
+          style={{ background: '#131528', minHeight: '250px' }}
           width={
             canvasSize.current.x ?? canvasContainerRef.current?.clientWidth
           }
