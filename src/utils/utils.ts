@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
+import { has } from 'lodash';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -75,4 +76,12 @@ export const initialLabel = (): number[] => {
   const initArray: number[] = [];
   for (let i = 0; i < 100; i++) initArray.push(i);
   return initArray;
+};
+
+export const shortenHash = (hash: string) => {
+  return (
+    hash.slice(0, hash.length / 3) +
+    '.'.repeat(hash.length / 3) +
+    hash.slice((hash.length / 3) * 2, hash.length - 1)
+  );
 };

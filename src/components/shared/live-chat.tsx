@@ -4,7 +4,7 @@ import EmojiPicker, {
   EmojiStyle
 } from 'emoji-picker-react';
 import { Smile, SendHorizonal } from 'lucide-react';
-import { ScrollArea } from '../ui/scroll-area';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import React, { useEffect, useRef, useState } from 'react';
 import useToast from '@/hooks/use-toast';
 import { Input } from '../ui/input';
@@ -17,6 +17,7 @@ import useModal from '@/hooks/use-modal';
 import { ModalType } from '@/types/modal';
 import { IChatUser } from '@/types';
 import { useDispatch } from 'react-redux';
+import { Card, CardContent, CardHeader } from '../ui/card';
 
 export type HistoryItemProps = {
   name: string;
@@ -144,43 +145,49 @@ const LiveChat = ({ className }: LiveChatProps) => {
 
   return (
     <div
-      className={`m-2 h-full w-full flex-col items-stretch justify-start bg-[#463E7A] ${className}`}
+      className={`m-2 flex h-full w-full flex-col items-stretch justify-start bg-[#463E7A] ${className}`}
     >
-      <div className="flex items-center gap-3 rounded-t-lg bg-[#191939] p-3">
-        <span className="text-base font-medium text-gray300">LIVE CHAT</span>
-        <div
-          className="h-2 w-2 rounded-full bg-purple"
-          style={{
-            transform: 'scale(1)',
-            animation:
-              '2s ease 0s infinite normal none running animation-bubble'
-          }}
-        ></div>
-      </div>
-      <div className="flex h-[73%] max-h-40 min-h-10 flex-1 flex-col items-stretch gap-4 bg-[#2C2852] lg:max-h-[185px] lg:min-h-[150px]">
-        <ScrollArea
-          className={`py-1 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
-        >
-          <div className="flex w-full flex-col">
-            <div ref={lastMessageRef}></div>
-            {chatState?.chatHistory &&
-              Array.isArray(chatState?.chatHistory) &&
-              chatState?.chatHistory?.map((chat, key) => (
-                <React.Fragment key={key}>
-                  <HistoryItem
-                    name={chat.user?.username}
-                    avatar={chat.user?.avatar}
-                    time={formatTime(chat.sentAt.toString())}
-                    message={chat.message}
-                    user={chat.user}
-                  />
-                  <div ref={ref}></div>
-                </React.Fragment>
-              ))}
+      <Card className="h-full overflow-hidden rounded-lg border-none bg-[#463E7A] text-white shadow-none">
+        <CardHeader className="flex flex-row items-center justify-between rounded-t-lg bg-[#191939] p-0 text-base font-semibold">
+          <div className="hidden items-center gap-3 rounded-t-lg bg-[#191939] p-3 lg:flex">
+            <span className="text-base font-medium text-gray300">
+              LIVE CHAT
+            </span>
+            <div
+              className="h-2 w-2 rounded-full bg-purple"
+              style={{
+                transform: 'scale(1)',
+                animation:
+                  '2s ease 0s infinite normal none running animation-bubble'
+              }}
+            />
           </div>
-        </ScrollArea>
-      </div>
-      <div className="w-full rounded-b-lg bg-[#2c2852a1] px-2 text-gray-400">
+        </CardHeader>
+        <CardContent className="h-full overflow-hidden bg-[#2C2852] p-0">
+          <ScrollArea className="h-full min-h-10 p-0">
+            <div className="flex w-full flex-col">
+              <div ref={lastMessageRef}></div>
+              {chatState?.chatHistory &&
+                Array.isArray(chatState?.chatHistory) &&
+                chatState?.chatHistory?.map((chat, key) => (
+                  <React.Fragment key={key}>
+                    <HistoryItem
+                      name={chat.user?.username}
+                      avatar={chat.user?.avatar}
+                      time={formatTime(chat.sentAt.toString())}
+                      message={chat.message}
+                      user={chat.user}
+                    />
+                    <div ref={ref}></div>
+                  </React.Fragment>
+                ))}
+            </div>
+
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </CardContent>
+      </Card>
+      <div className="my-2 w-full rounded-b-lg bg-[#2c2852a1] px-2 text-gray-400">
         <div className="flex h-full flex-col">
           <div className="flex h-full w-full items-center gap-2">
             <Smile
@@ -225,6 +232,12 @@ const LiveChat = ({ className }: LiveChatProps) => {
           </div>
         </div>
       </div>
+      {/* <div className="flex h-[73%] max-h-[180px] min-h-10 flex-1 flex-col items-stretch gap-4 bg-[#2C2852] lg:max-h-[185px] lg:min-h-[150px]">
+        <ScrollArea
+          className={`py-1 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
+        >
+        </ScrollArea>
+      </div> */}
     </div>
   );
 };

@@ -12,6 +12,7 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import { SiNintendogamecube } from 'react-icons/si';
 import { useGame } from '@/contexts';
+import { shortenHash } from '@/utils/utils';
 
 export default function HistoryModal() {
   const { open, type } = useAppSelector((state: any) => state.modal);
@@ -120,8 +121,8 @@ export default function HistoryModal() {
                   <FaArrowRight />
                 </button>
               </div>
-              <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-1 text-[20px]">
+              <div className="flex w-full flex-col items-center justify-between lg:flex-row">
+                <div className="flex flex-col items-center gap-1 text-[20px] lg:flex-row">
                   <SiNintendogamecube />
                   Game # <span className="font-thin">{currentGame._id}</span>
                 </div>
@@ -142,13 +143,11 @@ export default function HistoryModal() {
                   {formatDate(currentGame.created).timeAgo}
                 </span>
               </div>
-              {/* <div className='flex w-full gap-1 items-center'>
-                  <span className='uppercase font-bold'>Hash: </span>
-                  <span className='font-light'>Wed, 17 Jul 2024 10:11:38 GMT</span>
-                  <span className='text-sm font-thin'> 8 minutes ago</span>
-                </div> */}
-              <div className="w-full rounded-sm border px-3 py-2 text-sm font-thin text-white">
+              <div className="hidden w-full rounded-sm border px-3 py-2 text-sm font-thin text-white lg:block">
                 {currentGame.privateHash}
+              </div>
+              <div className="block w-full rounded-sm border px-3 py-2 text-sm font-thin text-white lg:hidden">
+                {shortenHash(currentGame.privateHash || '')}
               </div>
             </div>
           </div>

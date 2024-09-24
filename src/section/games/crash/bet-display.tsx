@@ -61,7 +61,7 @@ export default function BetDisplay({
           BetBoard
         </Button>
       </div>
-      <div className="h-full w-full overflow-auto rounded-lg bg-[#463E7A]">
+      <div className="h-full w-full overflow-auto rounded-lg bg-[#463E7A] pb-2">
         {/* <MobileLivechat
           livechatOpen={liveChatOpen}
           setLivechatOpen={setLiveChatOpen}
