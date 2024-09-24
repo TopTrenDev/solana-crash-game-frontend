@@ -216,7 +216,7 @@ export default function BetAction({
               <div className="relative w-full">
                 <Input
                   type="number"
-                  value={autoCashoutPoint}
+                  value={autoCashoutPoint === 0 ? '' : autoCashoutPoint}
                   onChange={handleAutoCashoutPointChange}
                   disabled={isBetted}
                   placeholder="1.05"
