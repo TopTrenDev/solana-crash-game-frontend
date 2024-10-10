@@ -622,7 +622,7 @@ export default function GraphicDisplay({
         style={{ width: '100%', height: '100%' }}
       >
         <canvas
-          style={{ background: '#131528', minHeight: '250px' }}
+          style={{ background: '#191939', minHeight: '250px' }}
           width={
             canvasSize.current.x ?? canvasContainerRef.current?.clientWidth
           }
