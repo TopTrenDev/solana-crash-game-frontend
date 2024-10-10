@@ -110,12 +110,7 @@ export default function BetAction({
   };
 
   const handleStartBet = async () => {
-    if (betAmount > 0 && !availableBet) {
-      // dispatch(userActions.siteBalanceStatus(true));
-      // const balanceTimeout = setTimeout(() => {
-      //   dispatch(userActions.siteBalanceStatus(false));
-      // }, 2000);
-
+    if (betAmount > 0 && !isBetted) {
       const joinParams = {
         target: autoCashoutPoint ? Number(autoCashoutPoint) * 100 : 1000000,
         betAmount: Number(betAmount).valueOf()
@@ -127,28 +122,8 @@ export default function BetAction({
       toast.error('Bet amount must be greater than 0');
       return;
     }
-    if (availableBet) {
-      setAvailableBet(false);
+    if (isBetted) {
       socket?.emit('bet-cashout');
-    }
-  };
-
-  const handleAutoBet = async () => {
-    if (autoBet) {
-      if (betAmount > 0) {
-        const joinParams = {
-          cashoutPoint: Number(autoCashoutPoint).valueOf() * 100,
-          betAmount: Number(betAmount).valueOf()
-        };
-        socket?.emit('auto-crashgame-bet', joinParams);
-        setAutoBet(false);
-      } else {
-        toast.error('Bet amount must be greater than 0');
-        setAutoBet(true);
-      }
-    } else {
-      setAutoBet(true);
-      socket?.emit('cancel-auto-bet');
     }
   };
 
@@ -233,7 +208,7 @@ export default function BetAction({
             </div>
             <div className="flex w-full flex-row items-center justify-center">
               <Button
-                className={`h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c] ${availableBet ? 'border-b-[#5c3921] border-t-[#e79a77] bg-[#ee4d0e] hover:bg-[#ca7f5c]' : ''}`}
+                className={`h-12 w-full select-none rounded-[12px] border-b-4 border-t-4 border-b-[#5c4b21] border-t-[#e7c777] bg-[#EEAF0E] px-3 py-3 hover:bg-[#caab5c] ${isBetted && !isCashouted ? 'border-b-[#5c3921] border-t-[#e79a77] bg-[#ee4d0e] hover:bg-[#ca7f5c]' : ''}`}
                 disabled={multiplierError !== ''}
                 onClick={handleStartBet}
               >
