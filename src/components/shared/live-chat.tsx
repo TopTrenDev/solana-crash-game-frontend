@@ -146,7 +146,7 @@ const LiveChat = ({ className }: LiveChatProps) => {
   return (
     <Card className="m-2 w-full rounded-lg border-none bg-[#463E7A] text-white shadow-none">
       <CardContent className="rounded-t-lg bg-[#2C2852] px-2 py-0">
-        <ScrollArea className="max-h-60 min-h-10 p-0">
+        <ScrollArea className="max-h-60 min-h-10 overflow-scroll p-0">
           <div className="flex w-full flex-col">
             <div ref={lastMessageRef}></div>
             {chatState?.chatHistory &&

@@ -30,7 +30,7 @@ export default function History() {
         </Table>
       </CardHeader>
       <CardContent className="rounded-b-lg bg-[#2C2852] px-2 py-0">
-        <ScrollArea className="max-h-60 min-h-10 p-0">
+        <ScrollArea className="max-h-60 min-h-10 overflow-scroll p-0">
           <Table className="relative max-h-[250px] table-fixed border-separate border-spacing-y-3 overflow-y-scroll">
             <TableBody className="h-full overflow-y-scroll">
               {gameHistories.map((history, index) => (
