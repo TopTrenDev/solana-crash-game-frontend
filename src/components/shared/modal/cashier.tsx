@@ -32,6 +32,7 @@ import { paymentActions } from '@/store/redux/actions';
 const CashierModal = () => {
   const modal = useModal();
   const userData = useAppSelector((state: any) => state.user.userData);
+  console.log('userData :>> ', userData);
   const solBalance = (userData.credit / 1100).toFixed(3);
   const modalState = useAppSelector((state: any) => state.modal);
   const paymentState = useAppSelector((state) => state.payment);
@@ -236,7 +237,7 @@ const CashierModal = () => {
                     Your balance is
                   </span>
                   <span className="text-[13px] text-[#5fa369]">
-                    {userData?.credit.toFixed(3)}
+                    {(userData.credit || 0).toFixed(3)}
                   </span>
                   <span className="text-[12px] text-gray-100">sola = </span>
                   <span className="text-[13px] text-[#5fa369]">
