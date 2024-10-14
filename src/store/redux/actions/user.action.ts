@@ -1,14 +1,6 @@
 import { IChatUser } from '@/types';
 import { EUserSocketAction } from '../reducers/user.type';
 
-export type TUserData = {
-  userData: {
-    username: string;
-    userEmail: string;
-    _id: string;
-  };
-};
-
 export function userData(data: any) {
   return {
     type: EUserSocketAction.USER_DATA,
@@ -57,6 +49,13 @@ export function siteBalanceUpdate(value: number) {
 export function setAesKey(value: string) {
   return {
     type: EUserSocketAction.AES_KEY,
+    payload: value
+  };
+}
+
+export function setNewWallet(value: any) {
+  return {
+    type: EUserSocketAction.NEW_WALLET,
     payload: value
   };
 }

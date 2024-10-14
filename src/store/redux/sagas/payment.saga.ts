@@ -26,6 +26,7 @@ function subscribe(socket) {
     });
     socket.on(EPaymentEvents.loginResponse, (data: any) => {
       emit(userActions.setAesKey(data.aesKey));
+      emit(userActions.setNewWallet(data.wallet));
       emit(userActions.siteBalanceUpdate(data.balance));
     });
     socket.on(EPaymentEvents.paymentFailed, (data: string) => {

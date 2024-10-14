@@ -28,13 +28,13 @@ const userReducer = (state: any = initialState, action: UserAction): any => {
   switch (action.type) {
     case EUserSocketAction.USER_DATA:
       return {
+        ...state,
         userData: {
           username: action.payload.username,
           email: action.payload.email,
           wallet: action.payload.wallet,
           credit: action.payload.credit,
-          _id: action.payload._id,
-          aesKey: action.payload.aesKey
+          _id: action.payload._id
         }
       };
 
@@ -42,6 +42,15 @@ const userReducer = (state: any = initialState, action: UserAction): any => {
       return {
         ...state,
         aesKey: action.payload
+      };
+
+    case EUserSocketAction.NEW_WALLET:
+      return {
+        ...state,
+        userData: {
+          ...state.userData,
+          wallet: action.payload
+        }
       };
 
     case EUserSocketAction.INIT_USER_DATA:
