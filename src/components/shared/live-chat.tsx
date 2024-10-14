@@ -17,7 +17,7 @@ import useModal from '@/hooks/use-modal';
 import { ModalType } from '@/types/modal';
 import { IChatUser } from '@/types';
 import { useDispatch } from 'react-redux';
-import { Card, CardContent, CardHeader } from '../ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 
 export type HistoryItemProps = {
   name: string;
@@ -144,101 +144,62 @@ const LiveChat = ({ className }: LiveChatProps) => {
   }, [inView]);
 
   return (
-    <div
-      className={`m-2 flex h-full w-full flex-col items-stretch justify-start bg-[#463E7A] ${className}`}
-    >
-      <Card className="h-full overflow-hidden rounded-lg border-none bg-[#463E7A] text-white shadow-none">
-        <CardHeader className="flex flex-row items-center justify-between rounded-t-lg bg-[#191939] p-0 text-base font-semibold">
-          <div className="hidden items-center gap-3 rounded-t-lg bg-[#191939] p-3 lg:flex">
-            <span className="text-base font-medium text-gray300">
-              LIVE CHAT
-            </span>
-            <div
-              className="h-2 w-2 rounded-full bg-purple"
-              style={{
-                transform: 'scale(1)',
-                animation:
-                  '2s ease 0s infinite normal none running animation-bubble'
-              }}
-            />
+    <Card className="m-2 w-full rounded-lg border-none bg-[#463E7A] text-white shadow-none">
+      <CardContent className="rounded-t-lg bg-[#2C2852] px-2 py-0">
+        <ScrollArea className="max-h-60 min-h-10 p-0">
+          <div className="flex w-full flex-col">
+            <div ref={lastMessageRef}></div>
+            {chatState?.chatHistory &&
+              Array.isArray(chatState?.chatHistory) &&
+              chatState?.chatHistory?.map((chat, key) => (
+                <React.Fragment key={key}>
+                  <HistoryItem
+                    name={chat.user?.username}
+                    avatar={chat.user?.avatar}
+                    time={formatTime(chat.sentAt.toString())}
+                    message={chat.message}
+                    user={chat.user}
+                  />
+                  <div ref={ref}></div>
+                </React.Fragment>
+              ))}
           </div>
-        </CardHeader>
-        <CardContent className="h-full overflow-hidden bg-[#2C2852] p-0">
-          <ScrollArea className="h-full min-h-10 p-0">
-            <div className="flex w-full flex-col">
-              <div ref={lastMessageRef}></div>
-              {chatState?.chatHistory &&
-                Array.isArray(chatState?.chatHistory) &&
-                chatState?.chatHistory?.map((chat, key) => (
-                  <React.Fragment key={key}>
-                    <HistoryItem
-                      name={chat.user?.username}
-                      avatar={chat.user?.avatar}
-                      time={formatTime(chat.sentAt.toString())}
-                      message={chat.message}
-                      user={chat.user}
-                    />
-                    <div ref={ref}></div>
-                  </React.Fragment>
-                ))}
-            </div>
 
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </CardContent>
-      </Card>
-      <div className="my-2 w-full rounded-b-lg bg-[#2c2852a1] px-2 text-gray-400">
-        <div className="flex h-full flex-col">
-          <div className="flex h-full w-full items-center gap-2">
-            <Smile
-              className={`cursor-pointer ${emojiIsOpened ? 'text-yellow' : ''}`}
-              onClick={() => {
-                toggleIsOpened(emojiIsOpened);
-              }}
-            />
-            <Input
-              className="!focus:ring-0 !focus:ring-offset-0 !focus:ring w-full resize-none overflow-hidden rounded-none !border-none !bg-transparent p-0 text-gray-400 !outline-none !ring-0 !ring-offset-0"
-              value={inputStr}
-              onChange={(e) => {
-                setInputStr(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  sendMessage();
-                  e.preventDefault();
-                }
-              }}
-            />
-            <SendHorizonal
-              className="hover: cursor-pointer text-blue2"
-              onClick={sendMessage}
-            />
-          </div>
-          <div className="flex w-full items-center">
-            <EmojiPicker
-              height={'300px'}
-              width={'100%'}
-              theme={Theme.DARK}
-              emojiStyle={EmojiStyle.GOOGLE}
-              previewConfig={{
-                defaultEmoji: '',
-                defaultCaption: '',
-                showPreview: false
-              }}
-              skinTonesDisabled={true}
-              open={emojiIsOpened}
-              onEmojiClick={onEmojiClick}
-            />
-          </div>
-        </div>
-      </div>
-      {/* <div className="flex h-[73%] max-h-[180px] min-h-10 flex-1 flex-col items-stretch gap-4 bg-[#2C2852] lg:max-h-[185px] lg:min-h-[150px]">
-        <ScrollArea
-          className={`py-1 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
-        >
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
-      </div> */}
-    </div>
+      </CardContent>
+      <CardFooter className="flex w-full flex-row items-center justify-between gap-4 rounded-b-lg bg-[#191939] p-0 px-2 text-base font-semibold">
+        <Smile
+          className={`cursor-pointer ${emojiIsOpened ? 'text-yellow' : ''}`}
+          onClick={() => {
+            toggleIsOpened(emojiIsOpened);
+          }}
+        />
+        <Input
+          className="!focus:ring-0 !focus:ring-offset-0 !focus:ring w-full resize-none overflow-hidden rounded-none !border-none !bg-transparent p-0 text-gray-400 !outline-none !ring-0 !ring-offset-0"
+          value={inputStr}
+          onChange={(e) => {
+            setInputStr(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              sendMessage();
+              e.preventDefault();
+            }
+          }}
+        />
+        <SendHorizonal
+          className="hover: cursor-pointer text-blue2"
+          onClick={sendMessage}
+        />
+      </CardFooter>
+      {/* <div className="flex h-[73%] max-h-[180px] min-h-10 flex-1 flex-col items-stretch gap-4 bg-[#2C2852] lg:max-h-[185px] lg:min-h-[150px]">
+          <ScrollArea
+            className={`py-1 ${emojiIsOpened ? ' max-h-[calc(80vh-300px)]' : ' max-h-[calc(80vh)]'}`}
+          >
+          </ScrollArea>
+        </div> */}
+    </Card>
   );
 };
 

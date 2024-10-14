@@ -28,7 +28,7 @@ export default function BetDisplay({
   crashStatus
 }: BetHistoryProps) {
   return (
-    <div className="mb-4 flex h-full w-full flex-col overflow-auto rounded-lg bg-[#463E7A] ">
+    <div className="flex h-full w-full flex-col overflow-auto rounded-lg bg-[#463E7A] ">
       <div className="flex w-full flex-row items-center">
         <Button
           className={cn(
@@ -61,7 +61,7 @@ export default function BetDisplay({
           BetBoard
         </Button>
       </div>
-      <div className="h-full w-full overflow-auto rounded-lg bg-[#463E7A] pb-2">
+      <div className="h-full w-full overflow-auto rounded-lg bg-[#463E7A]">
         {/* <MobileLivechat
           livechatOpen={liveChatOpen}
           setLivechatOpen={setLiveChatOpen}

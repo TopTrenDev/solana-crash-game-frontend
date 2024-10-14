@@ -51,7 +51,7 @@ export default function Header({ isApp }: HeaderProps) {
   }, []);
 
   return (
-    <div className="flex flex-1 items-center justify-end bg-dark bg-opacity-30 px-[20px] py-[28px] bg-blend-multiply lg:justify-between lg:px-[80px]">
+    <div className="flex flex-1 items-center justify-end bg-dark bg-opacity-30 bg-blend-multiply lg:justify-between">
       <div className="hidden w-[50px] lg:flex lg:w-[120px]">
         <Link
           to="/"
@@ -86,7 +86,7 @@ export default function Header({ isApp }: HeaderProps) {
           ))}
         </div>
       )}
-      <div className="ml-4 mr-8 flex items-center gap-1 md:ml-6">
+      <div className="flex items-center gap-1">
         {isApp ? (
           userData?.username !== '' ? (
             <div className="flex items-center gap-4">
