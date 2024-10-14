@@ -196,7 +196,7 @@ const CashierModal = () => {
                     <FaWallet className="h-6 w-6" />
                   </div>
                   <CopyToClipboard
-                    text={userData.wallet}
+                    text={userData.wallet.publicKey}
                     onCopy={onCopyText}
                     className="absolute right-0 top-0 flex h-full items-center justify-center rounded-r-lg bg-[#463E7A] px-2 text-gray500"
                   >
