@@ -572,7 +572,7 @@ export default function GraphicDisplay({
     if (preStartTime != 0) {
       newEngine.startTime = new Date().getTime() - preStartTime;
       newEngine.state = CrashEngineState.Active;
-    } else newEngine.startTime = new Date().getTime() + 9000;
+    } else newEngine.startTime = new Date().getTime() + 8500;
     engine = newEngine;
 
     timer.current = requestAnimationFrame(tick);
